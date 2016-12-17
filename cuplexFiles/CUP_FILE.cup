@@ -78,18 +78,18 @@ non terminal AST_STMT_LIST stmtList;
 non terminal AST_PROGRAM program;
 non terminal ArrayList<AST_ClassDecl> classDeclLst;
 non terminal AST_ClassDecl classDecl;
-non terminal ArrayList<AST_FIELD_OR_METHOD> fieldMethodList;
+non terminal ArrayList<AST_FieldOrMethod> fieldMethodList;
 non terminal AST_TYPE type;
 non terminal AST_Call call;
 non terminal AST_VCALL virtualCall;
-non terminal AST_EXP_LIST expList;
+non terminal ArrayList<AST_Exp> expList;
 non terminal AST_LITERAL literal;
 non terminal AST_Binop binop;
 non terminal AST_FORMALS formals;
 non terminal ArrayList<AST_FuncArgument> commaTypeIDList;
 non terminal AST_FuncArgument commaTypeID;
-non terminal AST_FIELD field;
-non terminal AST_IDLIST idList;
+non terminal AST_FieldList field;
+non terminal ArrayList<String> idList;
 non terminal AST_METHOD method;
 
 
@@ -223,6 +223,7 @@ commaTypeID     ::= COMMA type:t ID:name                {: RESULT = new AST_Func
 
 field           ::=	type:t idList:l SEMICOLON {: RESULT = new AST_FieldList(t,l); :}
 					;
+				
 				
 idList			::= ID:name					  {: RESULT = new ArrayList<String>(); RESULT.add(name); :}
 					| idList:l COMMA ID:name  {: l.add(name); RESULT= l; :}
