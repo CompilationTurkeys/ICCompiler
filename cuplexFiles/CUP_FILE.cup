@@ -1,0 +1,241 @@
+/*************/
+/* IMPORT(S) */
+/*************/
+import java_cup.runtime.*;
+import AST.*;
+
+
+parser code 
+{:
+	public Lexer lexer;
+
+	public Parser(Lexer lexer)
+	{
+		super(lexer);
+		this.lexer = lexer;
+	}
+:}
+
+/************************/
+/* CUSTOMIZE CUP PARSER */
+/************************/
+scan with
+{:
+	Symbol s;
+	s = lexer.next_token();
+	return s; 
+:};
+
+
+
+/*************/
+/* TERMINALS */
+/*************/
+terminal IF;
+terminal DOT;
+terminal PLUS;
+terminal MINUS;
+terminal TIMES;
+terminal DIVIDE;
+terminal LPAREN;
+terminal RPAREN;
+terminal LBRACK;
+terminal RBRACK;
+terminal LBRACE;
+terminal RBRACE;
+terminal SEMICOLON;
+terminal ASSIGN;
+
+terminal CLASS;
+terminal COMMA;
+terminal EQUAL;
+terminal EXTENDS;
+terminal GT;
+terminal GTE;
+terminal INTEGER;
+terminal NEW;
+terminal LT;
+terminal LTE;
+terminal NEQUAL;
+terminal NULL;
+terminal RETURN;
+terminal STRING;
+terminal VOID;
+terminal WHILE;
+
+/*************/
+/* TERMINALS */
+/*************/
+terminal Integer INT;
+terminal String ID;
+terminal String STR;
+terminal String	CLASS_ID;
+
+non terminal AST_Exp exp;
+non terminal AST_VAR var;
+non terminal AST_STMT stmt;
+non terminal AST_STMT_LIST stmtList;
+non terminal AST_PROGRAM program;
+non terminal ArrayList<AST_ClassDecl> classDeclLst;
+non terminal AST_ClassDecl classDecl;
+non terminal ArrayList<AST_FIELD_OR_METHOD> fieldMethodList;
+non terminal AST_TYPE type;
+non terminal AST_Call call;
+non terminal AST_VCALL virtualCall;
+non terminal AST_EXP_LIST expList;
+non terminal AST_LITERAL literal;
+non terminal AST_Binop binop;
+non terminal AST_FORMALS formals;
+non terminal ArrayList<AST_FuncArgument> commaTypeIDList;
+non terminal AST_FuncArgument commaTypeID;
+non terminal AST_FIELD field;
+non terminal AST_IDLIST idList;
+non terminal AST_METHOD method;
+
+
+/***********************/
+/* OPERATOR PRECEDENCE */
+/***********************/
+precedence left PLUS;
+precedence left MINUS;
+precedence left TIMES;
+precedence left DIVIDE;
+precedence left LT;
+precedence left LTE;
+precedence left GT;
+precedence left GTE;
+precedence left EQUAL;
+precedence left NEQUAL;
+precedence right ASSIGN;
+precedence left LBRACK, RBRACK, LPAREN, RPAREN, DOT;
+
+precedence left IF;
+
+
+
+/************************/
+/* START WITH: program */
+/************************/
+start with program;
+
+/********************/
+/* DERIVATION RULES */
+/********************/
+
+stmtList	::=		stmt:s								{: RESULT = new AST_STMT_LIST(s,null); :}
+					| stmt:s stmtList:l				{: RESULT = new AST_STMT_LIST(s,l); :}
+					;
+
+var			::=		ID:name								{: RESULT = new AST_VAR_SIMPLE(name);       :}
+					| exp:e DOT ID:fieldName			{: RESULT = new AST_VAR_FIELD(e,fieldName); :} 
+					| exp:e1 LBRACK exp:e2 RBRACK			{: RESULT = new AST_VAR_SUBSCRIPT(e1,e2);     :} 	
+					;
+					
+program		::=		classDeclLst:cdl					{: RESULT = new AST_PROGRAM_CLASS_DECL_LIST(cdl);  :}
+					;
+
+
+classDeclLst::=		classDecl:cd						{: RESULT = new ArrayList<AST_ClassDecl>(); RESULT.add(cd); :}
+					| classDeclLst:l classDecl:cd		{: l.add(cd); RESULT = l; :}
+					;
+					
+classDecl	::=		CLASS CLASS_ID:name LBRACE fieldMethodList:l RBRACE  {:  RESULT = new AST_ClassDeclNotExtendedWithFields(name,l); :}
+					| CLASS CLASS_ID:name LBRACE RBRACE {: RESULT = new AST_ClassDeclNotExtended(name); :}
+					| CLASS CLASS_ID:name EXTENDS CLASS_ID:otherName LBRACE fieldMethodList:l RBRACE {: RESULT = new AST_ClassDeclExtendedWithFields(name,otherName,l); :}
+					| CLASS CLASS_ID:name EXTENDS CLASS_ID:otherName LBRACE RBRACE {: RESULT = new AST_ClassDeclNotExtended(name,otherName); :}
+					;				
+
+fieldMethodList ::=  field:f 	{: RESULT = new ArrayList<AST_FieldOrMethod>(); RESULT.add(f); :}
+					| method:m 	{: RESULT = new ArrayList<AST_FieldOrMethod>(); RESULT.add(m); :}
+					| fieldMethodList:l field:f {: l.add(f); RESULT = l; :}  
+					| fieldMethodList:l method:m {: l.add(m); RESULT = l; :}
+					;
+
+stmt		::=		var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_STMT_ASSIGN(v,e); :}
+					| IF    LPAREN exp:cond RPAREN  stmt:s 						{: RESULT = new AST_STMT_IF(cond,s); :}
+					| WHILE LPAREN exp:cond RPAREN  stmt:s 						{: RESULT = new AST_STMT_WHILE(cond,s); :}
+					| call:cl SEMICOLON											{: RESULT = new AST_STMT_CALL(cl); :}
+					| RETURN SEMICOLON											{: RESULT = new AST_STMT_RETURN(null); :}
+					| RETURN exp:e SEMICOLON									{: RESULT = new AST_STMT_RETURN(e); :}
+					| LBRACE stmtList:body RBRACE								{: RESULT = new AST_STMT_MULTSTMTS(body); :}
+					| LBRACE RBRACE												{: RESULT = new AST_STMT_MULTSTMTS(null); :}
+					| type:t ID:name SEMICOLON									{: RESULT = new AST_STMT_TYPE(t,name); :}
+					| type:t ID:name ASSIGN exp:e SEMICOLON						{: RESULT = new AST_STMT_TYPE_EXP(t,name,e); :}
+					;
+					
+type		::= 	INTEGER  {: RESULT = new AST_TYPE_INT(); :}
+					| STRING  {: RESULT = new AST_TYPE_STRING(); :}
+					| CLASS_ID:name {: RESULT = new AST_TYPE_CLASS(name); :}
+					| type:t LBRACK RBRACK {: RESULT = new AST_TYPE_ARRAY(t); :}
+					;
+
+call		::= 	virtualCall:vc 	{:RESULT = new AST_CallVcall(vc); :};
+
+	
+virtualCall ::= 	exp:e DOT ID:name LPAREN expList:elst RPAREN      {: RESULT = new AST_VCALL_WITHARGS(e,name,elst); :}
+					| ID:name LPAREN expList:elst RPAREN			  {: RESULT = new AST_VCALL_WITHARGS(null,name,elst); :}
+					| ID:name LPAREN RPAREN			                  {: RESULT = new AST_VCALL_WITHOUTARGS(name,null); :}
+					| exp:e DOT ID:name LPAREN RPAREN			      {: RESULT = new AST_VCALL_WITHOUTARGS(name,e); :}
+					;
+					
+				
+exp          ::=       var:v                      					  {: RESULT = new AST_ExpVariable(v);          :}
+                       | call:cl                    				  {: RESULT = new AST_ExpFunctionCall(cl);          :}
+                       | exp:e1 binop:op exp:e2            			  {: RESULT = new AST_BinopExp(e1, e2, op); :}
+                       | NEW type:t LBRACK exp:e RBRACK    			  {: RESULT = new AST_ExpNewTypeArray(t, e); :}
+                       | NEW CLASS_ID:name LPAREN RPAREN   			  {: RESULT = new AST_ExpNewClass(name); :}
+                       | literal:l   							      {: RESULT = new AST_ExpLiteral(l); :}
+                       | LPAREN exp:e RPAREN    					  {: RESULT = new AST_ExpInsideParens(e); :}
+                       ;
+
+
+expList ::= 	exp:e 	{: RESULT = new ArrayList<AST_Exp>(); RESULT.add(e); :}
+				|  expList:l COMMA exp:e  {: l.add(e); RESULT = l;  :}
+				;
+ 
+literal     ::=     INT:num                              {: RESULT = new AST_LITERAL_NUM(num); :}
+                    | STR:str                            {: RESULT = new AST_LITERAL_STRING(str); :}
+                    | NULL                               {: RESULT = new AST_LITERAL_NULL(); :}
+                    ;
+
+binop       ::=     MINUS                                {: RESULT = new AST_Binop(BinaryOpTypes.MINUS); :}
+					| PLUS								 {: RESULT = new AST_Binop(BinaryOpTypes.PLUS); :}
+                    | TIMES                                {: RESULT = new AST_Binop(BinaryOpTypes.TIMES); :}
+                    | DIVIDE                                {: RESULT = new AST_Binop(BinaryOpTypes.DIVIDE);:}
+                    | LT                                {: RESULT = new AST_Binop(BinaryOpTypes.LT); :}
+                    | LTE                                {: RESULT = new AST_Binop(BinaryOpTypes.LTE); :}
+                    | GT                                {: RESULT = new AST_Binop(BinaryOpTypes.GT); :}
+                    | GTE                                {: RESULT = new AST_Binop(BinaryOpTypes.GTE); :}
+                    | EQUAL                                {: RESULT = new AST_Binop(BinaryOpTypes.EQUAL); :}
+                    | NEQUAL                                {: RESULT = new AST_Binop(BinaryOpTypes.NEQUAL); :}
+                    ;
+
+formals    ::=      type:t ID:name                      {: RESULT = new AST_FORMALS_TYPEID(t, name);:}
+                    | type:t ID:name commaTypeIDList:l  {: RESULT = new AST_FORMALS_COMMATYPEID_LIST(name, t, l);:}
+                    ;
+
+commaTypeIDList ::= commaTypeID:cmi                     {: RESULT = new ArrayList<AST_FuncArgument>(); RESULT.add(cmi); :}
+                    | commaTypeIDList:l commaTypeID:cmi {: l.add(cmi); RESULT = l; :}
+                    ;
+
+commaTypeID     ::= COMMA type:t ID:name                {: RESULT = new AST_FuncArgument(t, name);:}
+                    ;
+
+field           ::=	type:t idList:l SEMICOLON {: RESULT = new AST_FieldList(t,l); :}
+					;
+				
+idList			::= ID:name					  {: RESULT = new ArrayList<String>(); RESULT.add(name); :}
+					| idList:l COMMA ID:name  {: l.add(name); RESULT= l; :}
+					;
+
+method			::= type:t ID:name LPAREN RPAREN LBRACE RBRACE {: RESULT= new AST_METHOD_TYPE_SIMPLE(t,name); :}
+					| type:t ID:name LPAREN formals:f RPAREN LBRACE RBRACE {: RESULT= new AST_METHOD_TYPE_FORMALS(t,name,f); :}
+					| type:t ID:name LPAREN formals:f RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_METHOD_TYPE_FORMALS_STMT(t,name,f,l); :}
+					| type:t ID:name LPAREN RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_METHOD_TYPE_STMT(t,name,l); :}
+					| VOID ID:name LPAREN RPAREN LBRACE RBRACE {: RESULT= new AST_METHOD_VOID_SIMPLE(name); :}
+					| VOID ID:name LPAREN formals:f RPAREN LBRACE RBRACE {: RESULT= new AST_METHOD_VOID_FORMALS(name,f); :}
+					| VOID ID:name LPAREN formals:f RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_METHOD_VOID_FORMALS_STMT(name,f,l); :}
+					| VOID ID:name LPAREN RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_METHOD_VOID_STMT(name,l); :}
+				    ;
+
+				    
