@@ -1,6 +1,6 @@
 package AST;
 
-public abstract class AST_TYPE extends AST_Node
+public abstract class AST_Type extends AST_Node
 {
 	public int compilationTurkeys;
 }

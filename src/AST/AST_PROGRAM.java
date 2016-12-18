@@ -1,6 +1,6 @@
 package AST;
 
-public abstract class AST_PROGRAM extends AST_Node
+public abstract class AST_Program extends AST_Node
 {
 	public int moish;
 }

@@ -1,6 +1,6 @@
 package AST;
 
-public abstract class AST_LITERAL extends AST_Node
+public abstract class AST_Literal extends AST_Node
 {
 	public int moish;
 }
