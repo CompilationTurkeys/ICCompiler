@@ -27,8 +27,9 @@ public class Main
 			p = new Parser(l);
 			//p.parse();
 			Symbol parseSymbol = p.parse(); //Symbol is the object that the CUP returns (need import)
-			AST_PROGRAM root = (AST_PROGRAM) parseSymbol.value; //parseSymbol.value is an AST_NODE
-			SemanticAnalyzer analyzer = new SemanticAnalyzer(root);
+			AST_Program root = (AST_Program) parseSymbol.value; //parseSymbol.value is an AST_NODE
+			Evaluator semEvaluator = new Evaluator(root);
+			semEvaluator.evaluate();
 			file_writer.write("OK");
     	}
 			     
