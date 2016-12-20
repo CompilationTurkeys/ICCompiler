@@ -2,6 +2,8 @@
 import java.io.FileReader;
 import java.io.PrintWriter;
 
+import AST.AST_PROGRAM;
+
 public class Main
 {
 	static public void main(String argv[])
@@ -24,7 +26,10 @@ public class Main
 			
 			try {
 				p = new Parser(l);
-				p.parse();
+				//p.parse();
+				Symbol parseSymbol = p.parse(); //Symbol is the object that the CUP returns (need import)
+				AST_PROGRAM root = (AST_PROGRAM) parseSymbol.value; //parseSymbol.value is an AST_NODE
+				
 			}
 			catch(Exception e) {
 				file_writer.write("FAIL");
