@@ -107,10 +107,7 @@ precedence left EQUAL;
 precedence left NEQUAL;
 precedence right ASSIGN;
 precedence left LBRACK, RBRACK, LPAREN, RPAREN, DOT;
-
 precedence left IF;
-
-
 
 /************************/
 /* START WITH: program */
