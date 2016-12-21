@@ -84,11 +84,10 @@ non terminal AST_Type type;
 non terminal AST_VirtualCall virtualCall;
 non terminal ArrayList<AST_Exp> expList;
 non terminal AST_Literal literal;
-non terminal AST_Binop binop;
+non terminal BinaryOpTypes binop;
 non terminal ArrayList<AST_FuncArgument> formals;
-non terminal ArrayList<AST_FuncArgument> commaTypeIDList;
-non terminal AST_FuncArgument commaTypeID;
-non terminal AST_FieldList field;
+non terminal AST_FuncArgument formal;
+non terminal AST_Field field;
 non terminal ArrayList<String> idList;
 non terminal AST_Method method;
 
@@ -122,12 +121,12 @@ stmtList	::=		stmt:s							{: RESULT = new ArrayList<AST_Stmt>(); RESULT.add(s);
 					| stmtList:l stmt:s			    {: l.add(s); RESULT = l; :}
 					;
 
-var			::=		ID:name								{: RESULT = new AST_VariableSimpleField(name);       :}
+var			::=		ID:name								{: RESULT = new AST_VariableID(name);       :}
 					| exp:e DOT ID:fieldName			{: RESULT = new AST_VariableExpField(e,fieldName); :} 
-					| exp:e1 LBRACK exp:e2 RBRACK		{: RESULT = new AST_VariableNestedExp(e1,e2);     :} 	
+					| exp:e1 LBRACK exp:e2 RBRACK		{: RESULT = new AST_VariableExpArray(e1,e2);     :} 	
 					;
 					
-program		::=		classDeclLst:cdl					{: RESULT = new AST_ProgramClassDeclList(cdl);  :}
+program		::=		classDeclLst:cdl					{: RESULT = new AST_Program(cdl);  :}
 					;
 
 
@@ -150,19 +149,19 @@ fieldMethodList ::=  field:f 	{: RESULT = new ArrayList<AST_FieldOrMethod>(); RE
 stmt		::=		var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_StmtVarAssignment(v,e); :}
 					| IF    LPAREN exp:cond RPAREN  stmt:s 						{: RESULT = new AST_StmtIf(cond,s); :}
 					| WHILE LPAREN exp:cond RPAREN  stmt:s 						{: RESULT = new AST_StmtWhile(cond,s); :}
-					| virtualCall:cl SEMICOLON											{: RESULT = new AST_StmtCall(cl); :}
+					| virtualCall:cl SEMICOLON									{: RESULT = new AST_StmtCall(cl); :}
 					| RETURN SEMICOLON											{: RESULT = new AST_StmtReturn(null); :}
 					| RETURN exp:e SEMICOLON									{: RESULT = new AST_StmtReturn(e); :}
-					| LBRACE stmtList:body RBRACE								{: RESULT = new AST_StmtMultList(body); :}
-					| LBRACE RBRACE												{: RESULT = new AST_StmtMultList(null); :}
-					| type:t ID:name SEMICOLON									{: RESULT = new AST_StmtVariableExp(t,name,null); :}
-					| type:t ID:name ASSIGN exp:e SEMICOLON						{: RESULT = new AST_StmtVariableExp(t,name,e); :}
+					| LBRACE stmtList:body RBRACE								{: RESULT = new AST_StmtList(body); :}
+					| LBRACE RBRACE												{: RESULT = new AST_StmtList(null); :}
+					| type:t ID:name SEMICOLON									{: RESULT = new AST_StmtVariableDeclaration(t,name,null); :}
+					| type:t ID:name ASSIGN exp:e SEMICOLON						{: RESULT = new AST_StmtVariableDeclaration(t,name,e); :}
 					;
 					
-type		::= 	INTEGER  {: RESULT = new AST_TypePrimitive(PrimitiveDataTypes.INT); :}
-					| STRING  {: RESULT = new AST_TypePrimitive(PrimitiveDataTypes.STRING); :}
-					| CLASS_ID:name {: RESULT = new AST_TypeClass(name); :}
-					| type:t LBRACK RBRACK {: RESULT = new AST_TypeArray(t); :}
+type		::= 	INTEGER  {: RESULT = new AST_Type(PrimitiveDataTypes.INT, 0); :}
+					| STRING  {: RESULT = new AST_Type(PrimitiveDataTypes.STRING, 0); :}
+					| CLASS_ID:name {: RESULT = new AST_Type(name, 0); :}
+					| type:t LBRACK RBRACK {: t.incDimension(); RESULT = t;  :}
 					;
 
 	
@@ -172,14 +171,14 @@ virtualCall ::= 	exp:e DOT ID:name LPAREN expList:elst RPAREN      {: RESULT = n
 					| exp:e DOT ID:name LPAREN RPAREN			      {: RESULT = new AST_VirtualCall(e,name,null); :}
 					;
 					
-				
+					
 exp          ::=       var:v                      					  {: RESULT = new AST_ExpVariable(v);          :}
                        | virtualCall:cl                    				  {: RESULT = new AST_ExpFunctionCall(cl);          :}
-                       | exp:e1 binop:op exp:e2            			  {: RESULT = new AST_BinopExp(e1, e2, op); :}
+                       | exp:e1 binop:op exp:e2            			  {: RESULT = new AST_ExpBinop(e1, e2, op); :}
                        | NEW type:t LBRACK exp:e RBRACK    			  {: RESULT = new AST_ExpNewTypeArray(t, e); :}
                        | NEW CLASS_ID:name LPAREN RPAREN   			  {: RESULT = new AST_ExpNewClass(name); :}
-                       | literal:l   							      {: RESULT = new AST_ExpLiteral(l); :}
-                       | LPAREN exp:e RPAREN    					  {: RESULT = new AST_ExpInsideParens(e); :}
+                       | literal:l   							      {: RESULT = l; :}
+                       | LPAREN exp:e RPAREN    					  {: RESULT = e; :}
                        ;
 
 
@@ -192,30 +191,26 @@ literal     ::=     INT:num                              {: RESULT = new AST_Lit
                     | NULL                               {: RESULT = new AST_LiteralNull(); :}
                     ;
 
-binop       ::=     MINUS                                {: RESULT = new AST_Binop(BinaryOpTypes.MINUS); :}
-					| PLUS								 {: RESULT = new AST_Binop(BinaryOpTypes.PLUS); :}
-                    | TIMES                                {: RESULT = new AST_Binop(BinaryOpTypes.TIMES); :}
-                    | DIVIDE                                {: RESULT = new AST_Binop(BinaryOpTypes.DIVIDE);:}
-                    | LT                                {: RESULT = new AST_Binop(BinaryOpTypes.LT); :}
-                    | LTE                                {: RESULT = new AST_Binop(BinaryOpTypes.LTE); :}
-                    | GT                                {: RESULT = new AST_Binop(BinaryOpTypes.GT); :}
-                    | GTE                                {: RESULT = new AST_Binop(BinaryOpTypes.GTE); :}
-                    | EQUAL                                {: RESULT = new AST_Binop(BinaryOpTypes.EQUALS); :}
-                    | NEQUAL                                {: RESULT = new AST_Binop(BinaryOpTypes.NEQUALS); :}
+binop       ::=     MINUS                                {: RESULT = BinaryOpTypes.MINUS; :}
+					| PLUS								 {: RESULT = BinaryOpTypes.PLUS; :}
+                    | TIMES                                {: RESULT = BinaryOpTypes.TIMES; :}
+                    | DIVIDE                                {: RESULT = BinaryOpTypes.DIVIDE; :}
+                    | LT                                {: RESULT = BinaryOpTypes.LT; :}
+                    | LTE                                {: RESULT = BinaryOpTypes.LTE; :}
+                    | GT                                {: RESULT = BinaryOpTypes.GT; :}
+                    | GTE                                {: RESULT = BinaryOpTypes.GTE; :}
+                    | EQUAL                                {: RESULT = BinaryOpTypes.EQUALS; :}
+                    | NEQUAL                                {: RESULT = BinaryOpTypes.NEQUALS; :}
                     ;
 
-formals    ::=      type:t ID:name                      {: RESULT = new ArrayList<AST_FuncArgument>(); RESULT.add(new AST_FuncArgument(t,name));:}
-                    | commaTypeIDList:l type:t ID:name   {: l.add(new AST_FuncArgument(t,name)); RESULT = l; :}
+formals    ::=      formal:f                         {: RESULT = new ArrayList<AST_FuncArgument>(); RESULT.add(f); :}
+                    | formals:l COMMA formal:f       {: l.add(f); RESULT = l; :}
                     ;
 
-commaTypeIDList ::= commaTypeID:cmi                     {: RESULT = new ArrayList<AST_FuncArgument>(); RESULT.add(cmi); :}
-                    | commaTypeIDList:l commaTypeID:cmi {: l.add(cmi); RESULT = l; :}
+formal		    ::= type:t ID:name                   {: RESULT = new AST_FuncArgument(t, name); :}
                     ;
 
-commaTypeID     ::= COMMA type:t ID:name                {: RESULT = new AST_FuncArgument(t, name);:}
-                    ;
-
-field           ::=	type:t idList:l SEMICOLON {: RESULT = new AST_FieldList(t,l); :}
+field           ::=	type:t idList:l SEMICOLON {: RESULT = new AST_Field(t,l); :}
 					;
 				
 				
@@ -227,10 +222,8 @@ method			::= type:t ID:name LPAREN RPAREN LBRACE RBRACE {: RESULT= new AST_Metho
 					| type:t ID:name LPAREN formals:f RPAREN LBRACE RBRACE {: RESULT= new AST_Method(t,name,f,null); :}
 					| type:t ID:name LPAREN formals:f RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_Method(t,name,f,l); :}
 					| type:t ID:name LPAREN RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_Method(t,name,null,l); :}
-					| VOID ID:name LPAREN RPAREN LBRACE RBRACE {: RESULT= new AST_Method(new AST_TypePrimitive(PrimitiveDataTypes.VOID),name,null,null); :}
-					| VOID ID:name LPAREN formals:f RPAREN LBRACE RBRACE {: RESULT= new AST_Method(new AST_TypePrimitive(PrimitiveDataTypes.VOID),name,f,null); :}
-					| VOID ID:name LPAREN formals:f RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_Method(new AST_TypePrimitive(PrimitiveDataTypes.VOID),name,f,l); :}
-					| VOID ID:name LPAREN RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_Method(new AST_TypePrimitive(PrimitiveDataTypes.VOID),name,null,l); :}
-				    ;
-
-				    
+					| VOID ID:name LPAREN RPAREN LBRACE RBRACE {: RESULT= new AST_Method(new AST_Type(PrimitiveDataTypes.VOID),name,null,null); :}
+					| VOID ID:name LPAREN formals:f RPAREN LBRACE RBRACE {: RESULT= new AST_Method(new AST_Type(PrimitiveDataTypes.VOID),name,f,null); :}
+					| VOID ID:name LPAREN formals:f RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_Method(new AST_Type(PrimitiveDataTypes.VOID),name,f,l); :}
+					| VOID ID:name LPAREN RPAREN LBRACE stmtList:l RBRACE {: RESULT = new AST_Method(new AST_Type(PrimitiveDataTypes.VOID),name,null,l); :}
+				    ;				    

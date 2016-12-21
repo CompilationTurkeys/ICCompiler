@@ -40,7 +40,7 @@ public class Main
 			e.printStackTrace();
 		}
 		finally{
-			file_writer.close();
+			file_writer.close();			
 		}
 	}
 }
