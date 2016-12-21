@@ -1,4 +1,5 @@
    
+import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java_cup.runtime.*;
@@ -18,9 +19,9 @@ public class Main
 		try
 		{
 
-			file_reader = new FileReader(inputFilename);
+			file_reader = new FileReader(new File(inputFilename));
 
-			file_writer = new PrintWriter(outputFilename);
+			file_writer = new PrintWriter(new File(outputFilename));
 			
 			l = new Lexer(file_reader);
 			
@@ -28,7 +29,7 @@ public class Main
 			//p.parse();
 			Symbol parseSymbol = p.parse(); //Symbol is the object that the CUP returns (need import)
 			AST_Program root = (AST_Program) parseSymbol.value; //parseSymbol.value is an AST_NODE
-			Evaluator semEvaluator = new Evaluator(root);
+			SemanticEvaluator semEvaluator = new SemanticEvaluator(root);
 			semEvaluator.evaluate();
 			file_writer.write("OK");
     	}

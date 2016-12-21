@@ -5,7 +5,7 @@
 //----------------------------------------------------
 
 /** CUP generated interface containing symbol constants. */
-public interface sym {
+public interface Sym {
   /* terminals */
   public static final int DIVIDE = 7;
   public static final int LTE = 25;
