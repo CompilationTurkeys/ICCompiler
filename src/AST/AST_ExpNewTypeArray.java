@@ -10,4 +10,15 @@ public class AST_ExpNewTypeArray extends AST_Exp
 		this.arrayType = type;
 		this.sizeExpression = exp;
 	}
+	
+	@Override
+	public <ContextType, ResultType> ResultType accept(
+			Visitor<ContextType, ResultType>  visitor, ContextType context) {
+		return visitor.visit(this, context);
+	}
+	
+	@Override
+	public void accept(PrinterVisitor visitor) {
+		visitor.visit(this);
+	}
 }

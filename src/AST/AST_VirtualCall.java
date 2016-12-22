@@ -14,4 +14,15 @@ public class AST_VirtualCall extends AST_Node
 		this.callingExp = exp;
 		this.funcName = name;
 	}
+	
+	@Override
+	public <ContextType, ResultType> ResultType accept(
+			Visitor<ContextType, ResultType>  visitor, ContextType context) {
+		return visitor.visit(this, context);
+	}
+	
+	@Override
+	public void accept(PrinterVisitor visitor) {
+		visitor.visit(this);
+	}
 }

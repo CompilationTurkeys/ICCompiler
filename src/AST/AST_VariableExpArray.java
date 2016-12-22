@@ -10,4 +10,15 @@ public class AST_VariableExpArray extends AST_Variable
 		this.arrayExp = e1;
 		this.arraySize = e2;
 	}
+	
+	@Override
+	public <ContextType, ResultType> ResultType accept(
+			Visitor<ContextType, ResultType>  visitor, ContextType context) {
+		return visitor.visit(this, context);
+	}
+	
+	@Override
+	public void accept(PrinterVisitor visitor) {
+		visitor.visit(this);
+	}
 }

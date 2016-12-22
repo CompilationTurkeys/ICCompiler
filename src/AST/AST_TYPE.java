@@ -79,4 +79,15 @@ public class AST_Type extends AST_Node
 		return true;
 	}
 	
+	@Override
+	public <ContextType, ResultType> ResultType accept(
+			Visitor<ContextType, ResultType>  visitor, ContextType context) {
+		return visitor.visit(this, context);
+	}
+	
+	@Override
+	public void accept(PrinterVisitor visitor) {
+		visitor.visit(this);
+	}
+	
 }

@@ -10,4 +10,15 @@ public class AST_Program extends AST_Node
 	{
 		this.classList = lst;
 	}
+	
+	@Override
+	public <ContextType, ResultType> ResultType accept(
+			Visitor<ContextType, ResultType>  visitor, ContextType context) {
+		return visitor.visit(this, context);
+	}
+	
+	@Override
+	public void accept(PrinterVisitor visitor) {
+		visitor.visit(this);
+	}
 }

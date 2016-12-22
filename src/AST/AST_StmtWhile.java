@@ -10,4 +10,15 @@ public class AST_StmtWhile extends AST_Stmt
 		this.cond = cond;
 		this.stmt = stmt;
 	}
+	
+	@Override
+	public <ContextType, ResultType> ResultType accept(
+			Visitor<ContextType, ResultType>  visitor, ContextType context) {
+		return visitor.visit(this, context);
+	}
+	
+	@Override
+	public void accept(PrinterVisitor visitor) {
+		visitor.visit(this);
+	}
 }

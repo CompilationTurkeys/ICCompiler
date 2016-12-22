@@ -12,4 +12,15 @@ public class AST_StmtVariableDeclaration extends AST_Stmt
 		this.varName = name;
 		this.assignedExp = exp;
 	}
+	
+	@Override
+	public <ContextType, ResultType> ResultType accept(
+			Visitor<ContextType, ResultType>  visitor, ContextType context) {
+		return visitor.visit(this, context);
+	}
+	
+	@Override
+	public void accept(PrinterVisitor visitor) {
+		visitor.visit(this);
+	}
 }

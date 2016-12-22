@@ -12,4 +12,15 @@ public class AST_ExpBinop extends AST_Exp
 		this.rightExp = right;
 		this.OP = OP;
 	}
+	
+	@Override
+	public <ContextType, ResultType> ResultType accept(
+			Visitor<ContextType, ResultType>  visitor, ContextType context) {
+		return visitor.visit(this, context);
+	}
+	
+	@Override
+	public void accept(PrinterVisitor visitor) {
+		visitor.visit(this);
+	}
 }
