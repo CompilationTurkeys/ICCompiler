@@ -1,29 +1,5 @@
-import AST.AST_ClassDecl;
-import AST.AST_Exp;
-import AST.AST_ExpBinop;
-import AST.AST_ExpFunctionCall;
-import AST.AST_ExpNewClass;
-import AST.AST_ExpNewTypeArray;
-import AST.AST_ExpVariable;
-import AST.AST_Field;
-import AST.AST_FuncArgument;
-import AST.AST_Method;
-import AST.AST_Node;
-import AST.AST_Program;
-import AST.AST_Stmt;
-import AST.AST_StmtCall;
-import AST.AST_StmtIf;
-import AST.AST_StmtList;
-import AST.AST_StmtReturn;
-import AST.AST_StmtVarAssignment;
-import AST.AST_StmtVariableDeclaration;
-import AST.AST_StmtWhile;
-import AST.AST_Type;
-import AST.AST_Variable;
-import AST.AST_VariableExpArray;
-import AST.AST_VariableExpField;
-import AST.AST_VariableID;
-import AST.AST_VirtualCall;
+import AST.*;
+import AST.PrinterVisitor;
 
 public class ASTPrinter implements PrinterVisitor {
 	
@@ -121,7 +97,7 @@ public class ASTPrinter implements PrinterVisitor {
 	}
 
 	@Override
-	public Object visit(AST_StmtCall call) {
+	public void visit(AST_StmtCall call) {
 		// TODO Auto-generated method stub
 	
 	}

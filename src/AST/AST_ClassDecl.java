@@ -1,6 +1,5 @@
 
 package AST;
-
 import java.util.ArrayList;
 
 public class AST_ClassDecl extends AST_Node
