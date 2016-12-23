@@ -85,9 +85,18 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_StmtVarAssignment stmt, SymbolTable d) {
-		// TODO Auto-generated method stub
+
+	public Attribute visit(AST_StmtVarAssignment stmt, SymbolTable st) {
+		Attribute left = stmt.var.accept(this, st);
+		left.getType().accept(this, scope);
+		Attribute right = stmt.assignExp.accept(this, st);
+		right.getType().accept(this, scope);
+
+		if (!properInheritance(right.getType(), left.getType())) {
+			throw new RuntimeException(); // incompatible types or inheritance (cannot assign right to left)
+		}
 		return null;
+
 	}
 
 	@Override
@@ -196,6 +205,24 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	public Attribute visit(AST_Program program, SymbolTable d) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	// non visit functions
+
+	private boolean properInheritance(Type right, Type left) {
+
+		return ((right.getName().equals("null") && (left.getDefValue() == null || left.getDimension() > 0))
+				|| ((right.isPrimitive() && (right.getName()).equals(left.getName()))
+				|| (!right.isPrimitive() && inherit(right, left))));
+	}
+
+	private boolean inherit(Type right, Type left) {
+		if (right.getName().equals("null")){
+			return false;
+		}
+		return (((ClassAttribute)(program.getSymbols().get(subType.getName()))).getAncestors().contains(superType.getName())
+				&& subType.getDimension() == 0 && superType.getDimension() == 0) || (subType.equals(superType));
+		// TODO implement above return and change names according to code
 	}
 	
 }
