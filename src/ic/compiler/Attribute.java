@@ -3,7 +3,7 @@ import ic.ast.*;
 
 public class Attribute {
 
-	final private AST_Type type;
+	private AST_Type type;
 	private boolean isNull;
 
 	public Attribute(AST_Type type)

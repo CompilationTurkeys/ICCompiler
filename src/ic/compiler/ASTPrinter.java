@@ -1,6 +1,5 @@
 package ic.compiler;
 import ic.ast.*;
-import ic.ast.PrinterVisitor;
 
 public class ASTPrinter implements PrinterVisitor {
 	

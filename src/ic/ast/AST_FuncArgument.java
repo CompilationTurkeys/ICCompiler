@@ -1,4 +1,6 @@
 package ic.ast;
+import ic.compiler.PrinterVisitor;
+import ic.compiler.Visitor;
 
 public class AST_FuncArgument extends AST_Node
 {

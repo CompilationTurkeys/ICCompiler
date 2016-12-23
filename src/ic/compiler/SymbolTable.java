@@ -12,7 +12,6 @@ public class SymbolTable {
 	private String className; //in what class are we
 	private Map<AST_Node, SymbolTable> children; //the scopes that are inside my scopes.
 	
-	
 	public SymbolTable(SymbolTable parentTable, String className)
 	{
 		this.parent= parentTable;
@@ -20,7 +19,6 @@ public class SymbolTable {
 		this.symbols= new HashMap<String,Attribute>();
 		this.children=new HashMap<AST_Node, SymbolTable>();
 	}
-
 
 	public String getClassName() {
 		return className;

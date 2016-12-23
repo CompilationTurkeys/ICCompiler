@@ -1,6 +1,8 @@
-
 package ic.ast;
 import java.util.ArrayList;
+import ic.compiler.Visitor;
+import ic.compiler.PrinterVisitor;
+
 
 public class AST_ClassDecl extends AST_Node
 {
