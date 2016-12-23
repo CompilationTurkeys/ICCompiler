@@ -2,7 +2,7 @@
 /* IMPORT(S) */
 /*************/
 import java_cup.runtime.*;
-import AST.*;
+import ic.ast.*;
 import java.util.ArrayList;
 
 
