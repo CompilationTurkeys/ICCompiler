@@ -158,7 +158,6 @@ stmt		::=		var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_StmtVarAssign
 					| type:t ID:name ASSIGN exp:e SEMICOLON						{: RESULT = new AST_StmtVariableDeclaration(t,name,e); :}
 					;
 					
-					
 type		::= 	INTEGER  {: RESULT = new AST_Type(PrimitiveDataTypes.INT, 0); :}
 					| STRING  {: RESULT = new AST_Type(PrimitiveDataTypes.STRING, 0); :}
 					| CLASS_ID:name {: RESULT = new AST_Type(name, 0); :}
