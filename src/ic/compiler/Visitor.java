@@ -10,7 +10,7 @@ public interface Visitor<ContextType, ResultType> {
 	public ResultType visit(AST_Exp expr, ContextType d); // V
 	public ResultType visit(AST_ExpBinop expr, ContextType d); // V
 	public ResultType visit(AST_ExpFunctionCall expr, ContextType d);
-	public ResultType visit(AST_ExpNewClass expr, ContextType d);
+	public ResultType visit(AST_ExpNewClass expr, ContextType d); // V
 	public ResultType visit(AST_ExpNewTypeArray expr, ContextType d);
 	
 	public ResultType visit(AST_StmtVarAssignment stmt, ContextType d); // V
@@ -31,11 +31,13 @@ public interface Visitor<ContextType, ResultType> {
 	
 	public ResultType visit(AST_Type type, ContextType d);
 	
-	public ResultType visit(AST_FuncArgument funcArg, ContextType d);
+	public ResultType visit(AST_FuncArgument funcArg, ContextType d); // V
 	
-	public ResultType visit(AST_Field field, ContextType d);
+	public ResultType visit(AST_Field field, ContextType d); // V
 	
-	public ResultType visit(AST_Method method, ContextType d);
+	public ResultType visit(AST_Method method, ContextType d); //  V
+	
+	public ResultType visit(AST_Literal call, ContextType d); 
 	
 	public ResultType visit(AST_ClassDecl classDecl, ContextType d); // V
 	

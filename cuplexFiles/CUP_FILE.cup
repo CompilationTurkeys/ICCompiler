@@ -187,9 +187,9 @@ expList ::= 	exp:e 	{: RESULT = new ArrayList<AST_Exp>(); RESULT.add(e); :}
 				|  expList:l COMMA exp:e  {: l.add(e); RESULT = l;  :}
 				;
  
-literal     ::=     INT:num                              {: RESULT = new AST_LiteralNumber(num); :}
-                    | STR:str                            {: RESULT = new AST_LiteralString(str); :}
-                    | NULL                               {: RESULT = new AST_LiteralNull(); :}
+literal     ::=     INT:num                              {: RESULT = new AST_Literal(num); :}
+                    | STR:str                            {: RESULT = new AST_Literal(str); :}
+                    | NULL                               {: RESULT = new AST_Literal(null); :}
                     ;
 
 binop       ::=     MINUS                                {: RESULT = BinaryOpTypes.MINUS; :}

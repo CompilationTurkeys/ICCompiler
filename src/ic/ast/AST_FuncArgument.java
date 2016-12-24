@@ -13,7 +13,11 @@ public class AST_FuncArgument extends AST_Node
 		this.argName = name;
 		this.argType = type;
 	}
-	
+
+	public void setArgName(String argName) {
+		this.argName = argName;
+	}
+
 	@Override
 	public <ContextType, ResultType> ResultType accept(
 			Visitor<ContextType, ResultType>  visitor, ContextType context) {
@@ -23,5 +27,13 @@ public class AST_FuncArgument extends AST_Node
 	@Override
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	public AST_Type getArgType() {
+		return argType;
+	}
+	
+	public String getArgName() {
+		return argName;
 	}
 }

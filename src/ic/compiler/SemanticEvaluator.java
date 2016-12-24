@@ -276,29 +276,54 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		return null;
 	}
 
+
 	@Override
-	public Attribute visit(AST_Type type, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_Type type, SymbolTable st) {
+		if (!type.isPrimitive() && !type.getName().equals("null") && !program.getSymbols().containsKey(type.getName())) {
+			throw new RuntimeException("");
+		}
+		else if (type.getName().equals(PrimitiveDataTypes.VOID.getName())){
+			throw new RuntimeException("");
+		}
+		return null;
+		// TODO with implementation of AST_Literal
+	}
+
+	@Override
+	public Attribute visit(AST_FuncArgument funcArg, SymbolTable st) {
+		funcArg.getArgType().accept(this, st);
+		Attribute attribute =  new Attribute(funcArg.getArgType());
+		st.getSymbols().put(funcArg.getArgName(), attribute);
+		funcArg.setClassName(attribute.getType().getName());
+		return attribute;
+	}
+
+	@Override
+	public Attribute visit(AST_Field field, SymbolTable st) {
+		field.getType().accept(this, st);
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_FuncArgument funcArg, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_Method method, SymbolTable st) {
+		SymbolTable methodSymbolTable = new MethodSymbolTable(st, method.getName());
+		st.getChildren().put(method, methodSymbolTable);
+		if (!method.getType().isPrimitive() && !program.getSymbols().containsKey(method.getType().getName())) {
+			throw new RuntimeException("non primitive type of " + method.getType().getName() + "is not declared");
+		}
+		if (method.getArguments() != null) {
+			method.getArguments().stream().forEach(arg -> arg.accept(this, methodSymbolTable));
+		}
+		if (method.getMethodStmtList() != null)
+			method.getMethodStmtList().accept(this, methodSymbolTable);
+		return null;
+	}
+	
+	public Attribute visit(AST_Literal call, SymbolTable st) {
+		//TODO finish visit 
 		return null;
 	}
 
-	@Override
-	public Attribute visit(AST_Field field, SymbolTable d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Attribute visit(AST_Method method, SymbolTable d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Attribute visit(AST_ClassDecl c, SymbolTable st) {
