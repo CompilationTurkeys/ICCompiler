@@ -55,12 +55,6 @@ public class ASTPrinter implements PrinterVisitor {
 	}
 
 	@Override
-	public void visit(AST_ExpVariable expr) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void visit(AST_ExpFunctionCall expr) {
 		// TODO Auto-generated method stub
 		

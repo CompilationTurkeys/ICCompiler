@@ -5,12 +5,12 @@ import ic.compiler.Visitor;
 public class AST_StmtWhile extends AST_Stmt
 {
 	public AST_Exp cond;
-	public AST_Stmt stmt;
+	public AST_Stmt body;
 
-	public AST_StmtWhile(AST_Exp cond,AST_Stmt stmt)
+	public AST_StmtWhile(AST_Exp cond,AST_Stmt body)
 	{
 		this.cond = cond;
-		this.stmt = stmt;
+		this.body = body;
 	}
 	
 	@Override

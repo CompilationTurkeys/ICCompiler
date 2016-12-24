@@ -38,7 +38,7 @@ public class Main
 		catch (Exception e)
 		{
 			file_writer.write("FAIL");
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		finally{
 			file_writer.close();			

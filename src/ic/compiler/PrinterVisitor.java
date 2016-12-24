@@ -5,7 +5,6 @@ public interface PrinterVisitor {
 
 		public void visit(AST_Exp expr);
 		public void visit(AST_ExpBinop expr);
-		public void visit(AST_ExpVariable expr);
 		public void visit(AST_ExpFunctionCall expr);
 		public void visit(AST_ExpNewClass expr);
 		public void visit(AST_ExpNewTypeArray expr);

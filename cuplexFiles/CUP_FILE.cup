@@ -174,7 +174,7 @@ virtualCall ::= 	exp:e DOT ID:name LPAREN expList:elst RPAREN      {: RESULT = n
 					
 					
 exp          ::=       var:v                      					  {: RESULT = v; :}
-                       | virtualCall:cl                    				  {: RESULT = new AST_ExpFunctionCall(cl);          :}
+                       | virtualCall:cl                    			  {: RESULT = new AST_ExpFunctionCall(cl); :}
                        | exp:e1 binop:op exp:e2            			  {: RESULT = new AST_ExpBinop(e1, e2, op); :}
                        | NEW type:t LBRACK exp:e RBRACK    			  {: RESULT = new AST_ExpNewTypeArray(t, e); :}
                        | NEW CLASS_ID:name LPAREN RPAREN   			  {: RESULT = new AST_ExpNewClass(name); :}

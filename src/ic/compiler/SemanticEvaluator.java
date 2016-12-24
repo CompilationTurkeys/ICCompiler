@@ -64,11 +64,6 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		return attr;
 	}
 
-	@Override
-	public Attribute visit(AST_ExpVariable expr, SymbolTable d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Attribute visit(AST_ExpFunctionCall expr, SymbolTable d) {
@@ -78,8 +73,19 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 	public Attribute visit(AST_ExpNewClass expr, SymbolTable d) {
-		// TODO Auto-generated method stub
-		return null;
+		Attribute expNewClassAttr = null;
+		
+		//check if a class that is initialized exists
+		if(program.getSymbols().containsKey(expr.getClassName())){
+			expr.setClassName(expr.getClassName());
+			//class dimension is 0
+			expNewClassAttr = new Attribute(new AST_Type(expr.getClassName(), 0));//null argument == 0 dimension
+		}
+		else{
+			throw new RuntimeException("Trying to initialize an undeclared class: " + expr.getClassName());
+		}
+		
+		return expNewClassAttr;
 	}
 
 	@Override
@@ -138,8 +144,8 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 				throw new RuntimeException("Incompatible types, cannot assign type " + expAttr.getType().getName() + " to type "+ stmt.varType.getName());
 			}
 			
-			if (expAttr.isMethod() && (stmt.assignedExp instanceof AST_ExpVariable)){
-				throw new RuntimeException("Can not assign method to variable!");
+			if (expAttr.isMethod() && (stmt.assignedExp instanceof AST_Variable)){
+				throw new RuntimeException("Cannot assign method to variable!");
 			}
 		}
 		
@@ -186,14 +192,57 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_StmtIf stmt, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_StmtIf stmt, SymbolTable symTable) {
+		//traverse the condition
+		Attribute condAttr = stmt.cond.accept(this, symTable);
+		
+		//condition attribute is int in our case then we will check for type comaptibility appropriately
+		if (!condAttr.getType().getName().equals("int") || condAttr.getType().getDimension() > 0) {
+			throw new RuntimeException("Illegal IF statement: condition must be of type int but is of type" + condAttr.getType().getName());
+		}
+		//if the body of the statement is not null traverse it and create local scope table if necessary
+		if (stmt.body != null) {
+			
+			if (stmt.body instanceof AST_StmtList) {
+				stmt.body.accept(this, symTable);
+			}
+			else {
+				MethodSymbolTable currTable = new MethodSymbolTable(symTable, ((MethodSymbolTable)symTable).getMethodName());
+				symTable.getChildren().put(stmt.body, currTable);
+				stmt.body.accept(this, currTable);
+			}
+			//after finishing with the local scope remove it from the parent table
+			symTable.getChildren().remove(stmt.body);
+		}
+
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_StmtWhile stmt, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_StmtWhile stmt, SymbolTable symTable) {
+		//traverse the condition of while
+		Attribute condAttr = stmt.cond.accept(this, symTable);
+		
+		//condition attribute is int in our case then we will check for type comaptibility appropriately
+		if (!condAttr.getType().getName().equals("int") || condAttr.getType().getDimension() > 0) {
+			throw new RuntimeException("Illegal WHILE statement: condition must be of type int but is of type" + condAttr.getType().getName());
+		}
+		
+		//if the body of the statement is not null traverse it and create local scope table if necessary
+		if (stmt.body != null) {
+						
+			if (stmt.body instanceof AST_StmtList) {
+				stmt.body.accept(this, symTable);
+			}
+			else {
+				MethodSymbolTable currTable = new MethodSymbolTable(symTable, ((MethodSymbolTable)symTable).getMethodName());
+				symTable.getChildren().put(stmt.body, currTable);
+				stmt.body.accept(this, currTable);
+			}
+			//after finishing with the local scope remove it from the parent table
+			symTable.getChildren().remove(stmt.body);
+		}
+		
 		return null;
 	}
 
