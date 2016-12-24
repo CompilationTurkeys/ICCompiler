@@ -5,15 +5,21 @@ public class Attribute {
 
 	private AST_Type type;
 	private boolean isNull;
+	private boolean isMethod;
 
 	public Attribute(AST_Type type)
 	{
 		this.type = type;
 		this.isNull = false;
+		this.isMethod = false;
 	}
 	
-	public void setNull(boolean isNull) {
-		this.isNull = isNull;
+	public void setIsMethod(boolean isMethod) {
+		this.isMethod = isMethod;
+	}
+	
+	public boolean isMethod() {
+		return isMethod;
 	}
 
 	public AST_Type getType(){

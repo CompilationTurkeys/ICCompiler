@@ -18,7 +18,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 	public Attribute visit(AST_Exp expr, SymbolTable d) {
-		throw new UnsupportedOperationException("Unxepcted visit in Exp!");
+		throw new UnsupportedOperationException("Unexepcted visit in Exp!");
 	}
 
 	@Override
@@ -88,45 +88,97 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	public Attribute visit(AST_StmtVarAssignment stmt, SymbolTable symTable) {
 		Attribute left = stmt.var.accept(this, symTable);
-		left.getType().accept(this, symTable);
+		//left.getType().accept(this, symTable);
 		Attribute right = stmt.assignExp.accept(this, symTable);
-		right.getType().accept(this, symTable);
+		//right.getType().accept(this, symTable);
 
 		if (!properInheritance(right.getType(), left.getType())) {
-			throw new RuntimeException(); // incompatible types or inheritance (cannot assign right to left)
+			// incompatible types or inheritance (cannot assign right to left)
+			throw new RuntimeException("Incompatible types, cannot assign type " + right.getType().getName() + " to type "+ left.getType().getName());
 		}
 		return null;
 
 	}
 
 	@Override
-	public Attribute visit(AST_StmtList stmts, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_StmtList stmts, SymbolTable symTable) {
+		for (AST_Stmt stmt : stmts.stmtList){
+			stmt.accept(this, symTable);
+		}
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_Stmt stmt, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_Stmt stmt, SymbolTable symTable) {
+		throw new UnsupportedOperationException("Unexepcted visit in Stmt!");
+	}
+
+	@Override
+	public Attribute visit(AST_StmtCall call, SymbolTable symTable) {
+		call.funcCall.accept(this, symTable);
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_StmtCall call, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_StmtVariableDeclaration stmt, SymbolTable symTable) {
+		//check if var type is valid
+		stmt.varType.accept(this, symTable);
+		//if the variable name has already been used
+		if (symTable.getSymbols().containsKey(stmt.varName)){
+			throw new RuntimeException("Var name " + stmt.varName + " has already been used!");
+		}
+		if (stmt.assignedExp != null){
+			Attribute expAttr = stmt.assignedExp.accept(this, symTable);
+			//check proper inheritance
+			if (!properInheritance(expAttr.getType(), stmt.varType)){
+				throw new RuntimeException("Incompatible types, cannot assign type " + expAttr.getType().getName() + " to type "+ stmt.varType.getName());
+			}
+			
+			if (expAttr.isMethod() && (stmt.assignedExp instanceof AST_ExpVariable)){
+				throw new RuntimeException("Can not assign method to variable!");
+			}
+		}
+		
+		Attribute newVar = new Attribute(stmt.varType);
+		symTable.getSymbols().put(stmt.varName, newVar);
 		return null;
 	}
-
+	
 	@Override
-	public Attribute visit(AST_StmtVariableDeclaration stmt, SymbolTable d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public Attribute visit(AST_StmtReturn stmt, SymbolTable symTable) {
+		AST_Type expectedRetType = null;
+		
+		if (!(symTable instanceof MethodSymbolTable)){
+			throw new RuntimeException("Encountered return out of method scope.");
+		}
+		
+		MethodSymbolTable methodST = (MethodSymbolTable)symTable;
+		//check if the method does actually exist as part of the class and get its type
+		if (((ClassAttribute)(program.getSymbols().get(methodST.getClassName()))).getMethodMap().containsKey(methodST.getMethodName())){
+			expectedRetType = ((ClassAttribute)(program.getSymbols().get(methodST.getClassName()))).getMethodMap().get(methodST.getMethodName()).getType();
 
-	@Override
-	public Attribute visit(AST_StmtReturn stmt, SymbolTable d) {
-		// TODO Auto-generated method stub
-		return null;
+		}
+		//check void type compatibility
+		if (expectedRetType.getName().equals(PrimitiveDataTypes.VOID.getName())){
+			if (stmt.returnExp != null) {
+				throw new RuntimeException("Method " + methodST.getMethodName() + " is void and cannot return a value");
+			}
+			else {
+				return null;
+			}
+		}
+		else if (stmt.returnExp == null) {
+			throw new RuntimeException("Method " + methodST.getMethodName() + " is missing a return value "+ " return type is " + expectedRetType.getName());
+		}
+		//traverse the expression
+		Attribute exprAttr = stmt.returnExp.accept(this, symTable);
+		//check if method return type is subtype of method return type
+		if (!properInheritance(exprAttr.getType(), expectedRetType)){
+			throw new RuntimeException("Can not return type "+ exprAttr.getType() + "from method " + methodST.getMethodName() + " with type "+ expectedRetType.getName());
+		}
+		
+		stmt.setClassName(exprAttr.getType().getName());
+		return exprAttr;
 	}
 
 	@Override
@@ -216,13 +268,15 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 				|| (!right.isPrimitive() && inherit(right, left))));
 	}
 
-	private boolean inherit(AST_Type right, AST_Type left) {
-		if (right.getName().equals("null")){
+	private boolean inherit(AST_Type subType, AST_Type superType) {
+		if (subType.getName().equals("null")){
 			return false;
 		}
-		return (((AST_ClassDecl)(program.getSymbols().get(subType.getName()))).getAncestors().contains(superType.getName())
-				&& subType.getDimension() == 0 && superType.getDimension() == 0) || (subType.equals(superType));
-		// TODO implement above return and change names according to code
+		
+		boolean isAncestor = (((ClassAttribute)(program.getSymbols().get(subType.getName()))).getAncestors().contains(superType.getName()));
+		boolean isSameDim = (subType.getDimension() == 0 && superType.getDimension() == 0);
+		
+		return (subType.equals(superType)) || (isAncestor && isSameDim);
 	}
 	
 }
