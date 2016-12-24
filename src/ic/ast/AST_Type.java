@@ -10,17 +10,17 @@ public class AST_Type extends AST_Node
 	private Object defVal;
 	
 	public AST_Type(PrimitiveDataTypes typeName, Integer dimension) {
-		this.typeName = typeName.getValue();
+		this.typeName = typeName.getName();
 		this.dimension = (dimension == null) ? 0 : dimension.intValue();
 		this.isPrimitive = true;
-		this.defVal = setDefVal(typeName.getValue());
+		this.defVal = setDefVal(typeName.getName());
 	}
 
 	public AST_Type(String typeName, Integer dimension) {
 		this.typeName = typeName;
 		this.dimension = (dimension == null) ? 0 : dimension.intValue();
-		this.isPrimitive = typeName.equals(PrimitiveDataTypes.INT.getValue()) ||
-				typeName.equals(PrimitiveDataTypes.STRING.getValue()) || typeName.equals(PrimitiveDataTypes.VOID.getValue());
+		this.isPrimitive = typeName.equals(PrimitiveDataTypes.INT.getName()) ||
+				typeName.equals(PrimitiveDataTypes.STRING.getName()) || typeName.equals(PrimitiveDataTypes.VOID.getName());
 		this.defVal = setDefVal(typeName);
 	}
 
@@ -28,17 +28,17 @@ public class AST_Type extends AST_Node
 		this(typeName,0);
 	}
 
-	public setDefVal(String typeName) {
+	public Object setDefVal(String typeName) {
 		Object defVal = null;
 		switch(typeName) {
 			case "int":
-				defVal = PrimitiveTypes.INT.getDefaultValue();
+				defVal = PrimitiveDataTypes.INT.getDefaultValue();
 				break;
 			case "string":
-				defVal = PrimitiveTypes.STRING.getDefaultValue();
+				defVal = PrimitiveDataTypes.STRING.getDefaultValue();
 				break;
 			case "void":
-				defVal = PrimitiveTypes.VOID.getDefaultValue();
+				defVal = PrimitiveDataTypes.VOID.getDefaultValue();
 				break;
 		}
 		return defVal;
@@ -48,7 +48,7 @@ public class AST_Type extends AST_Node
 		return typeName;
 	}
 
-	public String getDefVal() { return defVal; }
+	public Object getDefVal() { return defVal; }
 
 	public int getDimension() {
 		return dimension;

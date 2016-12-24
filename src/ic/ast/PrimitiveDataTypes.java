@@ -5,16 +5,16 @@ public enum PrimitiveDataTypes {
 	STRING(null, "string"),
 	VOID(null, "void");
 	
-	private String value;
-	private String defVal;
+	private String name;
+	private Object defVal;
 
-	private PrimitiveDataTypes(String value, String defVal) {
-		this.value = value;
+	private PrimitiveDataTypes(Object defVal, String name) {
+		this.name = name;
 		this.defVal = defVal;
 	}
 	
-	public String getValue() {
-		return value;
+	public String getName() {
+		return name;
 	}
 
 	public Object getDefaultValue() {

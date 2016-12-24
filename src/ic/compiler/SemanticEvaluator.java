@@ -86,11 +86,11 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 
-	public Attribute visit(AST_StmtVarAssignment stmt, SymbolTable st) {
-		Attribute left = stmt.var.accept(this, st);
-		left.getType().accept(this, scope);
-		Attribute right = stmt.assignExp.accept(this, st);
-		right.getType().accept(this, scope);
+	public Attribute visit(AST_StmtVarAssignment stmt, SymbolTable symTable) {
+		Attribute left = stmt.var.accept(this, symTable);
+		left.getType().accept(this, symTable);
+		Attribute right = stmt.assignExp.accept(this, symTable);
+		right.getType().accept(this, symTable);
 
 		if (!properInheritance(right.getType(), left.getType())) {
 			throw new RuntimeException(); // incompatible types or inheritance (cannot assign right to left)
@@ -209,18 +209,18 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	// non visit functions
 
-	private boolean properInheritance(Type right, Type left) {
+	private boolean properInheritance(AST_Type right, AST_Type left) {
 
-		return ((right.getName().equals("null") && (left.getDefValue() == null || left.getDimension() > 0))
+		return ((right.getName().equals("null") && (left.getDefVal() == null || left.getDimension() > 0))
 				|| ((right.isPrimitive() && (right.getName()).equals(left.getName()))
 				|| (!right.isPrimitive() && inherit(right, left))));
 	}
 
-	private boolean inherit(Type right, Type left) {
+	private boolean inherit(AST_Type right, AST_Type left) {
 		if (right.getName().equals("null")){
 			return false;
 		}
-		return (((ClassAttribute)(program.getSymbols().get(subType.getName()))).getAncestors().contains(superType.getName())
+		return (((AST_ClassDecl)(program.getSymbols().get(subType.getName()))).getAncestors().contains(superType.getName())
 				&& subType.getDimension() == 0 && superType.getDimension() == 0) || (subType.equals(superType));
 		// TODO implement above return and change names according to code
 	}
