@@ -4,7 +4,7 @@ import ic.compiler.Visitor;
 
 import java.util.ArrayList;
 
-public class AST_VirtualCall extends AST_Node
+public class AST_VirtualCall extends AST_Exp
 {
 	public AST_Exp 	callingExp;
 	public ArrayList<AST_Exp> argList;

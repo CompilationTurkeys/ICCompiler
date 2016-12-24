@@ -21,14 +21,14 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_Exp expr, SymbolTable d) {
+	public Attribute visit(AST_Exp expr, SymbolTable symTable) {
 		throw new UnsupportedOperationException("Unexepcted visit in Exp!");
 	}
 
 	@Override
-	public Attribute visit(AST_ExpBinop expr, SymbolTable sTable) {		
-		Attribute leftExpResult = expr.leftExp.accept(this, sTable);
-		Attribute rightExpResult = expr.rightExp.accept(this,sTable);
+	public Attribute visit(AST_ExpBinop expr, SymbolTable symTable) {		
+		Attribute leftExpResult = expr.leftExp.accept(this, symTable);
+		Attribute rightExpResult = expr.rightExp.accept(this,symTable);
 		
 		if (!leftExpResult.getType().equals(rightExpResult.getType())){
 			throw new RuntimeException("Can't make " + expr.OP.getOpDescreption() + " between different types: " + leftExpResult.getType() + "and " + rightExpResult.getType());
@@ -64,15 +64,8 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		return attr;
 	}
 
-
 	@Override
-	public Attribute visit(AST_ExpFunctionCall expr, SymbolTable d) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Attribute visit(AST_ExpNewClass expr, SymbolTable d) {
+	public Attribute visit(AST_ExpNewClass expr, SymbolTable symTable) {
 		Attribute expNewClassAttr = null;
 		
 		//check if a class that is initialized exists
@@ -89,9 +82,24 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_ExpNewTypeArray expr, SymbolTable d) {
-		// TODO Auto-generated method stub
-		return null;
+	public Attribute visit(AST_ExpNewTypeArray expr, SymbolTable symTable) {
+		//check if the type specified actually exists 
+		if (!(expr.arrayType.equals(PrimitiveDataTypes.INT.getName())) && !(expr.arrayType.equals(PrimitiveDataTypes.STRING.getName()))){
+			if (!program.getSymbols().containsKey(expr.arrayType)){
+				throw new RuntimeException("Cannot instantiate unknown type: " + expr.arrayType.getName());
+			}
+		}
+			
+		//check if the expr inside the brackets returns int and is legal
+		Attribute expAttr = expr.sizeExpression.accept(this, symTable);
+		//check if the expr is evaluated to INT
+		if(!expAttr.getType().getName().equals(PrimitiveDataTypes.INT.getName())){
+			throw new RuntimeException("Expected array size of the type INT, the received size is of type: " + expr.arrayType.getName());
+		}
+		//creating a return Attribute
+		//notice that according to the grammar the total size of array will be + 1
+		Attribute retAttr = new Attribute(new AST_Type(expr.arrayType.getName(), expr.arrayType.getDimension()+1));
+		return retAttr;
 	}
 
 	@Override
@@ -247,38 +255,38 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_VirtualCall call, SymbolTable d) {
+	public Attribute visit(AST_VirtualCall call, SymbolTable symTable) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_Variable var, SymbolTable d) {
+	public Attribute visit(AST_Variable var, SymbolTable symTable) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_VariableExpField var, SymbolTable d) {
+	public Attribute visit(AST_VariableExpField var, SymbolTable symTable) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_VariableExpArray var, SymbolTable d) {
+	public Attribute visit(AST_VariableExpArray var, SymbolTable symTable) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_VariableID var, SymbolTable d) {
+	public Attribute visit(AST_VariableID var, SymbolTable symTable) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public Attribute visit(AST_Type type, SymbolTable st) {
+	public Attribute visit(AST_Type type, SymbolTable symTable) {
 		if (!type.isPrimitive() && !type.getName().equals("null") && !program.getSymbols().containsKey(type.getName())) {
 			throw new RuntimeException("");
 		}
@@ -290,24 +298,24 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_FuncArgument funcArg, SymbolTable st) {
-		funcArg.getArgType().accept(this, st);
+	public Attribute visit(AST_FuncArgument funcArg, SymbolTable symTable) {
+		funcArg.getArgType().accept(this, symTable);
 		Attribute attribute =  new Attribute(funcArg.getArgType());
-		st.getSymbols().put(funcArg.getArgName(), attribute);
+		symTable.getSymbols().put(funcArg.getArgName(), attribute);
 		funcArg.setClassName(attribute.getType().getName());
 		return attribute;
 	}
 
 	@Override
-	public Attribute visit(AST_Field field, SymbolTable st) {
-		field.getType().accept(this, st);
+	public Attribute visit(AST_Field field, SymbolTable symTable) {
+		field.getType().accept(this, symTable);
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_Method method, SymbolTable st) {
-		SymbolTable methodSymbolTable = new MethodSymbolTable(st, method.getName());
-		st.getChildren().put(method, methodSymbolTable);
+	public Attribute visit(AST_Method method, SymbolTable symTable) {
+		SymbolTable methodSymbolTable = new MethodSymbolTable(symTable, method.getName());
+		symTable.getChildren().put(method, methodSymbolTable);
 		if (!method.getType().isPrimitive() && !program.getSymbols().containsKey(method.getType().getName())) {
 			throw new RuntimeException("non primitive type of " + method.getType().getName() + "is not declared");
 		}
@@ -319,16 +327,16 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		return null;
 	}
 	
-	public Attribute visit(AST_Literal call, SymbolTable st) {
+	public Attribute visit(AST_Literal call, SymbolTable symTable) {
 		//TODO finish visit 
 		return null;
 	}
 
 
 	@Override
-	public Attribute visit(AST_ClassDecl c, SymbolTable st) {
-		SymbolTable classSymbolTable = new SymbolTable(st, c.getClassName()); // creating symbol table for class
-		ClassAttribute ca = (ClassAttribute)st.getSymbols().get(c.getClassName());
+	public Attribute visit(AST_ClassDecl c, SymbolTable symTable) {
+		SymbolTable classSymbolTable = new SymbolTable(symTable, c.getClassName()); // creating symbol table for class
+		ClassAttribute ca = (ClassAttribute)symTable.getSymbols().get(c.getClassName());
 		classSymbolTable.getSymbols().putAll(ca.getMethodMap());
 		classSymbolTable.getSymbols().putAll(ca.getFieldMap());
 		for (AST_Field f : c.getClassFields()){
@@ -341,10 +349,10 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_Program program, SymbolTable st) {
+	public Attribute visit(AST_Program program, SymbolTable symTable) {
 		List<AST_ClassDecl> classDeclList = program.getClasses();
 		for (AST_ClassDecl c : classDeclList){
-			if (st.getSymbols().containsKey(c.getClassName())){
+			if (symTable.getSymbols().containsKey(c.getClassName())){
 				throw new RuntimeException("class" + c.getClassName() +"already declared");
 			}
 			else {
@@ -352,11 +360,11 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			}
 		}
 		for (AST_ClassDecl c : classDeclList){
-			c.accept(this, st);
+			c.accept(this, symTable);
 		}
 		
 		int countMain = 0;
-		for (Attribute attribute : st.getSymbols().values()){
+		for (Attribute attribute : symTable.getSymbols().values()){
 			ClassAttribute classAtrr = (ClassAttribute) attribute;
 			if (classAtrr.hasMainMethod()){
 				countMain++;
