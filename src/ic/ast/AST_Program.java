@@ -3,6 +3,7 @@ import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AST_Program extends AST_Node
 {
@@ -23,4 +24,9 @@ public class AST_Program extends AST_Node
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	public List<AST_ClassDecl> getClasses() {
+		return classList;
+	}
+
 }

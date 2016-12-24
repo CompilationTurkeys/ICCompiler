@@ -4,7 +4,7 @@ import ic.ast.*;
 
 public class MethodAttribute extends Attribute {
 	
-	final private ArrayList<AST_FuncArgument> funcArgs;
+	private ArrayList<AST_FuncArgument> funcArgs;
 	
 	public MethodAttribute(AST_Type type, ArrayList<AST_FuncArgument> funcArgs) {
 		super(type);

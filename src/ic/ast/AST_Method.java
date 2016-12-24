@@ -29,4 +29,16 @@ public class AST_Method extends AST_FieldOrMethod
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+	
+	public String getName(){
+		return methodName;
+	}
+
+	public AST_Type getType() {
+		return methodType;
+	}
+
+	public ArrayList<AST_FuncArgument> getArguments() {
+		return methodArgs;
+	}
 }

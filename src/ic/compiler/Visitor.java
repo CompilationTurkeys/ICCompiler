@@ -7,19 +7,19 @@ import ic.ast.*;
  */
 public interface Visitor<ContextType, ResultType> {
 
-	public ResultType visit(AST_Exp expr, ContextType d);
-	public ResultType visit(AST_ExpBinop expr, ContextType d);
-	public ResultType visit(AST_ExpVariable expr, ContextType d);
+	public ResultType visit(AST_Exp expr, ContextType d); // V
+	public ResultType visit(AST_ExpBinop expr, ContextType d); // V
+	public ResultType visit(AST_ExpVariable expr, ContextType d); 
 	public ResultType visit(AST_ExpFunctionCall expr, ContextType d);
 	public ResultType visit(AST_ExpNewClass expr, ContextType d);
 	public ResultType visit(AST_ExpNewTypeArray expr, ContextType d);
 	
-	public ResultType visit(AST_StmtVarAssignment stmt, ContextType d);
-	public ResultType visit(AST_StmtList stmts, ContextType d);
-	public ResultType visit(AST_Stmt stmt, ContextType d);
-	public ResultType visit(AST_StmtCall call, ContextType d);
-	public ResultType visit(AST_StmtVariableDeclaration stmt, ContextType d);
-	public ResultType visit(AST_StmtReturn stmt, ContextType d);
+	public ResultType visit(AST_StmtVarAssignment stmt, ContextType d); // V
+	public ResultType visit(AST_StmtList stmts, ContextType d); // V
+	public ResultType visit(AST_Stmt stmt, ContextType d); // V
+	public ResultType visit(AST_StmtCall call, ContextType d); // V
+	public ResultType visit(AST_StmtVariableDeclaration stmt, ContextType d); // V
+	public ResultType visit(AST_StmtReturn stmt, ContextType d); // V
 	public ResultType visit(AST_StmtIf stmt, ContextType d);
 	public ResultType visit(AST_StmtWhile stmt, ContextType d);
 
@@ -38,8 +38,8 @@ public interface Visitor<ContextType, ResultType> {
 	
 	public ResultType visit(AST_Method method, ContextType d);
 	
-	public ResultType visit(AST_ClassDecl classDecl, ContextType d);
+	public ResultType visit(AST_ClassDecl classDecl, ContextType d); // V
 	
-	public ResultType visit(AST_Program program, ContextType d);
+	public ResultType visit(AST_Program program, ContextType d); // V
 
 }

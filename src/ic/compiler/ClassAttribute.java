@@ -65,5 +65,9 @@ public class ClassAttribute extends Attribute {
 			return false;
 		return true;
 	}
+
+	public boolean hasMainMethod() {
+		return methodMap.containsKey("main");
+	}
 	
 }

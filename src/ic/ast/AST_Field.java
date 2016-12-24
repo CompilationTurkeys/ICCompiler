@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class AST_Field extends AST_FieldOrMethod
 {
 	public ArrayList<String> fieldNamesList;
+
 	public AST_Type fieldsType;
 
 	public AST_Field(AST_Type type, ArrayList<String> lst)
@@ -24,5 +25,14 @@ public class AST_Field extends AST_FieldOrMethod
 	@Override
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
+	}
+	
+	public ArrayList<String> getFieldNamesList() {
+		return fieldNamesList;
+	}
+	
+
+	public AST_Type getType() {
+		return fieldsType;
 	}
 }

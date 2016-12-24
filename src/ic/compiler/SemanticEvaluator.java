@@ -1,4 +1,8 @@
 package ic.compiler;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ic.ast.*;
 
 public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
@@ -248,18 +252,122 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_ClassDecl classDecl, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_ClassDecl c, SymbolTable st) {
+		SymbolTable classSymbolTable = new SymbolTable(st, c.getClassName()); // creating symbol table for class
+		ClassAttribute ca = (ClassAttribute)st.getSymbols().get(c.getClassName());
+		classSymbolTable.getSymbols().putAll(ca.getMethodMap());
+		classSymbolTable.getSymbols().putAll(ca.getFieldMap());
+		for (AST_Field f : c.getClassFields()){
+			f.accept(this, classSymbolTable);
+		}
+		for (AST_Method m: c.getClassMethods()){
+			m.accept(this, classSymbolTable);
+		}
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_Program program, SymbolTable d) {
-		// TODO Auto-generated method stub
+	public Attribute visit(AST_Program program, SymbolTable st) {
+		List<AST_ClassDecl> classDeclList = program.getClasses();
+		for (AST_ClassDecl c : classDeclList){
+			if (st.getSymbols().containsKey(c.getClassName())){
+				throw new RuntimeException("class" + c.getClassName() +"already declared");
+			}
+			else {
+				setClassAttribute(c);
+			}
+		}
+		for (AST_ClassDecl c : classDeclList){
+			c.accept(this, st);
+		}
+		
+		int countMain = 0;
+		for (Attribute attribute : st.getSymbols().values()){
+			ClassAttribute classAtrr = (ClassAttribute) attribute;
+			if (classAtrr.hasMainMethod()){
+				countMain++;
+			}
+		}
+		if (countMain != 1){
+			throw new RuntimeException("Main method should appear only one in Program");
+		}
 		return null;
 	}
 
 	// non visit functions
+
+	private void setClassAttribute(AST_ClassDecl c) {
+		// TODO check if 'main' checks are necessary
+//		MethodAttribute main = new MethodAttribute(new Type(PrimitiveTypes.VOID,0,-1), new FormalList(new Formal(new Type(PrimitiveTypes.STRING, 1, -1), "args",  -1), -1), true);
+		Map<String, Attribute> fieldMap = new HashMap<>();
+		Map<String, MethodAttribute> methodMap = new HashMap<>();
+		String superClass = c.getExtendedClassName();
+		
+		//fill the fields map of c class symbol table
+		for (AST_Field fld : c.getClassFields()){
+			for (String name : fld.getFieldNamesList()){
+				if (fieldMap.containsKey(name)){
+					throw new RuntimeException("Duplicate decleration of field " + name);
+				}
+				Attribute attr = new Attribute(fld.getType());
+				fieldMap.put(name, attr);
+			}
+		}
+		
+		// fill the methods map of c class symbol table
+		for (AST_Method method : c.getClassMethods()){
+			if (methodMap.containsKey(method.getName()) || fieldMap.containsKey(method.getName())){
+				throw new RuntimeException("duplicate declerations");
+				}
+			MethodAttribute attr = new MethodAttribute(method.getType(), method.getArguments());
+			
+//			if (m.getName().equals("main") && attr.equals(main)){
+//				hasMain = true;
+//			}
+			methodMap.put(method.getName(), attr);
+		}
+
+		ClassAttribute thisClassAttr = new ClassAttribute(fieldMap, methodMap);
+//		thisClassAttr.setHasMain(hasMain);
+		thisClassAttr.getAncestors().add(c.getClassName());
+		program.getSymbols().put(c.getClassName(), thisClassAttr);
+				
+		if (superClass != null){  // if class doesn't extend a superClass
+			if (superClass.equals(c.getClassName())){
+				throw new RuntimeException("invalid class extension");
+			}
+			if (!program.getSymbols().containsKey(superClass)){
+				throw new RuntimeException("class doesn't exist");
+			}
+			if (program.getSymbols().get(superClass) != null){ 
+				addAttrsFromSuperClasses(c, (ClassAttribute)program.getSymbols().get(c.getClassName()), (ClassAttribute)program.getSymbols().get(superClass));
+			}
+			else{
+				throw new RuntimeException("cannot extend from undecleared function");
+			}
+		}
+	}
+
+	private void addAttrsFromSuperClasses(AST_ClassDecl c, ClassAttribute currentClassAttribute, ClassAttribute superClassAttribute) {
+		for (String key : superClassAttribute.getMethodMap().keySet()){
+			MethodAttribute value = superClassAttribute.getMethodMap().get(key);
+			if (currentClassAttribute.getMethodMap().containsKey(key) && !currentClassAttribute.getMethodMap().get(key).equals(value)){
+				throw new RuntimeException("same methods in super and current classes cannot have different signatures");
+			}
+			currentClassAttribute.getMethodMap().put(key, value);
+		}
+		
+		for (String key : superClassAttribute.getMethodMap().keySet()){
+			MethodAttribute value = superClassAttribute.getMethodMap().get(key);
+			if (currentClassAttribute.getFieldMap().containsKey(key) && !currentClassAttribute.getFieldMap().get(key).equals(value)){
+				throw new RuntimeException("same fields in super and current classes cannot have different types");
+			}
+			currentClassAttribute.getFieldMap().put(key, value);
+		}
+		
+		// Add all ancestors to current class
+		currentClassAttribute.getAncestors().addAll(superClassAttribute.getAncestors());
+	}
 
 	private boolean properInheritance(AST_Type right, AST_Type left) {
 
