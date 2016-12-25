@@ -21,11 +21,11 @@ public interface Visitor<ContextType, ResultType> {
 	public ResultType visit(AST_StmtIf stmt, ContextType symTable); // V
 	public ResultType visit(AST_StmtWhile stmt, ContextType symTable); // V
 
-	public ResultType visit(AST_VirtualCall call, ContextType symTable);
+	public ResultType visit(AST_VirtualCall call, ContextType symTable); // V
 
 	public ResultType visit(AST_Variable var,  ContextType symTable); // V
-	public ResultType visit(AST_VariableExpField var,  ContextType symTable);
-	public ResultType visit(AST_VariableExpArray var,  ContextType symTable);
+	public ResultType visit(AST_VariableExpField var,  ContextType symTable); // V
+	public ResultType visit(AST_VariableExpArray var,  ContextType symTable); // V
 	public ResultType visit(AST_VariableID var,  ContextType symTable); // V
 	
 	public ResultType visit(AST_Type type, ContextType symTable); // V

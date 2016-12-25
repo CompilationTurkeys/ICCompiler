@@ -255,51 +255,61 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	public Attribute visit(AST_VirtualCall call, SymbolTable symTable) {
 		
 		Attribute callExpAttr = null;
-		
+		//expression exists, not an explicit call, evaluate the exp
 		if (call.getCallingExpression() != null) {
 			callExpAttr = call.getCallingExpression().accept(this, symTable);
 		}
 		
-		if (callExpAttr.isNull()) {
-			throw new RuntimeException("Null Pointer Exception!!");
-		}
-		
+		//check if exp is primitive
 		if (callExpAttr.getType().isPrimitive()) {
-			throw new RuntimeException(" Primitive type" + callExpAttr.getType() + 
-					" can't have a member function " + call.getFuncName());
+			throw new RuntimeException("Primitive type" + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
 		}
-
+		
+		if (callExpAttr.isNull()) {
+			throw new RuntimeException("Null pointer exception, cannot access member function of null");
+		}
+		
 		if (callExpAttr.getType().getDimension() > 0) {
-			throw new RuntimeException("Array type of " + callExpAttr.getType() 
-			+ " doesn't have a member function " + call.getFuncName());
+			throw new RuntimeException("Array type of " + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
 		}
-		MethodAttribute methodAttr;
-		
-		methodAttr = ((ClassAttribute)(program.getSymbols().get(callExpAttr.getType().getName())))
-				.getMethodMap().get(call.getFuncName());
-		
-		if (methodAttr == null) {
-			throw new RuntimeException("Class " + callExpAttr.getType() +
-					" does not have a method named " + call.getFuncName());
+				
+		MethodAttribute funcAttr = ((ClassAttribute)(program.getSymbols().get(callExpAttr.getType().getName()))).getMethodMap().get(call.getFuncName());
+		//check if the function exists
+		if (funcAttr == null) {
+			throw new RuntimeException("Class " + callExpAttr.getType() + " does not have a method named " + call.getFuncName());
 		}
 		
-		// Check that the parameters are from the right types.
+		//check that the parameters are from the right types
+		List<AST_Exp> actualArgs = call.getArguments();
+		List<AST_FuncArgument> formalArgs = funcAttr.getParameters();
+		String funcName = call.getFuncName();
 		
-		List<AST_Exp> funcArgs = call.getArguments();
-		List<AST_FuncArgument> arguments = methodAttr.getParameters();
+		//no actual and formal parameters
+		if (actualArgs == null && formalArgs == null) {
+			return funcAttr;
+		}
 		
-		for (int i=0; i<  funcArgs.size() ; i++){
-			Attribute attr = funcArgs.get(i).accept(this, symTable);
-			if (!attr.getType().equals(arguments.get(i).getArgType())){
-				throw new RuntimeException("Argument "+ i + "Should be of type " + arguments.get(i).getArgType() 
-						+ "and not " + attr.getType());
+		//num of formal and actual parameters must be equal
+		if (actualArgs.size() != formalArgs.size()) {
+			throw new RuntimeException("Illegal arguments passed to function " 
+					+ funcName + ": number of actual arguments is " 
+					+ actualArgs.size() + " while number of formal parameters is " + formalArgs.size());
+		}
+		
+		//check types and inheritance
+		for (int i = 0; i < actualArgs.size(); i++) {
+			//evaluate actual arguments and check validity
+			Attribute argAttr = actualArgs.get(i).accept(this, symTable);
+			argAttr.getType().accept(this, symTable);
+			if (!properInheritance(argAttr.getType(), formalArgs.get(i).getArgType())) {
+				throw new RuntimeException("Illegal arguments to method " 
+						+ funcName + ": was expecting " + formalArgs.get(i).getArgType().getName()
+						+ " but recieved " + argAttr.getType().getName());
 			}
 		}
-		
-		return methodAttr;
-	
+		return funcAttr;
 	}
-
+	
 	@Override
 	public Attribute visit(AST_Variable var, SymbolTable symTable) {
 		throw new UnsupportedOperationException("Unexpected visit in Variable!");
