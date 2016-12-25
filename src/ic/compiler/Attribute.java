@@ -34,6 +34,7 @@ public class Attribute {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (isMethod ? 1231 : 1237);
 		result = prime * result + (isNull ? 1231 : 1237);
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
@@ -48,6 +49,8 @@ public class Attribute {
 		if (getClass() != obj.getClass())
 			return false;
 		Attribute other = (Attribute) obj;
+		if (isMethod != other.isMethod)
+			return false;
 		if (isNull != other.isNull)
 			return false;
 		if (type == null) {
