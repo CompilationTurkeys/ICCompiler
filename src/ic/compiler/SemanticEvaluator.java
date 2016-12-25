@@ -264,14 +264,52 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 	public Attribute visit(AST_VariableExpField var, SymbolTable symTable) {
-		// TODO Auto-generated method stub
-		return null;
+		//traverse the expression and evaluate it
+		Attribute expAttr = var.exp.accept(this, symTable);
+
+		if (expAttr.isNull()) {
+			throw new RuntimeException("Null pointer exception, trying to access field of null expression.");
+		}
+		//check expression type
+		expAttr.getType().accept(this, symTable);
+		
+		if (expAttr.getType().isPrimitive()){
+			throw new RuntimeException("Expression is of primitive type and doesn't have fields.");
+		}
+		
+		//check if the field exists in this expression type
+		Attribute expFieldAttr = ((ClassAttribute) (program.getSymbols().get(expAttr.getType().getName()))).getFieldMap().get(var.fieldName);
+		
+		if (expFieldAttr == null){
+			throw new RuntimeException("Field " + var.fieldName + " does not exist in type " + expAttr.getType().getName());
+		}
+		
+		return expFieldAttr;
 	}
 
 	@Override
 	public Attribute visit(AST_VariableExpArray var, SymbolTable symTable) {
-		// TODO Auto-generated method stub
-		return null;
+		//evaluate the size and the expression of the array
+		Attribute arrExpAttr = var.arrayExp.accept(this, symTable);
+		Attribute arrIndexAttr = var.arraySize.accept(this, symTable);
+
+		if (arrExpAttr.isNull()){
+			throw new RuntimeException("Null pointer exception, trying to access index of null expression.");
+		}
+
+		if (arrExpAttr.getType().getDimension() == 0){
+			throw new RuntimeException("Expression of type " + arrExpAttr.getType().getName() + " is not an array.");
+		}
+		// check validity of expression type
+		arrExpAttr.getType().accept(this, symTable);
+		
+		if (!arrIndexAttr.getType().getName().equals(PrimitiveDataTypes.INT.getName()) || arrIndexAttr.getType().getDimension() > 0){
+			throw new RuntimeException("Array index expression must be integer value");
+		}
+		
+		//returns new attribute, with same type as array expression but with lower dimension(the internal index was already computed)
+		Attribute resultAttr = new Attribute(new AST_Type(arrExpAttr.getType().getName(), arrExpAttr.getType().getDimension()-1));
+		return resultAttr;
 	}
 
 	@Override
