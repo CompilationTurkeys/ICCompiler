@@ -1,4 +1,5 @@
 package ic.compiler;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -476,22 +477,28 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			}
 		}
 		if (countMain != 1){
-			throw new RuntimeException("Main method should appear only one in Program");
+			throw new RuntimeException("Main method should appear only once in a Program!");
 		}
 		return null;
 	}
 
-	// non visit functions
+	/**
+	 * Non visit functions 
+	 * */
 
-	private void setClassAttribute(AST_ClassDecl c) {
-		// TODO check if 'main' checks are necessary
-//		MethodAttribute main = new MethodAttribute(new Type(PrimitiveTypes.VOID,0,-1), new FormalList(new Formal(new Type(PrimitiveTypes.STRING, 1, -1), "args",  -1), -1), true);
+	private void setClassAttribute(AST_ClassDecl cl) {
+		//create main method attribute
+		ArrayList<AST_FuncArgument> mainArgs = new ArrayList<AST_FuncArgument>(); 
+		mainArgs.add(new AST_FuncArgument(new AST_Type(PrimitiveDataTypes.STRING, 1), "args"));
+		MethodAttribute main = new MethodAttribute(new AST_Type(PrimitiveDataTypes.VOID,0), mainArgs);
+		
 		Map<String, Attribute> fieldMap = new HashMap<>();
 		Map<String, MethodAttribute> methodMap = new HashMap<>();
-		String superClass = c.getExtendedClassName();
+		String superClass = cl.getExtendedClassName();
+		boolean hasMain = false;
 		
-		//fill the fields map of c class symbol table
-		for (AST_Field fld : c.getClassFields()){
+		//fill the fields map of cl class symbol table
+		for (AST_Field fld : cl.getClassFields()){
 			for (String name : fld.getFieldNamesList()){
 				if (fieldMap.containsKey(name)){
 					throw new RuntimeException("Duplicate decleration of field " + name);
@@ -501,33 +508,36 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			}
 		}
 		
-		// fill the methods map of c class symbol table
-		for (AST_Method method : c.getClassMethods()){
+		//fill the methods map of cl class symbol table
+		for (AST_Method method : cl.getClassMethods()){
 			if (methodMap.containsKey(method.getName()) || fieldMap.containsKey(method.getName())){
 				throw new RuntimeException("duplicate declerations");
-				}
-			MethodAttribute attr = new MethodAttribute(method.getType(), method.getArguments());
+			}
 			
-//			if (m.getName().equals("main") && attr.equals(main)){
-//				hasMain = true;
-//			}
-			methodMap.put(method.getName(), attr);
+			MethodAttribute methodAttr = new MethodAttribute(method.getType(), method.getArguments());
+			
+			if (method.getName().equals("main") && methodAttr.equals(main)){
+				hasMain = true;
+			}
+			
+			methodMap.put(method.getName(), methodAttr);
 		}
 
 		ClassAttribute thisClassAttr = new ClassAttribute(fieldMap, methodMap);
-//		thisClassAttr.setHasMain(hasMain);
-		thisClassAttr.getAncestors().add(c.getClassName());
-		program.getSymbols().put(c.getClassName(), thisClassAttr);
-				
-		if (superClass != null){  // if class doesn't extend a superClass
-			if (superClass.equals(c.getClassName())){
+		thisClassAttr.setHasMainMethod(hasMain);
+		thisClassAttr.getAncestors().add(cl.getClassName());
+		program.getSymbols().put(cl.getClassName(), thisClassAttr);
+		
+		// if class doesn't extend a superClass	
+		if (superClass != null){
+			if (superClass.equals(cl.getClassName())){
 				throw new RuntimeException("invalid class extension");
 			}
 			if (!program.getSymbols().containsKey(superClass)){
 				throw new RuntimeException("class doesn't exist");
 			}
 			if (program.getSymbols().get(superClass) != null){ 
-				addAttrsFromSuperClasses(c, (ClassAttribute)program.getSymbols().get(c.getClassName()), (ClassAttribute)program.getSymbols().get(superClass));
+				addAttrsFromSuperClasses(cl, (ClassAttribute)program.getSymbols().get(cl.getClassName()), (ClassAttribute)program.getSymbols().get(superClass));
 			}
 			else{
 				throw new RuntimeException("cannot extend from undecleared function");

@@ -8,6 +8,7 @@ public class ClassAttribute extends Attribute {
 	private Map<String, Attribute> fieldMap;
 	private Map<String, MethodAttribute> methodMap;
 	private Set<String> classAncestors;
+	private boolean hasMainMethod;
 	
 	public ClassAttribute(Map<String, Attribute> fieldMap, Map<String, MethodAttribute> methodMap)
 	{
@@ -29,12 +30,21 @@ public class ClassAttribute extends Attribute {
 		return methodMap;
 	}
 
+	public boolean hasMainMethod() {
+		return hasMainMethod;
+	}
+	
+	public void setHasMainMethod(boolean hasMainMethod) {
+		this.hasMainMethod = hasMainMethod;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((classAncestors == null) ? 0 : classAncestors.hashCode());
 		result = prime * result + ((fieldMap == null) ? 0 : fieldMap.hashCode());
+		result = prime * result + (hasMainMethod ? 1231 : 1237);
 		result = prime * result + ((methodMap == null) ? 0 : methodMap.hashCode());
 		return result;
 	}
@@ -58,6 +68,8 @@ public class ClassAttribute extends Attribute {
 				return false;
 		} else if (!fieldMap.equals(other.fieldMap))
 			return false;
+		if (hasMainMethod != other.hasMainMethod)
+			return false;
 		if (methodMap == null) {
 			if (other.methodMap != null)
 				return false;
@@ -65,9 +77,5 @@ public class ClassAttribute extends Attribute {
 			return false;
 		return true;
 	}
-
-	public boolean hasMainMethod() {
-		return methodMap.containsKey("main");
-	}
-	
+		
 }
