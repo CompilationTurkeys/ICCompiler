@@ -59,7 +59,6 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			}
 			break;
 		}
-		expr.setClassName(leftExpResult.getType().getName());
 		Attribute attr = new Attribute(leftExpResult.getType());
 		return attr;
 	}
@@ -69,13 +68,12 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute expNewClassAttr = null;
 		
 		//check if a class that is initialized exists
-		if(program.getSymbols().containsKey(expr.getClassName())){
-			expr.setClassName(expr.getClassName());
+		if(program.getSymbols().containsKey(expr.className)){
 			//class dimension is 0
-			expNewClassAttr = new Attribute(new AST_Type(expr.getClassName(), 0));//null argument == 0 dimension
+			expNewClassAttr = new Attribute(new AST_Type(expr.className, null));
 		}
 		else{
-			throw new RuntimeException("Trying to initialize an undeclared class: " + expr.getClassName());
+			throw new RuntimeException("Trying to initialize an undeclared class: " + expr.className);
 		}
 		
 		return expNewClassAttr;
@@ -195,7 +193,6 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			throw new RuntimeException("Can not return type "+ exprAttr.getType() + "from method " + methodST.getMethodName() + " with type "+ expectedRetType.getName());
 		}
 		
-		stmt.setClassName(exprAttr.getType().getName());
 		return exprAttr;
 	}
 
@@ -262,8 +259,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 	public Attribute visit(AST_Variable var, SymbolTable symTable) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unexpected visit in Variable!");
 	}
 
 	@Override
@@ -280,21 +276,26 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 	public Attribute visit(AST_VariableID var, SymbolTable symTable) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Attribute varAttr = findVar(var.fieldName, symTable);
+		//if function returned null then variable was not found in any of the parent scopes
+		if (varAttr == null) {
+			throw new RuntimeException("Variable name " + var.fieldName + " does not exist");
+		}
+		return varAttr;
 	}
 
 
 	@Override
 	public Attribute visit(AST_Type type, SymbolTable symTable) {
+		//check for non existent types
 		if (!type.isPrimitive() && !type.getName().equals("null") && !program.getSymbols().containsKey(type.getName())) {
-			throw new RuntimeException("");
+			throw new RuntimeException("Unknown type: " + type.getName());
 		}
 		else if (type.getName().equals(PrimitiveDataTypes.VOID.getName())){
-			throw new RuntimeException("");
+			throw new RuntimeException("Variable cannot be declared as void type.");
 		}
 		return null;
-		// TODO with implementation of AST_Literal
 	}
 
 	@Override
@@ -302,7 +303,6 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		funcArg.getArgType().accept(this, symTable);
 		Attribute attribute =  new Attribute(funcArg.getArgType());
 		symTable.getSymbols().put(funcArg.getArgName(), attribute);
-		funcArg.setClassName(attribute.getType().getName());
 		return attribute;
 	}
 
@@ -327,9 +327,23 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		return null;
 	}
 	
-	public Attribute visit(AST_Literal call, SymbolTable symTable) {
-		//TODO finish visit 
-		return null;
+	public Attribute visit(AST_Literal literal, SymbolTable symTable) {
+		Attribute litAttr = null;
+		//check type of the literal between allowed types
+		if (literal.isInteger()){
+			litAttr = new Attribute(new AST_Type(PrimitiveDataTypes.INT.getName(), null));
+		}
+		else if (literal.isString()){
+			litAttr = new Attribute(new AST_Type(PrimitiveDataTypes.STRING.getName(), null));
+		}
+		else if (literal.isNull()){
+			litAttr = new Attribute(new AST_Type("null", null));
+		}
+		else{
+			throw new RuntimeException("Unexpected literal type: " + literal.value.toString());
+		}
+		
+		return litAttr;
 	}
 
 
@@ -467,6 +481,18 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		boolean isSameDim = (subType.getDimension() == 0 && superType.getDimension() == 0);
 		
 		return (subType.equals(superType)) || (isAncestor && isSameDim);
+	}
+	
+	private Attribute findVar(String varName, SymbolTable symTable) {
+		SymbolTable st = symTable;
+		//iterate over hierarchy of scopes and look for varname, return null if not found
+		while (st != program){
+			if (st.getSymbols().containsKey(varName)){
+				return st.getSymbols().get(varName);
+			}
+			st = st.getParentTable();
+		}
+		return null;
 	}
 	
 }

@@ -23,12 +23,12 @@ public interface Visitor<ContextType, ResultType> {
 
 	public ResultType visit(AST_VirtualCall call, ContextType symTable);
 
-	public ResultType visit(AST_Variable var,  ContextType symTable);
+	public ResultType visit(AST_Variable var,  ContextType symTable); // V
 	public ResultType visit(AST_VariableExpField var,  ContextType symTable);
 	public ResultType visit(AST_VariableExpArray var,  ContextType symTable);
-	public ResultType visit(AST_VariableID var,  ContextType symTable);
+	public ResultType visit(AST_VariableID var,  ContextType symTable); // V
 	
-	public ResultType visit(AST_Type type, ContextType symTable);
+	public ResultType visit(AST_Type type, ContextType symTable); // V
 	
 	public ResultType visit(AST_FuncArgument funcArg, ContextType symTable); // V
 	
@@ -36,7 +36,7 @@ public interface Visitor<ContextType, ResultType> {
 	
 	public ResultType visit(AST_Method method, ContextType symTable); //  V
 	
-	public ResultType visit(AST_Literal call, ContextType symTable); 
+	public ResultType visit(AST_Literal literal, ContextType symTable); //  V
 	
 	public ResultType visit(AST_ClassDecl classDecl, ContextType symTable); // V
 	
