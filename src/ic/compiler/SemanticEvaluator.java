@@ -253,8 +253,51 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 	public Attribute visit(AST_VirtualCall call, SymbolTable symTable) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Attribute callExpAttr = null;
+		
+		if (call.getCallingExpression() != null) {
+			callExpAttr = call.getCallingExpression().accept(this, symTable);
+		}
+		
+		if (callExpAttr.isNull()) {
+			throw new RuntimeException("Null Pointer Exception!!");
+		}
+		
+		if (callExpAttr.getType().isPrimitive()) {
+			throw new RuntimeException(" Primitive type" + callExpAttr.getType() + 
+					" can't have a member function " + call.getFuncName());
+		}
+
+		if (callExpAttr.getType().getDimension() > 0) {
+			throw new RuntimeException("Array type of " + callExpAttr.getType() 
+			+ " doesn't have a member function " + call.getFuncName());
+		}
+		MethodAttribute methodAttr;
+		
+		methodAttr = ((ClassAttribute)(program.getSymbols().get(callExpAttr.getType().getName())))
+				.getMethodMap().get(call.getFuncName());
+		
+		if (methodAttr == null) {
+			throw new RuntimeException("Class " + callExpAttr.getType() +
+					" does not have a method named " + call.getFuncName());
+		}
+		
+		// Check that the parameters are from the right types.
+		
+		List<AST_Exp> funcArgs = call.getArguments();
+		List<AST_FuncArgument> arguments = methodAttr.getParameters();
+		
+		for (int i=0; i<  funcArgs.size() ; i++){
+			Attribute attr = funcArgs.get(i).accept(this, symTable);
+			if (!attr.getType().equals(arguments.get(i).getArgType())){
+				throw new RuntimeException("Argument "+ i + "Should be of type " + arguments.get(i).getArgType() 
+						+ "and not " + attr.getType());
+			}
+		}
+		
+		return methodAttr;
+	
 	}
 
 	@Override

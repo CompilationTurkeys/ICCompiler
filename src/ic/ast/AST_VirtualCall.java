@@ -3,6 +3,7 @@ import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AST_VirtualCall extends AST_Exp
 {
@@ -26,5 +27,17 @@ public class AST_VirtualCall extends AST_Exp
 	@Override
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
+	}
+	
+	public AST_Exp getCallingExpression(){
+		return callingExp;
+	}
+	
+	public String getFuncName(){
+		return funcName;
+	}
+
+	public List<AST_Exp> getArguments() {
+		return argList;
 	}
 }
