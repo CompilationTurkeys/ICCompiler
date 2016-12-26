@@ -37,7 +37,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		
 		switch (expr.OP){
 		case PLUS:
-			if (!leftExpResult.getType().isPrimitive() || leftExpResult.equals(PrimitiveDataTypes.VOID)){
+			if (!leftExpResult.getType().isPrimitive() || leftExpResult.getType().isVoid()){
 				throw new RuntimeException("Can't make " + expr.OP.getOpDescreption() 
 				+" between two " + leftExpResult.getType() + " vars");
 			}
@@ -45,7 +45,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		case MINUS:
 		case DIVIDE:
 		case TIMES:
-			if (!leftExpResult.getType().equals(PrimitiveDataTypes.INT)){
+			if (!leftExpResult.getType().isInt()){
 				throw new RuntimeException("Can't make" +expr.OP.getOpDescreption() + " between two " + leftExpResult.getType() + " vars");
 			}
 			break;
@@ -55,7 +55,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		case LTE:
 		case GT:
 		case GTE:
-			if (!leftExpResult.getType().equals(PrimitiveDataTypes.INT)){
+			if (!leftExpResult.getType().isInt()){
 				throw new RuntimeException("Can't compare between two " + leftExpResult.getType() + " vars");
 			}
 			break;
@@ -83,7 +83,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	@Override
 	public Attribute visit(AST_ExpNewTypeArray expr, SymbolTable symTable) {
 		//check if the type specified actually exists 
-		if (!(expr.arrayType.equals(PrimitiveDataTypes.INT.getName())) && !(expr.arrayType.equals(PrimitiveDataTypes.STRING.getName()))){
+		if (!(expr.arrayType.getName().equals(PrimitiveDataTypes.INT.getName())) && !(expr.arrayType.getName().equals(PrimitiveDataTypes.STRING.getName()))){
 			if (!program.getSymbols().containsKey(expr.arrayType)){
 				throw new RuntimeException("Cannot instantiate unknown type: " + expr.arrayType.getName());
 			}
@@ -92,7 +92,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		//check if the expr inside the brackets returns int and is legal
 		Attribute expAttr = expr.sizeExpression.accept(this, symTable);
 		//check if the expr is evaluated to INT
-		if(!expAttr.getType().getName().equals(PrimitiveDataTypes.INT.getName())){
+		if(!expAttr.getType().isInt()){
 			throw new RuntimeException("Expected array size of the type INT, the received size is of type: " + expr.arrayType.getName());
 		}
 		//creating a return Attribute
@@ -140,13 +140,14 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	public Attribute visit(AST_StmtVariableDeclaration stmt, SymbolTable symTable) {
 		//check if var type is valid
 		stmt.varType.accept(this, symTable);
-		//if the variable name has already been used
+
 		if (symTable.getSymbols().containsKey(stmt.varName)){
 			throw new RuntimeException("Var name " + stmt.varName + " has already been used!");
 		}
+		
 		if (stmt.assignedExp != null){
 			Attribute expAttr = stmt.assignedExp.accept(this, symTable);
-			//check proper inheritance
+			
 			if (!properInheritance(expAttr.getType(), stmt.varType)){
 				throw new RuntimeException("Incompatible types, cannot assign type " + expAttr.getType().getName() + " to type "+ stmt.varType.getName());
 			}
@@ -170,13 +171,16 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		}
 		
 		MethodSymbolTable methodST = (MethodSymbolTable)symTable;
-		//check if the method does actually exist as part of the class and get its type
-		if (((ClassAttribute)(program.getSymbols().get(methodST.getClassName()))).getMethodMap().containsKey(methodST.getMethodName())){
-			expectedRetType = ((ClassAttribute)(program.getSymbols().get(methodST.getClassName()))).getMethodMap().get(methodST.getMethodName()).getType();
+		
+		//check if the method exists as part of the class and get its type
+		if (((ClassAttribute)(program.getSymbols().get(methodST.getClassName())))
+		    .getMethodMap().containsKey(methodST.getMethodName())){
+			expectedRetType = ((ClassAttribute) (program.getSymbols().get(methodST.getClassName())))
+				.getMethodMap().get(methodST.getMethodName()).getType();
 
 		}
 		//check void type compatibility
-		if (expectedRetType.getName().equals(PrimitiveDataTypes.VOID.getName())){
+		if (expectedRetType.isVoid()){
 			if (stmt.returnExp != null) {
 				throw new RuntimeException("Method " + methodST.getMethodName() + " is void and cannot return a value");
 			}
@@ -189,6 +193,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		}
 		//traverse the expression
 		Attribute exprAttr = stmt.returnExp.accept(this, symTable);
+		
 		//check if method return type is subtype of method return type
 		if (!properInheritance(exprAttr.getType(), expectedRetType)){
 			throw new RuntimeException("Can not return type "+ exprAttr.getType() + "from method " + methodST.getMethodName() + " with type "+ expectedRetType.getName());
@@ -203,7 +208,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute condAttr = stmt.cond.accept(this, symTable);
 		
 		//condition attribute is int in our case then we will check for type comaptibility appropriately
-		if (!condAttr.getType().getName().equals("int") || condAttr.getType().getDimension() > 0) {
+		if (!condAttr.getType().isInt() ) {
 			throw new RuntimeException("Illegal IF statement: condition must be of type int but is of type" + condAttr.getType().getName());
 		}
 		//if the body of the statement is not null traverse it and create local scope table if necessary
@@ -230,7 +235,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute condAttr = stmt.cond.accept(this, symTable);
 		
 		//condition attribute is int in our case then we will check for type comaptibility appropriately
-		if (!condAttr.getType().getName().equals("int") || condAttr.getType().getDimension() > 0) {
+		if (!condAttr.getType().isInt()) {
 			throw new RuntimeException("Illegal WHILE statement: condition must be of type int but is of type" + condAttr.getType().getName());
 		}
 		
@@ -261,7 +266,6 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			callExpAttr = call.getCallingExpression().accept(this, symTable);
 		}
 		
-		//check if exp is primitive
 		if (callExpAttr.getType().isPrimitive()) {
 			throw new RuntimeException("Primitive type" + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
 		}
@@ -274,7 +278,9 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			throw new RuntimeException("Array type of " + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
 		}
 				
-		MethodAttribute funcAttr = ((ClassAttribute)(program.getSymbols().get(callExpAttr.getType().getName()))).getMethodMap().get(call.getFuncName());
+		MethodAttribute funcAttr = ((ClassAttribute)(program.getSymbols().get(callExpAttr.getType().getName())))
+					   .getMethodMap().get(call.getFuncName());
+		
 		//check if the function exists
 		if (funcAttr == null) {
 			throw new RuntimeException("Class " + callExpAttr.getType() + " does not have a method named " + call.getFuncName());
@@ -357,7 +363,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		// check validity of expression type
 		arrExpAttr.getType().accept(this, symTable);
 		
-		if (!arrIndexAttr.getType().getName().equals(PrimitiveDataTypes.INT.getName()) || arrIndexAttr.getType().getDimension() > 0){
+		if (!arrIndexAttr.getType().isInt()){
 			throw new RuntimeException("Array index expression must be integer value");
 		}
 		
@@ -423,10 +429,10 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute litAttr = null;
 		//check type of the literal between allowed types
 		if (literal.isInteger()){
-			litAttr = new Attribute(new AST_Type(PrimitiveDataTypes.INT.getName(), null));
+			litAttr = new Attribute(new AST_Type(PrimitiveDataTypes.INT));
 		}
 		else if (literal.isString()){
-			litAttr = new Attribute(new AST_Type(PrimitiveDataTypes.STRING.getName(), null));
+			litAttr = new Attribute(new AST_Type(PrimitiveDataTypes.STRING));
 		}
 		else if (literal.isNull()){
 			litAttr = new Attribute(new AST_Type("null", null));
