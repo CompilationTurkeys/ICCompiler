@@ -60,6 +60,18 @@ public class AST_Type extends AST_Node
 			typeName.equals(PrimitiveDataTypes.VOID.getName()) ) ;
 	}
 	
+	public boolean isInt() {
+		return  isPrimitive() && typeName.equals(PrimitiveDataTypes.INT.getName()) ;
+	}
+	
+	public boolean isVoid() {
+		return  isPrimitive() && typeName.equals(PrimitiveDataTypes.VOID.getName()) ;
+	}
+	
+	public boolean isString() {
+		return  isPrimitive() && typeName.equals(PrimitiveDataTypes.STRING.getName()) ;
+	}
+	
 	@Override
 	public String toString() {
 		String s = typeName;
