@@ -387,7 +387,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	@Override
 	public Attribute visit(AST_Type type, SymbolTable symTable) {
 		//check for non existent types
-		if (!type.isPrimitive() && !type.getName().equals("null") && !program.getSymbols().containsKey(type.getName())) {
+		if (!type.checkTypePrimitive() && !type.getName().equals("null") && !program.getSymbols().containsKey(type.getName())) {
 			throw new RuntimeException("Unknown type: " + type.getName());
 		}
 		else if (type.getName().equals(PrimitiveDataTypes.VOID.getName())){

@@ -55,9 +55,13 @@ public class AST_Type extends AST_Node
 	}
 	
 	public boolean isPrimitive() {
-		return  dimension == 0 && ( typeName.equals(PrimitiveDataTypes.INT.getName()) ||
-			typeName.equals(PrimitiveDataTypes.STRING.getName()) || 
-			typeName.equals(PrimitiveDataTypes.VOID.getName()) ) ;
+		return  dimension == 0 && checkTypePrimitive() ;
+	}
+	
+	public boolean checkTypePrimitive() {
+		return ( typeName.equals(PrimitiveDataTypes.INT.getName()) ||
+				typeName.equals(PrimitiveDataTypes.STRING.getName()) || 
+				typeName.equals(PrimitiveDataTypes.VOID.getName()) );
 	}
 	
 	public boolean isInt() {
@@ -86,7 +90,6 @@ public class AST_Type extends AST_Node
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + dimension;
-		result = prime * result + (isPrimitive ? 1231 : 1237);
 		result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
 		return result;
 	}
@@ -101,8 +104,6 @@ public class AST_Type extends AST_Node
 			return false;
 		AST_Type other = (AST_Type) obj;
 		if (dimension != other.dimension)
-			return false;
-		if (isPrimitive != other.isPrimitive)
 			return false;
 		if (typeName == null) {
 			if (other.typeName != null)
