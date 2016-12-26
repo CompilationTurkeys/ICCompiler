@@ -6,21 +6,17 @@ public class AST_Type extends AST_Node
 {
 	private int dimension = 0;
 	private String typeName;
-	private boolean isPrimitive;
 	private Object defVal;
 	
 	public AST_Type(PrimitiveDataTypes typeName, Integer dimension) {
 		this.typeName = typeName.getName();
 		this.dimension = (dimension == null) ? 0 : dimension.intValue();
-		this.isPrimitive = true;
-		this.defVal = setDefVal(typeName.getName());
+		this.defVal = typeName.getDefaultValue();
 	}
 
 	public AST_Type(String typeName, Integer dimension) {
 		this.typeName = typeName;
 		this.dimension = (dimension == null) ? 0 : dimension.intValue();
-		this.isPrimitive = typeName.equals(PrimitiveDataTypes.INT.getName()) ||
-				typeName.equals(PrimitiveDataTypes.STRING.getName()) || typeName.equals(PrimitiveDataTypes.VOID.getName());
 		this.defVal = setDefVal(typeName);
 	}
 
@@ -59,7 +55,9 @@ public class AST_Type extends AST_Node
 	}
 	
 	public boolean isPrimitive() {
-		return isPrimitive;
+		return  dimension == 0 && ( typeName.equals(PrimitiveDataTypes.INT.getName()) ||
+			typeName.equals(PrimitiveDataTypes.STRING.getName()) || 
+			typeName.equals(PrimitiveDataTypes.VOID.getName()) ) ;
 	}
 	
 	@Override
