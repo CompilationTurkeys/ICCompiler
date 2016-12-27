@@ -23,4 +23,11 @@ public class AST_VariableExpArray extends AST_Variable
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_VariableExpArray [arrayExp=" + arrayExp + ", arraySize=" + arraySize + "]";
+	}
+	
+	
 }

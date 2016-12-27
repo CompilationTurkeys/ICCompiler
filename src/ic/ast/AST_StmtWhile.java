@@ -23,4 +23,12 @@ public class AST_StmtWhile extends AST_Stmt
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_StmtWhile [cond=" + cond + ", body=" + body + "]";
+	}
+	
+	
+	
 }

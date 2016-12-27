@@ -40,6 +40,13 @@ public class AST_Literal extends AST_Exp
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String toString() {
+		return "AST_Literal [value=" + value + "]";
+	}
+	
+	
 	
 	
 }

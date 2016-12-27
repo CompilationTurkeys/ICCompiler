@@ -23,4 +23,11 @@ public class AST_StmtIf extends AST_Stmt
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_StmtIf [cond=" + cond + ", body=" + body + "]";
+	}
+	
+	
 }

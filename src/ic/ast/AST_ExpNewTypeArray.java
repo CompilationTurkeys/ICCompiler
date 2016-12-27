@@ -23,4 +23,11 @@ public class AST_ExpNewTypeArray extends AST_Exp
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_ExpNewTypeArray [arrayType=" + arrayType + ", sizeExpression=" + sizeExpression + "]";
+	}
+	
+	
 }

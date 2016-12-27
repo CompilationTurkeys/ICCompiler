@@ -29,4 +29,11 @@ public class AST_Program extends AST_Node
 		return classList;
 	}
 
+	@Override
+	public String toString() {
+		return "AST_Program [classList=" + classList + "]";
+	}
+	
+	
+
 }

@@ -31,26 +31,28 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute leftExpResult = expr.leftExp.accept(this, symTable);
 		Attribute rightExpResult = expr.rightExp.accept(this,symTable);
 		
-		if (!leftExpResult.getType().equals(rightExpResult.getType())){
-			throw new RuntimeException("Can't make " + expr.OP.getOpDescreption() + " between different types: " + leftExpResult.getType() + "and " + rightExpResult.getType());
-		}
-		
+		boolean properInherited = IsProperInheritance(rightExpResult.getType(),leftExpResult.getType()) ;
 		switch (expr.OP){
 		case PLUS:
-			if (!leftExpResult.getType().isPrimitive() || leftExpResult.getType().isVoid()){
+			if (!properInherited || !leftExpResult.getType().isPrimitive() || leftExpResult.getType().isVoid()){
 				throw new RuntimeException("Can't make " + expr.OP.getOpDescreption() 
-				+" between two " + leftExpResult.getType() + " vars");
+				+" between " + leftExpResult.getType() + " and " + rightExpResult.getType() +  "vars");
 			}
 			break;
 		case MINUS:
 		case DIVIDE:
 		case TIMES:
-			if (!leftExpResult.getType().isInt()){
-				throw new RuntimeException("Can't make" +expr.OP.getOpDescreption() + " between two " + leftExpResult.getType() + " vars");
+			if (!properInherited || !leftExpResult.getType().isInt()){
+				throw new RuntimeException("Can't make " +expr.OP.getOpDescreption() + " between " 
+				+ leftExpResult.getType() + " and " + rightExpResult.getType() +  "vars");
 			}
 			break;
 		case EQUALS:
 		case NEQUALS:
+			if (!properInherited){
+				throw new RuntimeException("Can't compare between two " + leftExpResult.getType() + " vars");
+			}
+			break;
 		case LT:
 		case LTE:
 		case GT:
@@ -60,7 +62,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			}
 			break;
 		}
-		Attribute attr = new Attribute(leftExpResult.getType());
+		Attribute attr = new Attribute(new AST_Type(PrimitiveDataTypes.INT));
 		return attr;
 	}
 
@@ -109,7 +111,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute right = stmt.assignExp.accept(this, symTable);
 		//right.getType().accept(this, symTable);
 
-		if (!properInheritance(right.getType(), left.getType())) {
+		if (!IsProperInheritance(right.getType(), left.getType())) {
 			// incompatible types or inheritance (cannot assign right to left)
 			throw new RuntimeException("Incompatible types, cannot assign type " + right.getType().getName() + " to type "+ left.getType().getName());
 		}
@@ -148,7 +150,8 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		if (stmt.assignedExp != null){
 			Attribute expAttr = stmt.assignedExp.accept(this, symTable);
 			
-			if (!properInheritance(expAttr.getType(), stmt.varType)){
+			//checks if value assigned from exprAtrr to var is proper inherited
+			if (!IsProperInheritance(stmt.varType,expAttr.getType())){
 				throw new RuntimeException("Incompatible types, cannot assign type " + expAttr.getType().getName() + " to type "+ stmt.varType.getName());
 			}
 			
@@ -195,7 +198,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute exprAttr = stmt.returnExp.accept(this, symTable);
 		
 		//check if method return type is subtype of method return type
-		if (!properInheritance(exprAttr.getType(), expectedRetType)){
+		if (!IsProperInheritance(exprAttr.getType(), expectedRetType)){
 			throw new RuntimeException("Can not return type "+ exprAttr.getType() + "from method " + methodST.getMethodName() + " with type "+ expectedRetType.getName());
 		}
 		
@@ -209,7 +212,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		
 		//condition attribute is int in our case then we will check for type comaptibility appropriately
 		if (!condAttr.getType().isInt() ) {
-			throw new RuntimeException("Illegal IF statement: condition must be of type int but is of type" + condAttr.getType().getName());
+			throw new RuntimeException("Illegal IF statement: condition must be of type int but is of type " + condAttr.getType().getName());
 		}
 		//if the body of the statement is not null traverse it and create local scope table if necessary
 		if (stmt.body != null) {
@@ -312,7 +315,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			//evaluate actual arguments and check validity
 			Attribute argAttr = actualArgs.get(i).accept(this, symTable);
 			argAttr.getType().accept(this, symTable);
-			if (!properInheritance(argAttr.getType(), formalArgs.get(i).getArgType())) {
+			if (!IsProperInheritance(argAttr.getType(), formalArgs.get(i).getArgType())) {
 				throw new RuntimeException("Illegal arguments to method " 
 						+ funcName + ": was expecting " + formalArgs.get(i).getArgType().getName()
 						+ " but recieved " + argAttr.getType().getName());
@@ -576,11 +579,29 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		currentClassAttribute.getAncestors().addAll(superClassAttribute.getAncestors());
 	}
 
-	private boolean properInheritance(AST_Type right, AST_Type left) {
-
-		return right.getDimension() == left.getDimension() && ((right.getName().equals("null") && (left.getDefVal() == null || left.getDimension() > 0))
+	private boolean IsProperInheritance(AST_Type right, AST_Type left) {
+		
+		if (right.getDimension() != left.getDimension()){
+			return false;
+		}
+		if (!((right.getName().equals("null") && (left.getDefVal() == null || left.getDimension() > 0)))){
+			
+			if (!right.checkTypePrimitive() || !left.checkTypePrimitive() || !right.getName().equals(left.getName() )){
+			
+				if (! (!right.checkTypePrimitive() && inherit(left, right)) ){
+					return false;
+				}
+			}
+		}
+		return true;
+		
+				
+		/*return   right.getDimension() == left.getDimension() && 
+				((right.getName().equals("null") && (left.getDefVal() == null || left.getDimension() > 0))
 				|| ((right.checkTypePrimitive() && left.checkTypePrimitive() && (right.getName()).equals(left.getName()))
-				|| (!right.checkTypePrimitive() && inherit(right, left))));
+				|| (!right.checkTypePrimitive() && inherit(right, left))));*/
+				
+			
 	}
 
 	private boolean inherit(AST_Type subType, AST_Type superType) {

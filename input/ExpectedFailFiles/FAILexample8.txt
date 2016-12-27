@@ -1,0 +1,8 @@
+class A{
+	int f(){
+		if (5+5)
+			return 5;
+		return 4;
+	}
+	void main(string[] args){}
+}

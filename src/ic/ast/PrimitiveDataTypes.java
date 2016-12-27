@@ -20,4 +20,8 @@ public enum PrimitiveDataTypes {
 	public Object getDefaultValue() {
 		return defVal;
 	}
+	
+	public String toString(){
+		return getName();
+	}
 }

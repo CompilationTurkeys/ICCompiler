@@ -6,6 +6,7 @@ import ic.compiler.PrinterVisitor;
 
 public class AST_ClassDecl extends AST_Node
 {
+	
 	public ArrayList<AST_Field> classFields;
 
 	public ArrayList<AST_Method> classMethods;
@@ -55,4 +56,13 @@ public class AST_ClassDecl extends AST_Node
 	public ArrayList<AST_Method> getClassMethods() {
 		return classMethods;
 	}
+
+	@Override
+	public String toString() {
+		return "AST_ClassDecl [classFields=" + classFields + ", classMethods=" + classMethods + ", className="
+				+ className + ", extendedClassName=" + extendedClassName + "]";
+	}
+	
+	
+
 }

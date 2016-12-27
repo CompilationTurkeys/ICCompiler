@@ -39,4 +39,9 @@ public enum BinaryOpTypes {
 			return null;
 		}
 	}
+	
+	public String  toString(){
+		return getOpDescreption();
+		
+	}
 }

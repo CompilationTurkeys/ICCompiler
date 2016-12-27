@@ -49,4 +49,12 @@ public class AST_Method extends AST_FieldOrMethod
 	public AST_StmtList getMethodStmtList() {
 		return methodStmtList;
 	}
+
+	@Override
+	public String toString() {
+		return "AST_Method [methodType=" + methodType + ", methodName=" + methodName + ", methodArgs=" + methodArgs
+				+ ", methodStmtList=" + methodStmtList + "]";
+	}
+	
+	
 }

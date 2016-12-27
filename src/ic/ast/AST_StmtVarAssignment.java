@@ -23,4 +23,11 @@ public class AST_StmtVarAssignment extends AST_Stmt
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_StmtVarAssignment [assignExp=" + assignExp + ", var=" + var + "]";
+	}
+	
+	
 }

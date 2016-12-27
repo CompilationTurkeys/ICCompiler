@@ -44,4 +44,11 @@ public class AST_VirtualCall extends AST_Exp
 	public List<AST_Exp> getArguments() {
 		return argList;
 	}
+
+	@Override
+	public String toString() {
+		return "AST_VirtualCall [callingExp=" + callingExp + ", argList=" + argList + ", funcName=" + funcName + "]";
+	}
+	
+	
 }

@@ -23,4 +23,11 @@ public class AST_VariableExpField extends AST_Variable
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_VariableExpField [exp=" + exp + ", fieldName=" + fieldName + "]";
+	}
+	
+	
 }

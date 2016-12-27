@@ -1,0 +1,39 @@
+class A{
+	string x;
+	int f(){
+		if (x == "hello")
+			return 1;
+		return 0;
+		}
+	}
+class B extends A{
+	A a;
+	int f(){
+		B b = new B();
+		if (b == a){
+			return 1;
+		}
+		return 0;
+	}
+
+	string g(int x, int y){
+		return "foo";
+	}
+	
+	void main(string[] args){
+		A a = new B();
+		int x = a.f();
+		return;
+	}
+}
+
+class C{
+	int x;
+	int f(B b, int a){
+		return (b.f() + a);
+	}
+	void g(){
+		B b = new B();
+		string x = b.g(0,5);
+	}
+}

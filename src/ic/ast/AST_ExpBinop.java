@@ -25,4 +25,11 @@ public class AST_ExpBinop extends AST_Exp
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_ExpBinop [OP=" + OP + ", leftExp=" + leftExp + ", rightExp=" + rightExp + "]";
+	}
+	
+	
 }

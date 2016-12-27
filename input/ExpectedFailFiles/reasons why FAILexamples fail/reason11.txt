@@ -1,0 +1,1 @@
+main method must receive string[] as its only paramater.

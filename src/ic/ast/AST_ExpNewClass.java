@@ -21,4 +21,11 @@ public class AST_ExpNewClass extends AST_Exp
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_ExpNewClass [className=" + className + "]";
+	}
+	
+	
 }

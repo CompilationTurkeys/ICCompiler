@@ -1,0 +1,24 @@
+class A{
+	string x;
+	int f(){
+		if (x == "hello")
+			return 1;
+		return 0;
+		}
+	}
+class B extends A{
+	A a;
+	int f(){
+		B b = new B();
+		if (b == a){
+			return 1;
+		}
+		return 0;
+	}
+	
+	void main(string[] args){
+		B b = new A();
+		int x = a.f();
+		return;
+	}
+}

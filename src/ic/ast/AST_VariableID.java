@@ -21,4 +21,11 @@ public class AST_VariableID extends AST_Variable
 	public void accept(PrinterVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AST_VariableID [fieldName=" + fieldName + "]";
+	}
+	
+	
 }

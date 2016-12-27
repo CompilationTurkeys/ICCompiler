@@ -1,0 +1,1 @@
+B.f() takes no paramaters, 1 given.

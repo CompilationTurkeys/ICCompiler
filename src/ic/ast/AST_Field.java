@@ -35,4 +35,14 @@ public class AST_Field extends AST_FieldOrMethod
 	public AST_Type getType() {
 		return fieldsType;
 	}
+
+	@Override
+	public String toString() {
+		return "AST_Field [fieldNamesList=" + fieldNamesList + ", fieldsType=" + fieldsType + ", fieldMethod="
+				+ fieldMethod + "]";
+	}
+
+	
+	
+	
 }

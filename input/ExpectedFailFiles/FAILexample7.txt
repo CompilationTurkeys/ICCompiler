@@ -1,0 +1,8 @@
+class A{
+	int f(){
+		int x = 5;
+		string y = "hello";
+		return (x+y);
+	}
+	void main(string[] args){}
+}
