@@ -259,31 +259,35 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 	public Attribute visit(AST_VirtualCall call, SymbolTable symTable) {
-		
+		String callExpName = null;
 		Attribute callExpAttr = null;
-		//expression exists, not an explicit call, evaluate the exp
+		//expression exists (method is a field of a different class), not an explicit call, evaluate the exp
 		if (call.getCallingExpression() != null) {
 			callExpAttr = call.getCallingExpression().accept(this, symTable);
+			
+			if (callExpAttr.getType().isPrimitive()) {
+				throw new RuntimeException("Primitive type" + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
+			}
+			
+			if (callExpAttr.isNull()) {
+				throw new RuntimeException("Null pointer exception, cannot access member function of null");
+			}
+			
+			if (callExpAttr.getType().getDimension() > 0) {
+				throw new RuntimeException("Array type of " + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
+			}
+			callExpName = callExpAttr.getType().getName();
 		}
-		
-		if (callExpAttr.getType().isPrimitive()) {
-			throw new RuntimeException("Primitive type" + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
-		}
-		
-		if (callExpAttr.isNull()) {
-			throw new RuntimeException("Null pointer exception, cannot access member function of null");
-		}
-		
-		if (callExpAttr.getType().getDimension() > 0) {
-			throw new RuntimeException("Array type of " + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
+		else { // method is defined in current class
+			callExpName = symTable.getClassName();
 		}
 				
-		MethodAttribute funcAttr = ((ClassAttribute)(program.getSymbols().get(callExpAttr.getType().getName())))
+		MethodAttribute funcAttr = ((ClassAttribute)(program.getSymbols().get(callExpName)))
 					   .getMethodMap().get(call.getFuncName());
 		
 		//check if the function exists
 		if (funcAttr == null) {
-			throw new RuntimeException("Class " + callExpAttr.getType() + " does not have a method named " + call.getFuncName());
+			throw new RuntimeException("Class " + callExpName + " does not have a method named " + call.getFuncName());
 		}
 		
 		//check that the parameters are from the right types
@@ -574,9 +578,9 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	private boolean properInheritance(AST_Type right, AST_Type left) {
 
-		return ((right.getName().equals("null") && (left.getDefVal() == null || left.getDimension() > 0))
-				|| ((right.isPrimitive() && (right.getName()).equals(left.getName()))
-				|| (!right.isPrimitive() && inherit(right, left))));
+		return right.getDimension() == left.getDimension() && ((right.getName().equals("null") && (left.getDefVal() == null || left.getDimension() > 0))
+				|| ((right.checkTypePrimitive() && left.checkTypePrimitive() && (right.getName()).equals(left.getName()))
+				|| (!right.checkTypePrimitive() && inherit(right, left))));
 	}
 
 	private boolean inherit(AST_Type subType, AST_Type superType) {

@@ -33,6 +33,10 @@ public class AST_VirtualCall extends AST_Exp
 		return callingExp;
 	}
 	
+	public void setCallingExpression(AST_Exp callingExp) {
+		this.callingExp = callingExp;
+	}
+	
 	public String getFuncName(){
 		return funcName;
 	}

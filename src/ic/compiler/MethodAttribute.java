@@ -35,8 +35,14 @@ public class MethodAttribute extends Attribute {
 		if (funcArgs == null) {
 			if (other.funcArgs != null)
 				return false;
-		} else if (!funcArgs.equals(other.funcArgs))
-			return false;
+		}
+		else {
+			for (int i = 0; i < funcArgs.size(); i++) {
+				if (!funcArgs.get(i).equals(other.funcArgs.get(i))) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 	

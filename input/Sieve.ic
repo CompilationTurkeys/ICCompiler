@@ -10,7 +10,7 @@ class Sieve {
 
   void initArray() {
     int i = 0;
-    while (i < 4) {
+    while (i < 1) {
       num[i] = i;
       i=i+1;
     }
@@ -18,7 +18,7 @@ class Sieve {
 
   void sieveAll() {
     int i = 2;
-    while (i < num.length) {
+    while (i < 1) {
       sieve(i);
       i=i+1; 
     }
@@ -26,7 +26,7 @@ class Sieve {
 
   void sieve(int n) {
     int i = 2*n;
-    while (i < num.length) {
+    while (i < 1) {
       num[i] = 0;
       i=i+n;
     }
@@ -34,9 +34,7 @@ class Sieve {
 
   void printPrimes() {
     int i = 2;
-    while (i < num.length) {
-      if (num[i] != 0) {
-      }
+    while (i < 1) {
       i=i+1;
     }
   }
@@ -49,7 +47,7 @@ class Sieve {
   void test(string[] args) {
     int n;
 
-    if (args.length != 1) {
+    if (1 != 1) {
       return;
     }
 

@@ -1,4 +1,5 @@
 package ic.ast;
+import ic.compiler.MethodAttribute;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
@@ -36,4 +37,11 @@ public class AST_FuncArgument extends AST_Node
 	public String getArgName() {
 		return argName;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		AST_FuncArgument other = (AST_FuncArgument) obj;
+		return this.argName.equals(other.argName) && this.argType.equals(other.argType);
+	}
+
 }
