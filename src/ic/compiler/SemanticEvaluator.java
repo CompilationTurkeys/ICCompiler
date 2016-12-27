@@ -151,7 +151,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			Attribute expAttr = stmt.assignedExp.accept(this, symTable);
 			
 			//checks if value assigned from exprAtrr to var is proper inherited
-			if (!IsProperInheritance(stmt.varType,expAttr.getType())){
+			if (!IsProperInheritance(expAttr.getType(),stmt.varType)){
 				throw new RuntimeException("Incompatible types, cannot assign type " + expAttr.getType().getName() + " to type "+ stmt.varType.getName());
 			}
 			
@@ -578,17 +578,17 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		// Add all ancestors to current class
 		currentClassAttribute.getAncestors().addAll(superClassAttribute.getAncestors());
 	}
-
-	private boolean IsProperInheritance(AST_Type right, AST_Type left) {
+	
+	private boolean IsProperInheritance(AST_Type subType, AST_Type superType) {
 		
-		if (right.getDimension() != left.getDimension()){
+		if (subType.getDimension() != superType.getDimension()){
 			return false;
 		}
-		if (!((right.getName().equals("null") && (left.getDefVal() == null || left.getDimension() > 0)))){
+		if (!((subType.getName().equals("null") && (superType.getDefVal() == null || superType.getDimension() > 0)))){
 			
-			if (!right.checkTypePrimitive() || !left.checkTypePrimitive() || !right.getName().equals(left.getName() )){
+			if (!subType.checkTypePrimitive() || !superType.checkTypePrimitive() || !subType.getName().equals(superType.getName() )){
 			
-				if (! (!right.checkTypePrimitive() && inherit(left, right)) ){
+				if (! (!subType.checkTypePrimitive() && inherit(subType, superType)) ){
 					return false;
 				}
 			}
