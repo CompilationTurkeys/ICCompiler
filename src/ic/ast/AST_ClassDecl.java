@@ -20,10 +20,13 @@ public class AST_ClassDecl extends AST_Node
 		this.extendedClassName = otherName;
 		classFields = new ArrayList<>();
 		classMethods = new ArrayList<>();
-		list.stream().filter(obj -> obj instanceof AST_Field)
-		.forEach(obj -> classFields.add((AST_Field)obj));
-		list.stream().filter(obj -> obj instanceof AST_Method)
-		.forEach(obj -> classMethods.add((AST_Method)obj));
+		if (list!=null){
+			list.stream().filter(obj -> obj instanceof AST_Field)
+			.forEach(obj -> classFields.add((AST_Field)obj));
+			
+			list.stream().filter(obj -> obj instanceof AST_Method)
+			.forEach(obj -> classMethods.add((AST_Method)obj));
+		}
 	}
 	
 	public String getClassName() {

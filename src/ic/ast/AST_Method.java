@@ -15,7 +15,7 @@ public class AST_Method extends AST_FieldOrMethod
 	{
 		this.methodType = methodType;
 		this.methodName = methodName;
-		this.methodArgs = methodArgs;
+		this.methodArgs = methodArgs == null ? new ArrayList<>() : methodArgs;
 		setMethodStmtList(methodStmtList);
 	}
 

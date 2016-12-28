@@ -31,26 +31,28 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute leftExpResult = expr.leftExp.accept(this, symTable);
 		Attribute rightExpResult = expr.rightExp.accept(this,symTable);
 		
-		boolean properInherited = IsProperInheritance(rightExpResult.getType(),leftExpResult.getType()) ;
+		boolean properInheritedRTL = IsProperInheritance(rightExpResult.getType(), leftExpResult.getType());
+		boolean properInheritedLTR = IsProperInheritance(leftExpResult.getType(), rightExpResult.getType()) ;
 		switch (expr.OP){
 		case PLUS:
-			if (!properInherited || !leftExpResult.getType().isPrimitive() || leftExpResult.getType().isVoid()){
+			if (!(properInheritedRTL || properInheritedLTR) || !leftExpResult.getType().isPrimitive() || leftExpResult.getType().isVoid()){
 				throw new RuntimeException("Can't make " + expr.OP.getOpDescreption() 
-				+" between " + leftExpResult.getType() + " and " + rightExpResult.getType() +  "vars");
+				+" between " + leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
 			}
 			break;
 		case MINUS:
 		case DIVIDE:
 		case TIMES:
-			if (!properInherited || !leftExpResult.getType().isInt()){
+			if (!(properInheritedRTL || properInheritedLTR) || !leftExpResult.getType().isInt()){
 				throw new RuntimeException("Can't make " +expr.OP.getOpDescreption() + " between " 
-				+ leftExpResult.getType() + " and " + rightExpResult.getType() +  "vars");
+				+ leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
 			}
 			break;
 		case EQUALS:
 		case NEQUALS:
-			if (!properInherited){
-				throw new RuntimeException("Can't compare between two " + leftExpResult.getType() + " vars");
+			if (!(properInheritedRTL || properInheritedLTR)){
+				throw new RuntimeException("Can't compare between " 
+						+ leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
 			}
 			break;
 		case LT:
@@ -58,7 +60,8 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		case GT:
 		case GTE:
 			if (!leftExpResult.getType().isInt()){
-				throw new RuntimeException("Can't compare between two " + leftExpResult.getType() + " vars");
+				throw new RuntimeException("Can't compare between " 
+						+ leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
 			}
 			break;
 		}
@@ -98,7 +101,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			throw new RuntimeException("Expected array size of the type INT, the received size is of type: " + expr.arrayType.getName());
 		}
 		//creating a return Attribute
-		//notice that according to the grammar the total size of array will be + 1
+		//notice that according to the grammar the total size of array will be
 		Attribute retAttr = new Attribute(new AST_Type(expr.arrayType.getName(), expr.arrayType.getDimension()+1));
 		return retAttr;
 	}
@@ -307,7 +310,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		if (actualArgs.size() != formalArgs.size()) {
 			throw new RuntimeException("Illegal arguments passed to function " 
 					+ funcName + ": number of actual arguments is " 
-					+ actualArgs.size() + " while number of formal parameters is " + formalArgs.size());
+					+ actualArgs.size() + " while the number of parameters should be " + formalArgs.size());
 		}
 		
 		//check types and inheritance
@@ -359,6 +362,11 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		//evaluate the size and the expression of the array
 		Attribute arrExpAttr = var.arrayExp.accept(this, symTable);
 		Attribute arrIndexAttr = var.arraySize.accept(this, symTable);
+		
+		if (var.arrayExp instanceof AST_ExpNewTypeArray || 
+		   (var.arrayExp instanceof AST_VariableExpArray && ((AST_VariableExpArray) var.arrayExp).isDeclarationExp)){
+			var.isDeclarationExp = true;
+		}
 
 		if (arrExpAttr.isNull()){
 			throw new RuntimeException("Null pointer exception, trying to access index of null expression.");
@@ -374,8 +382,9 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			throw new RuntimeException("Array index expression must be integer value");
 		}
 		
+		int dimension = var.isDeclarationExp ? arrExpAttr.getType().getDimension()+1 : arrExpAttr.getType().getDimension()-1;
 		//returns new attribute, with same type as array expression but with lower dimension(the internal index was already computed)
-		Attribute resultAttr = new Attribute(new AST_Type(arrExpAttr.getType().getName(), arrExpAttr.getType().getDimension()-1));
+		Attribute resultAttr =  new Attribute(new AST_Type(arrExpAttr.getType().getName(), dimension));
 		return resultAttr;
 	}
 
@@ -383,7 +392,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	public Attribute visit(AST_VariableID var, SymbolTable symTable) {
 		
 		Attribute varAttr = findVar(var.fieldName, symTable);
-		//if function returned null then variable was not found in any of the parent scopes
+		//if function returned null then variable was not found in any of the parent copes
 		if (varAttr == null) {
 			throw new RuntimeException("Variable name " + var.fieldName + " does not exist");
 		}
@@ -489,7 +498,10 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 				countMain++;
 			}
 		}
-		if (countMain != 1){
+		if (countMain < 1){
+			throw new RuntimeException("The program does not have a valid main method!");
+		}
+		else if (countMain > 1){
 			throw new RuntimeException("Main method should appear only once in a Program!");
 		}
 		return null;
@@ -547,14 +559,16 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 				throw new RuntimeException("invalid class extension");
 			}
 			if (!program.getSymbols().containsKey(superClass)){
-				throw new RuntimeException("class doesn't exist");
+				throw new RuntimeException("class " + superClass + " has not been declared yet");
 			}
-			if (program.getSymbols().get(superClass) != null){ 
-				addAttrsFromSuperClasses(cl, (ClassAttribute)program.getSymbols().get(cl.getClassName()), (ClassAttribute)program.getSymbols().get(superClass));
-			}
-			else{
-				throw new RuntimeException("cannot extend from undecleared function");
-			}
+			
+			addAttrsFromSuperClasses(cl, (ClassAttribute)program.getSymbols().get(cl.getClassName()), (ClassAttribute)program.getSymbols().get(superClass));
+
+			//if (program.getSymbols().get(superClass) != null){ 
+			//}
+			//else{
+			//	throw new RuntimeException("cannot extend from undecleared function");
+			//}
 		}
 	}
 

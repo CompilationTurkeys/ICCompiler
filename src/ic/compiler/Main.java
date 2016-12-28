@@ -18,8 +18,7 @@ public class Main
 		String outputFilename = argv[1];
 		
 		try
-		{
-
+		{	
 			file_reader = new FileReader(new File(inputFilename));
 
 			file_writer = new PrintWriter(new File(outputFilename));
@@ -27,9 +26,9 @@ public class Main
 			l = new Lexer(file_reader);
 			
 			p = new Parser(l);
-			//p.parse();
-			Symbol parseSymbol = p.parse(); //Symbol is the object that the CUP returns (need import)
-			AST_Program root = (AST_Program) parseSymbol.value; //parseSymbol.value is an AST_NODE
+			
+			Symbol parseSymbol = p.parse();
+			AST_Program root = (AST_Program) parseSymbol.value;
 			SemanticEvaluator semEvaluator = new SemanticEvaluator(root);
 			semEvaluator.evaluate();
 			file_writer.write("OK");
@@ -38,7 +37,8 @@ public class Main
 		catch (Exception e)
 		{
 			file_writer.write("FAIL");
-			System.out.println(e.getMessage());
+			System.out.println("failed with message: " + e.getMessage());
+			
 		}
 		finally{
 			file_writer.close();			

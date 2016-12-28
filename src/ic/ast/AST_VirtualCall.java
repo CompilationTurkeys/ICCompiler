@@ -13,7 +13,7 @@ public class AST_VirtualCall extends AST_Exp
 
 	public AST_VirtualCall(AST_Exp exp, String name, ArrayList<AST_Exp> expList)
 	{
-		this.argList = expList;
+		this.argList = expList == null ? new ArrayList<>() : expList;
 		this.callingExp = exp;
 		this.funcName = name;
 	}
