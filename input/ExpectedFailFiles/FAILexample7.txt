@@ -2,6 +2,7 @@ class A{
 	int f(){
 		int x = 5;
 		string y = "hello";
+		int[][] z = new int[][7];
 		return (x+y);
 	}
 	void main(string[] args){}

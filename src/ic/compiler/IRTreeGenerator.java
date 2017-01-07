@@ -8,12 +8,12 @@ import javax.management.RuntimeErrorException;
 
 import ic.ast.*;
 
-public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
+public class IRTreeGenerator implements Visitor<SymbolTable, Attribute> {
 		
 	private AST_Node root;
 	private SymbolTable program;
 	
-	public SemanticEvaluator (AST_Node root)
+	public IRTreeGenerator (AST_Node root)
 	{
 		this.root= root;
 	}
