@@ -4,17 +4,14 @@ import ic.ast.BinaryOpTypes;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public class IR_Binop extends IR_Exp{
+public class IR_JumpRegister extends IR_Exp{
 	
-	public BinaryOpTypes OP;
-	public IR_Exp leftExp;
-	public IR_Exp rightExp;
+	public TempRegister tr;
+
 	
-	public IR_Binop(IR_Exp left,IR_Exp right,BinaryOpTypes OP)
+	public IR_JumpRegister(TempRegister tr)
 	{
-		this.leftExp = left;
-		this.rightExp = right;
-		this.OP = OP;
+		this.tr = tr;
 	}
 
 	@Override

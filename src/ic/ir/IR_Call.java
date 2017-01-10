@@ -1,20 +1,18 @@
 package ic.ir;
-import ic.ir.IR_Exp;
-import ic.ast.BinaryOpTypes;
+import java.util.ArrayList;
+
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public class IR_Binop extends IR_Exp{
+public class IR_Call extends IR_Exp{
 	
-	public BinaryOpTypes OP;
-	public IR_Exp leftExp;
-	public IR_Exp rightExp;
+	public TempRegister tr;
+	public ArrayList<IR_Exp> args;
 	
-	public IR_Binop(IR_Exp left,IR_Exp right,BinaryOpTypes OP)
+	public IR_Call(TempRegister tr, ArrayList<IR_Exp> args)
 	{
-		this.leftExp = left;
-		this.rightExp = right;
-		this.OP = OP;
+		this.tr = tr;
+		this.args = args;
 	}
 
 	@Override

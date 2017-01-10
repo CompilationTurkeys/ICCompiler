@@ -4,17 +4,20 @@ import ic.ast.BinaryOpTypes;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public class IR_Binop extends IR_Exp{
+public class IR_Function extends IR_Exp{
 	
-	public BinaryOpTypes OP;
-	public IR_Exp leftExp;
-	public IR_Exp rightExp;
+	public IR_Exp prologue;
+	public IR_Exp body;
+	public IR_Exp epilogue;
+	public TempLabel tl;
+
 	
-	public IR_Binop(IR_Exp left,IR_Exp right,BinaryOpTypes OP)
+	public IR_Function(IR_Exp prologue, IR_Exp body, IR_Exp epilogue, TempLabel tl)
 	{
-		this.leftExp = left;
-		this.rightExp = right;
-		this.OP = OP;
+		this.prologue = prologue;
+		this.body = body;
+		this.epilogue = epilogue;
+		this.tl = tl;
 	}
 
 	@Override

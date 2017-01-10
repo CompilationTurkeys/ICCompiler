@@ -2,7 +2,7 @@ package ic.ir;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public abstract class IR_Node{
+public abstract class IR_Exp{
 	
 	public abstract void accept(PrinterVisitor visitor);
 
