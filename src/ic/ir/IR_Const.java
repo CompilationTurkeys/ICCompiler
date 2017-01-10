@@ -3,13 +3,13 @@ package ic.ir;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public class IR_Mem extends IR_Exp{
+public class IR_Const extends IR_Exp{
 	
-	IR_Node irNode;
+	int value;
 	
-	public IR_Mem(IR_Node irNode)
+	public IR_Const(int val)
 	{
-		this.irNode = irNode;
+		value = val;
 	}
 
 	@Override
