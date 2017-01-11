@@ -20,7 +20,7 @@ public class IR_Const extends IR_Exp{
 
 	@Override
 	public <ContextType, ResultType> ResultType accept(Visitor<ContextType, ResultType> visitor, ContextType context) {
-		//TODO
+		return null;
 	}
 	
 }

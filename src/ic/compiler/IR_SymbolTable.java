@@ -1,4 +1,4 @@
-package ic.ir;
+package ic.compiler;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,14 +8,25 @@ public class IR_SymbolTable {
 
 	private IR_SymbolTable parent; //the scope is inside a parent scope
 	private Map<String, IR_Attribute> symbols; //the symbols in the symbol table of the scope
-	//atributes are relevant things for the tests (type, isInitialized...)
+	//attributes are relevant things for the tests
 	private Map<AST_Node, IR_SymbolTable> children; //the scopes that are inside my scopes.
+	private String className; //in what class are we
 	
-	public IR_SymbolTable(IR_SymbolTable parentTable)
+	
+	public IR_SymbolTable(IR_SymbolTable parentTable, String className)
 	{
 		this.parent= parentTable;
-		this.symbols= new HashMap<String,IR_Attribute>();
+		this.className= className;
+		this.symbols= new HashMap<String, IR_Attribute>();
 		this.children=new HashMap<AST_Node, IR_SymbolTable>();
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
 	public void setSymbols(Map<String, IR_Attribute> symbols) {

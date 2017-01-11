@@ -3,13 +3,13 @@ package ic.ir;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public class IR_Temp extends IR_Node{
+public class IR_Temp extends IR_Exp{
 	
 	TempRegister _register;
 	
-	public IR_Temp()
+	public IR_Temp(TempRegister reg)
 	{
-		this._register = new TempRegister();
+		this._register = reg;
 	}
 
 	@Override
@@ -21,6 +21,7 @@ public class IR_Temp extends IR_Node{
 	@Override
 	public <ContextType, ResultType> ResultType accept(Visitor<ContextType, ResultType> visitor, ContextType context) {
 		//TODO
+		return null;
 	}
 	
 }

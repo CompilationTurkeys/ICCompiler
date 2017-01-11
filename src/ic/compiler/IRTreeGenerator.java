@@ -3,88 +3,81 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import ic.ir.*;
 import javax.management.RuntimeErrorException;
-
 import ic.ast.*;
 
-public class IRTreeGenerator implements Visitor<SymbolTable, Attribute> {
+public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		
-	private AST_Node root;
-	private SymbolTable program;
+	private IR_Exp irRoot;
+	private IR_SymbolTable program;
+	private AST_Node astRoot;
+	
 	
 	public IRTreeGenerator (AST_Node root)
 	{
-		this.root= root;
+		this.astRoot= root;
 	}
 	
-	public void evaluate() {
-		this.program= new SymbolTable(null, "");
-		root.accept(this, program);
+	public IR_Exp generateIRTree() {
+		this.program= new IR_SymbolTable(null, "");
+		//Add types and basic funcs??
+		
+		irRoot.accept(this, program);
+		return irRoot;
 	}
-
+	
+	
 	@Override
-	public Attribute visit(AST_Exp expr, SymbolTable symTable) {
+	public IR_Exp visit(AST_Exp expr, IR_SymbolTable symTable) {
 		throw new UnsupportedOperationException("Unexepcted visit in Exp!");
 	}
 
 	@Override
-	public Attribute visit(AST_ExpBinop expr, SymbolTable symTable) {		
-		Attribute leftExpResult = expr.leftExp.accept(this, symTable);
-		Attribute rightExpResult = expr.rightExp.accept(this,symTable);
+	public IR_Exp visit(AST_ExpBinop expr, IR_SymbolTable symTable) {		
+		IR_Exp leftExpResult = expr.leftExp.accept(this, symTable);
+		IR_Exp rightExpResult = expr.rightExp.accept(this,symTable);
 		
-		boolean properInheritedRTL = IsProperInheritance(rightExpResult.getType(), leftExpResult.getType());
-		boolean properInheritedLTR = IsProperInheritance(leftExpResult.getType(), rightExpResult.getType()) ;
 		switch (expr.OP){
 		case PLUS:
-			if (!(properInheritedRTL || properInheritedLTR) || !leftExpResult.getType().isPrimitive() || leftExpResult.getType().isVoid()){
-				throw new RuntimeException("Can't make " + expr.OP.getOpDescreption() 
-				+" between " + leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
-			}
-			break;
 		case MINUS:
 		case DIVIDE:
 		case TIMES:
-			if (!(properInheritedRTL || properInheritedLTR) || !leftExpResult.getType().isInt()){
-				throw new RuntimeException("Can't make " +expr.OP.getOpDescreption() + " between " 
-				+ leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
-			}
-			break;
+			return new IR_Binop(leftExpResult, rightExpResult, expr.OP);
+			
 		case EQUALS:
 		case NEQUALS:
-			if (!(properInheritedRTL || properInheritedLTR)){
-				throw new RuntimeException("Can't compare between " 
-						+ leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
-			}
-			break;
 		case LT:
 		case LTE:
 		case GT:
 		case GTE:
-			if (!leftExpResult.getType().isInt()){
-				throw new RuntimeException("Can't compare between " 
-						+ leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
-			}
-			break;
+			TempRegister newTemp = new TempRegister();
+			TempLabel trueLabel = new TempLabel("T");
+			TempLabel falseLabel = new TempLabel("F");
+			TempLabel endLabel = new TempLabel("END");
+			
+			return new IR_Seq(
+					new IR_Seq(
+						new IR_Cjump(expr.OP,leftExpResult,rightExpResult,trueLabel,falseLabel),
+						new IR_Seq(
+							new IR_Seq(
+								new IR_Label(trueLabel),
+								new IR_Seq(
+									new IR_Move(new IR_Temp(newTemp),new IR_Const(1)),
+									new IR_JumpLabel(endLabel))),
+							new IR_Seq(
+								new IR_Label(falseLabel),
+								new IR_Seq(
+									new IR_Move(new IR_Temp(newTemp),new IR_Const(0)),
+									new IR_JumpLabel(endLabel))))),
+					new IR_Seq(new IR_Label(endLabel),new IR_Temp(newTemp)));
+			
 		}
-		Attribute attr = new Attribute(new AST_Type(PrimitiveDataTypes.INT));
-		return attr;
 	}
 
 	@Override
-	public Attribute visit(AST_ExpNewClass expr, SymbolTable symTable) {
-		Attribute expNewClassAttr = null;
-		
-		//check if a class that is initialized exists
-		if(program.getSymbols().containsKey(expr.className)){
-			//class dimension is 0
-			expNewClassAttr = new Attribute(new AST_Type(expr.className, null));
-		}
-		else{
-			throw new RuntimeException("Trying to initialize an undeclared class: " + expr.className);
-		}
-		
-		return expNewClassAttr;
+	public IR_Exp visit(AST_ExpNewClass expr, IR_SymbolTable symTable) {
+		return null;
 	}
 
 	@Override
@@ -131,12 +124,19 @@ public class IRTreeGenerator implements Visitor<SymbolTable, Attribute> {
 	}
 
 	@Override
-	public Attribute visit(AST_StmtList stmts, SymbolTable symTable) {
-		for (AST_Stmt stmt : stmts.stmtList){
-			stmt.accept(this, symTable);
+	public IR_Exp visit(AST_StmtList stmts, IR_SymbolTable symTable) {
+		IR_Exp result;
+		
+		if (stmts.stmtList == null){
+			return null;
 		}
-		return null;
-	}
+		
+		for (AST_Stmt stmt : stmts.stmtList){
+				result = stmt.accept(this, symTable);					
+		}
+		
+		return new IR_Seq(result, visit(stmts.stmtList.remove(0), symTable));
+	}	
 
 	@Override
 	public Attribute visit(AST_Stmt stmt, SymbolTable symTable) {
@@ -336,7 +336,7 @@ public class IRTreeGenerator implements Visitor<SymbolTable, Attribute> {
 	}
 	
 	@Override
-	public Attribute visit(AST_Variable var, SymbolTable symTable) {
+	public IR_Exp visit(AST_Variable var, IR_SymbolTable symTable) {
 		throw new UnsupportedOperationException("Unexpected visit in Variable!");
 	}
 
@@ -449,20 +449,18 @@ public class IRTreeGenerator implements Visitor<SymbolTable, Attribute> {
 		return null;
 	}
 	
-	public Attribute visit(AST_Literal literal, SymbolTable symTable) {
-		Attribute litAttr = null;
-		//check type of the literal between allowed types
+	public IR_Exp visit(AST_Literal literal, IR_SymbolTable symTable) {
+		IR_Exp litAttr = null;
+		//Create the appropriate IR node according to the literal type
 		if (literal.isInteger()){
-			litAttr = new Attribute(new AST_Type(PrimitiveDataTypes.INT));
+			litAttr = new IR_Const((Integer)literal.value);
 		}
 		else if (literal.isString()){
-			litAttr = new Attribute(new AST_Type(PrimitiveDataTypes.STRING));
+			litAttr = new IR_String(new StringLabel(),(String)literal.value);
 		}
-		else if (literal.isNull()){
-			litAttr = new Attribute(new AST_Type("null", null));
-		}
-		else{
-			throw new RuntimeException("Unexpected literal type: " + literal.value.toString());
+		else {
+			//null is actually a zero value
+			litAttr = new IR_Const(0);
 		}
 		
 		return litAttr;
@@ -601,44 +599,9 @@ public class IRTreeGenerator implements Visitor<SymbolTable, Attribute> {
 		currentClassAttribute.getAncestors().addAll(superClassAttribute.getAncestors());
 	}
 	
-	private boolean IsProperInheritance(AST_Type subType, AST_Type superType) {
-		
-		if (subType.getDimension() != superType.getDimension()){
-			return false;
-		}
-		if (!((subType.getName().equals("null") && (superType.getDefVal() == null || superType.getDimension() > 0)))){
-			
-			if (!subType.checkTypePrimitive() || !superType.checkTypePrimitive() || !subType.getName().equals(superType.getName() )){
-			
-				if (! (!subType.checkTypePrimitive() && inherit(subType, superType)) ){
-					return false;
-				}
-			}
-		}
-		return true;
-		
-				
-		/*return   right.getDimension() == left.getDimension() && 
-				((right.getName().equals("null") && (left.getDefVal() == null || left.getDimension() > 0))
-				|| ((right.checkTypePrimitive() && left.checkTypePrimitive() && (right.getName()).equals(left.getName()))
-				|| (!right.checkTypePrimitive() && inherit(right, left))));*/
-				
-			
-	}
-
-	private boolean inherit(AST_Type subType, AST_Type superType) {
-		if (subType.getName().equals("null")){
-			return false;
-		}
-		
-		boolean isAncestor = (((ClassAttribute)(program.getSymbols().get(subType.getName()))).getAncestors().contains(superType.getName()));
-		boolean isSameDim = (subType.getDimension() == 0 && superType.getDimension() == 0);
-		
-		return (subType.equals(superType)) || (isAncestor && isSameDim);
-	}
 	
-	private Attribute findVar(String varName, SymbolTable symTable) {
-		SymbolTable st = symTable;
+	private IR_Attribute findVar(String varName, IR_SymbolTable symTable) {
+		IR_SymbolTable st = symTable;
 		//iterate over hierarchy of scopes and look for varname, return null if not found
 		while (st != program){
 			if (st.getSymbols().containsKey(varName)){

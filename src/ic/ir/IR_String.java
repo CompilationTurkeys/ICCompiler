@@ -3,13 +3,14 @@ package ic.ir;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public class IR_Mem extends IR_Exp{
+public class IR_String extends IR_Exp{
+	StringLabel label;
+	String value;
 	
-	IR_Exp irNode;
-	
-	public IR_Mem(IR_Exp irNode)
+	public IR_String(StringLabel label, String value)
 	{
-		this.irNode = irNode;
+		this.value = value;
+		this.label = label;
 	}
 
 	@Override

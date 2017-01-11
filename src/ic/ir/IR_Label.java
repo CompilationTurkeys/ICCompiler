@@ -3,13 +3,13 @@ package ic.ir;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public class IR_Label extends IR_Node{
+public class IR_Label extends IR_Exp{
 	
 	public TempLabel _label;
 	
-	public IR_Label(String name)
+	public IR_Label(TempLabel label)
 	{
-		this._label = new TempLabel(name);
+		this._label = label;
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class IR_Label extends IR_Node{
 
 	@Override
 	public <ContextType, ResultType> ResultType accept(Visitor<ContextType, ResultType> visitor, ContextType context) {
-		//TODO
+		return null;
 	}
 	
 }

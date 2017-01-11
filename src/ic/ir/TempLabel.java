@@ -8,7 +8,7 @@ public class TempLabel {
 
 	
 	public TempLabel(String name){
-		_name =LABEL_PREFIX + ++counter + "_" + name;
+		_name =LABEL_PREFIX + ++counter + "_" + name + ":";
 	}
 
 }
