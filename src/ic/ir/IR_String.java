@@ -5,11 +5,9 @@ import ic.compiler.Visitor;
 
 public class IR_String extends IR_Exp{
 	StringLabel label;
-	String value;
 	
-	public IR_String(StringLabel label, String value)
+	public IR_String(StringLabel label)
 	{
-		this.value = value;
 		this.label = label;
 	}
 

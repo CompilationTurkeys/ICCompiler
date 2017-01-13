@@ -16,6 +16,19 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	private IR_SymbolTable program;
 	private AST_Node astRoot;
 	
+	// Map of string name to  string value for the the MIPS generation
+	private Map<String, String> stringLabelsMap = new HashMap<>();
+
+	// Maps the name of the classes in the program to their LIRClassAttributes
+	private Map<String, IR_ClassAttribute> classMap = new HashMap<>();
+
+	// Maps the name of the classes to the corresponding ClassDecl objects.
+	//private HashMap<String, HashMap<String, FormalList>> classToMethodFormalsMap = new HashMap<>();
+
+	// Map of the dispach tables of each class.
+	// Each dispach table is a map of function name and the classname it was dispatched by
+	private Map<String, Map<String,String>> dispachTablesMap = new HashMap<>();
+	private String mainClassName;
 	
 	public IRTreeGenerator (AST_Node root)
 	{
@@ -210,6 +223,14 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public Attribute visit(AST_StmtIf stmt, SymbolTable symTable) {
+		
+		
+//		IR_Exp condAttr = stmt.cond.accept(this, symTable);
+//		IR_Exp body = stmt.body.accept(this, symTable);
+//		TempLabel jumpHereIfTrue = new TempLabel("T");
+//		TempLabel jumpHereIfFalse = new TempLabel("F");
+//		// TODO continue visit of StmtIf
+		
 		//traverse the condition
 		Attribute condAttr = stmt.cond.accept(this, symTable);
 		
@@ -448,7 +469,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			litAttr = new IR_Const((Integer)literal.value);
 		}
 		else if (literal.isString()){
-			litAttr = new IR_String(new StringLabel(),(String)literal.value);
+			StringLabel newLabel = new StringLabel();
+			litAttr = new IR_String(newLabel);
+			stringLabelsMap.put(newLabel.getName(), (String)literal.value);	
 		}
 		else {
 			//null is actually a zero value
@@ -475,36 +498,50 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	}
 
 	@Override
-	public Attribute visit(AST_Program program, SymbolTable symTable) {
-		List<AST_ClassDecl> classDeclList = program.getClasses();
-		for (AST_ClassDecl c : classDeclList){
-			if (symTable.getSymbols().containsKey(c.getClassName())){
-				throw new RuntimeException("class" + c.getClassName() +"already declared");
+	public IR_Exp visit(AST_Program program, IR_SymbolTable symTable) {
+		
+		for (AST_ClassDecl c : program.getClasses()) {
+			if (c.extendedClassName == null) {
+				classMap.put(c.className, new IR_ClassAttribute(c));
+				dispachTablesMap.put(c.className, createDispachTable(classMap.get(c.className)));
+			} else {
+				// if c extends a superclass, then the super must appear before
+				// c in the list
+				classMap.put(c.className, new IR_ClassAttribute(c, classMap.get(c.extendedClassName)));
+				dispachTablesMap.put(c.className, createDispachTable(classMap.get(c.className)));
 			}
-			else {
-				setClassAttribute(c);
-			}
-		}
-		for (AST_ClassDecl c : classDeclList){
-			c.accept(this, symTable);
 		}
 		
-		int countMain = 0;
-		for (Attribute attribute : symTable.getSymbols().values()){
-			ClassAttribute classAtrr = (ClassAttribute) attribute;
-			if (classAtrr.hasMainMethod()){
-				countMain++;
-			}
+		for (AST_ClassDecl c : program.getClasses()) {
+			c.accept(this, symTable);
 		}
-		if (countMain < 1){
-			throw new RuntimeException("The program does not have a valid main method!");
-		}
-		else if (countMain > 1){
-			throw new RuntimeException("Main method should appear only once in a Program!");
-		}
+		//TODO WHAT TO RETURN??? Hierarchy of sequences?
 		return null;
 	}
 
+	
+	private Map<String,String> createDispachTable(IR_ClassAttribute classAttr) {
+		Map<String,String> dispachTable = new HashMap<>();
+		AST_ClassDecl currentClass = classAttr.getClassObject();
+		
+		for (String name : classAttr.getMethodOffsetMap().keySet()) {
+			
+			while (currentClass.extendedClassName != null && !currentClass.getMethodNames().contains(name)) {
+				currentClass = classMap.get(currentClass.extendedClassName).getClassObject();
+			}
+			
+			if (currentClass.getMethodNames().contains(name)) {
+				dispachTable.put(name, currentClass.className);
+			}
+			
+			currentClass = classAttr.getClassObject();
+		}
+		
+		
+		
+		return dispachTable;
+	}
+	
 	/**
 	 * Non visit functions 
 	 * */

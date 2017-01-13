@@ -10,5 +10,8 @@ public class StringLabel {
 	public StringLabel(){
 		_name =LABEL_PREFIX + ++counter +":";
 	}
-
+	
+	public String getName(){
+		return _name;
+	}
 }

@@ -60,6 +60,14 @@ public class AST_ClassDecl extends AST_Node
 		return classMethods;
 	}
 
+	public ArrayList<String> getMethodNames(){
+		ArrayList<String> methodNames = new ArrayList<String>();
+		for (AST_Method m : classMethods){
+			methodNames.add(m.getName());
+		}
+		return methodNames;
+	}
+	
 	@Override
 	public String toString() {
 		return "AST_ClassDecl [classFields=" + classFields + ", classMethods=" + classMethods + ", className="
