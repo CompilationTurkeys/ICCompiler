@@ -5,9 +5,10 @@ import ic.compiler.Visitor;
 
 public class IR_Temp extends IR_Exp{
 	
-	TempRegister _register;
+	Register _register;
 	
-	public IR_Temp(TempRegister reg)
+	
+	public IR_Temp(Register reg)
 	{
 		this._register = reg;
 	}

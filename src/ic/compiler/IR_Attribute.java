@@ -1,11 +1,17 @@
 package ic.compiler;
 
+import ic.ast.AST_Type;
+
 public class IR_Attribute {
 	
+	public FrameMember frameMember;
+	public AST_Type frameMemberType;
+	
 
-	public IR_Attribute(int offset)
+	public IR_Attribute(FrameMember member, AST_Type memberType)
 	{
-		this.offset = offset;
+		this.frameMember = member;
+		this.frameMemberType = memberType;
 	}
 	
 }

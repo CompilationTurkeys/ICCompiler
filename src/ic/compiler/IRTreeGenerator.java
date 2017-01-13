@@ -9,6 +9,9 @@ import ic.ast.*;
 
 public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		
+	public static final String FP="$fp";
+	public static final String SP="$sp";
+
 	private IR_Exp irRoot;
 	private IR_SymbolTable program;
 	private AST_Node astRoot;
@@ -131,50 +134,47 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			return null;
 		}
 		
-		for (AST_Stmt stmt : stmts.stmtList){
-				result = stmt.accept(this, symTable);					
-		}
+		result = stmts.stmtList.remove(0).accept(this, symTable);					
 		
-		return new IR_Seq(result, visit(stmts.stmtList.remove(0), symTable));
+		return new IR_Seq(result, stmts.accept(this, symTable));
 	}	
 
 	@Override
-	public Attribute visit(AST_Stmt stmt, SymbolTable symTable) {
+	public IR_Exp visit(AST_Stmt stmt, IR_SymbolTable symTable) {
 		throw new UnsupportedOperationException("Unexepcted visit in Stmt!");
 	}
 
 	@Override
-	public Attribute visit(AST_StmtCall call, SymbolTable symTable) {
-		call.funcCall.accept(this, symTable);
-		return null;
+	public IR_Exp visit(AST_StmtCall call, IR_SymbolTable symTable) {
+		return call.funcCall.accept(this, symTable);
 	}
 
 	@Override
-	public Attribute visit(AST_StmtVariableDeclaration stmt, SymbolTable symTable) {
-		//check if var type is valid
-		stmt.varType.accept(this, symTable);
+	public IR_Exp visit(AST_StmtVariableDeclaration stmt, IR_SymbolTable symTable) {		
+	
+		int numOfLocals = ++symTable.getFrame().numOfLocalVars;
+		symTable.getFrame().size += MethodFrame.WORD_SIZE;
+		FrameMember newMem = new FrameMember(-(numOfLocals*MethodFrame.WORD_SIZE));
+		symTable.getSymbols().put(stmt.varName, new IR_Attribute(newMem, stmt.varType));
 
-		if (symTable.getSymbols().containsKey(stmt.varName)){
-			throw new RuntimeException("Var name " + stmt.varName + " has already been used!");
-		}
-		
 		if (stmt.assignedExp != null){
-			Attribute expAttr = stmt.assignedExp.accept(this, symTable);
-			
-			//checks if value assigned from exprAtrr to var is proper inherited
-			if (!IsProperInheritance(expAttr.getType(),stmt.varType)){
-				throw new RuntimeException("Incompatible types, cannot assign type " + expAttr.getType().getName() + " to type "+ stmt.varType.getName());
-			}
-			
-			if (expAttr.isMethod() && (stmt.assignedExp instanceof AST_Variable)){
-				throw new RuntimeException("Cannot assign method to variable!");
-			}
+			//traverse var expression
+			return new IR_Move(IRExpAssign(newMem),
+							   stmt.assignedExp.accept(this, symTable));		
 		}
 		
-		Attribute newVar = new Attribute(stmt.varType);
-		symTable.getSymbols().put(stmt.varName, newVar);
 		return null;
 	}
+	
+	private IR_Mem IRExpAssign(FrameMember frameMember)
+	{
+		return new IR_Mem(
+				new IR_Binop(new IR_Const(frameMember.offset), 
+						new IR_Temp(new SpecialRegister(FP)),
+						BinaryOpTypes.PLUS));
+	}
+	
+	
 	
 	@Override
 	public Attribute visit(AST_StmtReturn stmt, SymbolTable symTable) {
