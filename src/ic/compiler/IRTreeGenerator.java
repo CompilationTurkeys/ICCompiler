@@ -112,18 +112,10 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 
-	public Attribute visit(AST_StmtVarAssignment stmt, SymbolTable symTable) {
-		Attribute left = stmt.var.accept(this, symTable);
-		//left.getType().accept(this, symTable);
-		Attribute right = stmt.assignExp.accept(this, symTable);
-		//right.getType().accept(this, symTable);
-
-		if (!IsProperInheritance(right.getType(), left.getType())) {
-			// incompatible types or inheritance (cannot assign right to left)
-			throw new RuntimeException("Incompatible types, cannot assign type " + right.getType().getName() + " to type "+ left.getType().getName());
-		}
-		return null;
-
+	public IR_Exp visit(AST_StmtVarAssignment stmt, IR_SymbolTable symTable) {
+		IR_Exp assignExp = stmt.assignExp.accept(this, symTable);
+		IR_Exp var = stmt.var.accept(this,symTable);
+		return new IR_Move(var, assignExp);
 	}
 
 	@Override
