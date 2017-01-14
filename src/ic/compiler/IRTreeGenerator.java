@@ -237,32 +237,45 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		
 		
 	}
+	
 	@Override
-	public Attribute visit(AST_StmtWhile stmt, SymbolTable symTable) {
-		//traverse the condition of while
-		Attribute condAttr = stmt.cond.accept(this, symTable);
+	public IR_Exp visit(AST_StmtWhile stmt, IR_SymbolTable symTable) {
 		
-		//condition attribute is int in our case then we will check for type comaptibility appropriately
-		if (!condAttr.getType().isInt()) {
-			throw new RuntimeException("Illegal WHILE statement: condition must be of type int but is of type" + condAttr.getType().getName());
-		}
+		IR_Exp cond = null, body = null;
+
+		TempLabel loop = new TempLabel("while_loop");
+		TempLabel exitLoop = new TempLabel("while_exit_loop");
+
+		cond = stmt.cond.accept(this, symTable);
 		
-		//if the body of the statement is not null traverse it and create local scope table if necessary
-		if (stmt.body != null) {
-						
-			if (stmt.body instanceof AST_StmtList) {
-				stmt.body.accept(this, symTable);
-			}
-			else {
-				MethodSymbolTable currTable = new MethodSymbolTable(symTable, ((MethodSymbolTable)symTable).getMethodName());
-				symTable.getChildren().put(stmt.body, currTable);
-				stmt.body.accept(this, currTable);
-			}
-			//after finishing with the local scope remove it from the parent table
+		if (stmt.body != null){
+			IR_SymbolTable newScopeTable = new IR_SymbolTable(symTable, symTable.getClassName());
+			symTable.getChildren().put(stmt.body, newScopeTable);
+			body = stmt.body.accept(this, newScopeTable);
 			symTable.getChildren().remove(stmt.body);
 		}
 		
-		return null;
+		return
+				new IR_Seq(
+					new IR_Seq(
+						new IR_Cjump(
+								BinaryOpTypes.NEQUALS,
+								cond,
+								new IR_Const(0),
+								loop,
+								exitLoop),
+						new IR_Seq(
+								new IR_Label(loop),
+								new IR_Seq(
+										body, 
+										new IR_Cjump(
+												BinaryOpTypes.NEQUALS,
+												cond,
+												new IR_Const(0),
+												loop,
+												exitLoop)))),
+					new IR_Label(exitLoop));
+
 	}
 
 	@Override
