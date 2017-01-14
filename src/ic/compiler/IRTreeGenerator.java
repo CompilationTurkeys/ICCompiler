@@ -224,40 +224,37 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	}
 
 	@Override
-	public Attribute visit(AST_StmtIf stmt, SymbolTable symTable) {
+	public IR_Exp visit(AST_StmtIf stmt, IR_SymbolTable symTable) {
 		
+		IR_Exp body = null;
+		IR_Exp condAttr = stmt.cond.accept(this, symTable);
 		
-//		IR_Exp condAttr = stmt.cond.accept(this, symTable);
-//		IR_Exp body = stmt.body.accept(this, symTable);
-//		TempLabel jumpHereIfTrue = new TempLabel("T");
-//		TempLabel jumpHereIfFalse = new TempLabel("F");
-//		// TODO continue visit of StmtIf
-		
-		//traverse the condition
-		Attribute condAttr = stmt.cond.accept(this, symTable);
-		
-		//condition attribute is int in our case then we will check for type comaptibility appropriately
-		if (!condAttr.getType().isInt() ) {
-			throw new RuntimeException("Illegal IF statement: condition must be of type int but is of type " + condAttr.getType().getName());
-		}
-		//if the body of the statement is not null traverse it and create local scope table if necessary
-		if (stmt.body != null) {
-			
-			if (stmt.body instanceof AST_StmtList) {
-				stmt.body.accept(this, symTable);
-			}
-			else {
-				MethodSymbolTable currTable = new MethodSymbolTable(symTable, ((MethodSymbolTable)symTable).getMethodName());
-				symTable.getChildren().put(stmt.body, currTable);
-				stmt.body.accept(this, currTable);
-			}
-			//after finishing with the local scope remove it from the parent table
+		if (stmt.body != null){
+			IR_SymbolTable newScopeTable = new IR_SymbolTable(symTable, symTable.getClassName());
+			symTable.getChildren().put(stmt.body, newScopeTable);
+			body = stmt.body.accept(this, newScopeTable);
 			symTable.getChildren().remove(stmt.body);
 		}
 
-		return null;
+		TempLabel jumpHereIfTrue = new TempLabel("if_cond_T");
+		TempLabel jumpHereIfFalse = new TempLabel("if_cond_F");
+		
+		return
+			new IR_Seq(
+				new IR_Seq(
+					new IR_Cjump(
+							BinaryOpTypes.NEQUALS,
+							condAttr,
+							new IR_Const(0),
+							jumpHereIfTrue,
+							jumpHereIfFalse),
+					new IR_Seq(
+							new IR_Label(jumpHereIfTrue),
+							body)),
+				new IR_Label(jumpHereIfFalse));
+		
+		
 	}
-
 	@Override
 	public Attribute visit(AST_StmtWhile stmt, SymbolTable symTable) {
 		//traverse the condition of while
