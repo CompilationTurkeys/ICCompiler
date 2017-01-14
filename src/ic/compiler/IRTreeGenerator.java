@@ -1,5 +1,6 @@
 package ic.compiler;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,30 +100,11 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	}
 
 	@Override
-	public Attribute visit(AST_ExpNewTypeArray expr, SymbolTable symTable) {
+	public IR_Exp visit(AST_ExpNewTypeArray expr, IR_SymbolTable symTable) {
+		return new IR_Call( 
+				new TempLabel("arrayAlloc"),
+				expr.sizeExpression.accept(this, symTable));
 		
-		expr.arrayType.accept(this,symTable);
-		//check if the type specified actually exists 
-		if (!(expr.arrayType.getName().equals(PrimitiveDataTypes.INT.getName())) && !(expr.arrayType.getName().equals(PrimitiveDataTypes.STRING.getName()))){
-			if (!program.getSymbols().containsKey(expr.arrayType)){
-				throw new RuntimeException("Cannot instantiate unknown type: " + expr.arrayType.getName());
-			}
-		}
-		
-		if (expr.arrayType.getDimension() != 0){
-			throw new RuntimeException("Cannot specify an array dimension after an empty dimension");	
-		}
-			
-		//check if the expr inside the brackets returns int and is legal
-		Attribute expAttr = expr.sizeExpression.accept(this, symTable);
-		//check if the expr is evaluated to INT
-		if(!expAttr.getType().isInt()){
-			throw new RuntimeException("Expected array size of the type INT, the received size is of type: " + expr.arrayType.getName());
-		}
-		//creating a return Attribute
-		//notice that according to the grammar the total size of array will be
-		Attribute retAttr = new Attribute(new AST_Type(expr.arrayType.getName(), expr.arrayType.getDimension()+1));
-		return retAttr;
 	}
 
 	@Override
@@ -284,67 +266,13 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	}
 
 	@Override
-	public Attribute visit(AST_VirtualCall call, SymbolTable symTable) {
-		String callExpName = null;
-		Attribute callExpAttr = null;
-		//expression exists (method is a field of a different class), not an explicit call, evaluate the exp
-		if (call.getCallingExpression() != null) {
-			callExpAttr = call.getCallingExpression().accept(this, symTable);
-			
-			if (callExpAttr.getType().isPrimitive()) {
-				throw new RuntimeException("Primitive type" + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
-			}
-			
-			if (callExpAttr.isNull()) {
-				throw new RuntimeException("Null pointer exception, cannot access member function of null");
-			}
-			
-			if (callExpAttr.getType().getDimension() > 0) {
-				throw new RuntimeException("Array type of " + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
-			}
-			callExpName = callExpAttr.getType().getName();
-		}
-		else { // method is defined in current class
-			callExpName = symTable.getClassName();
-		}
-				
-		MethodAttribute funcAttr = ((ClassAttribute)(program.getSymbols().get(callExpName)))
-					   .getMethodMap().get(call.getFuncName());
+	public IR_Exp visit(AST_VirtualCall call, IR_SymbolTable symTable) {
 		
-		//check if the function exists
-		if (funcAttr == null) {
-			throw new RuntimeException("Class " + callExpName + " does not have a method named " + call.getFuncName());
-		}
+		IR_Exp argsIRNode = ASTNodeListVisit(symTable, (ArrayList<AST_Node>)(ArrayList<?>)call.argList);
 		
-		//check that the parameters are from the right types
-		List<AST_Exp> actualArgs = call.getArguments();
-		List<AST_FuncArgument> formalArgs = funcAttr.getParameters();
-		String funcName = call.getFuncName();
 		
-		//no actual and formal parameters
-		if (actualArgs == null && formalArgs == null) {
-			return funcAttr;
-		}
+		return new IR_Seq(call.callingExp.accept(this, symTable));
 		
-		//num of formal and actual parameters must be equal
-		if (actualArgs.size() != formalArgs.size()) {
-			throw new RuntimeException("Illegal arguments passed to function " 
-					+ funcName + ": number of actual arguments is " 
-					+ actualArgs.size() + " while the number of parameters should be " + formalArgs.size());
-		}
-		
-		//check types and inheritance
-		for (int i = 0; i < actualArgs.size(); i++) {
-			//evaluate actual arguments and check validity
-			Attribute argAttr = actualArgs.get(i).accept(this, symTable);
-			argAttr.getType().accept(this, symTable);
-			if (!IsProperInheritance(argAttr.getType(), formalArgs.get(i).getArgType())) {
-				throw new RuntimeException("Illegal arguments to method " 
-						+ funcName + ": was expecting " + formalArgs.get(i).getArgType().getName()
-						+ " but recieved " + argAttr.getType().getName());
-			}
-		}
-		return funcAttr;
 	}
 	
 	@Override
@@ -503,8 +431,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			dispachMethodsTablesMap.put(c.className, createMethodsDispachTable(classMap.get(c.className)));
 			dispachFieldsTablesMap.put(c.className,createFieldsDispachTable(classMap.get(c.className)));
 		}
-		
-		return classDeclListVisit(program.getClasses(), symTable);
+		List<AST_ClassDecl> lst = program.getClasses();
+		return ASTNodeListVisit(symTable,(List<AST_Node>)(List<?>)lst);
 	}
 	
 	private IR_Exp methodDeclListVisit(List<AST_Method> methodDeclList, IR_SymbolTable symTable){
@@ -515,12 +443,12 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		return new IR_Seq(cls.accept(this, symTable),methodDeclListVisit(methodDeclList,symTable));
 	}
 
-	private IR_Exp classDeclListVisit(List<AST_ClassDecl> classDeclList,IR_SymbolTable symTable){
-		if (classDeclList.size() == 1){
-			return classDeclList.get(0).accept(this, symTable);
+	private IR_Exp ASTNodeListVisit(IR_SymbolTable symTable,List<AST_Node> lst){
+		if (lst.size() == 1){
+			return lst.get(0).accept(this, symTable);
 		}
-		AST_ClassDecl cls = classDeclList.remove(0);
-		return new IR_Seq(cls.accept(this, symTable),classDeclListVisit(classDeclList,symTable));
+		AST_Node cls = lst.remove(0);
+		return new IR_Seq(cls.accept(this, symTable),ASTNodeListVisit(symTable,lst));
 		
 	}
 	
