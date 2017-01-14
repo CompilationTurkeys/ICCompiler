@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.RuntimeErrorException;
-
 import ic.ast.*;
 
 public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
@@ -132,6 +130,16 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 
 	@Override
 	public Attribute visit(AST_StmtList stmts, SymbolTable symTable) {
+		SymbolTable scope;
+		if (symTable instanceof MethodSymbolTable)
+		{
+			scope = new MethodSymbolTable(symTable, ((MethodSymbolTable)symTable).getMethodName());
+			symTable.getChildren().put(stmts, scope);
+		}
+		else{
+			scope = symTable;
+		}
+		
 		for (AST_Stmt stmt : stmts.stmtList){
 			stmt.accept(this, symTable);
 		}
