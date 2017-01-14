@@ -570,7 +570,9 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 				throw new RuntimeException("class " + superClass + " has not been declared yet");
 			}
 			
-			addAttrsFromSuperClasses(cl, (ClassAttribute)program.getSymbols().get(cl.getClassName()), (ClassAttribute)program.getSymbols().get(superClass));
+			addAttrsFromSuperClasses(cl, 
+					(ClassAttribute)program.getSymbols().get(cl.getClassName()), 
+					(ClassAttribute)program.getSymbols().get(superClass));
 
 			//if (program.getSymbols().get(superClass) != null){ 
 			//}
@@ -583,15 +585,16 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	private void addAttrsFromSuperClasses(AST_ClassDecl c, ClassAttribute currentClassAttribute, ClassAttribute superClassAttribute) {
 		for (String key : superClassAttribute.getMethodMap().keySet()){
 			MethodAttribute value = superClassAttribute.getMethodMap().get(key);
-			if (currentClassAttribute.getMethodMap().containsKey(key) && !currentClassAttribute.getMethodMap().get(key).equals(value)){
+			if (currentClassAttribute.getMethodMap().containsKey(key) &&
+					!currentClassAttribute.getMethodMap().get(key).equals(value)){
 				throw new RuntimeException("same methods in super and current classes cannot have different signatures");
 			}
 			currentClassAttribute.getMethodMap().put(key, value);
 		}
 		
-		for (String key : superClassAttribute.getMethodMap().keySet()){
-			MethodAttribute value = superClassAttribute.getMethodMap().get(key);
-			if (currentClassAttribute.getFieldMap().containsKey(key) && !currentClassAttribute.getFieldMap().get(key).equals(value)){
+		for (String key : superClassAttribute.getFieldMap().keySet()){
+			Attribute value = superClassAttribute.getFieldMap().get(key);
+			if (currentClassAttribute.getFieldMap().containsKey(key)){
 				throw new RuntimeException("same fields in super and current classes cannot have different types");
 			}
 			currentClassAttribute.getFieldMap().put(key, value);

@@ -68,6 +68,13 @@ public class AST_ClassDecl extends AST_Node
 		return methodNames;
 	}
 	
+	public ArrayList<String> getFieldsNames(){
+		ArrayList<String> fieldsNames = new ArrayList<>();
+		getClassFields().stream().map(fields -> fields.fieldNamesList)
+		.forEach(names -> fieldsNames.addAll(names));
+		return fieldsNames;
+	}
+	
 	@Override
 	public String toString() {
 		return "AST_ClassDecl [classFields=" + classFields + ", classMethods=" + classMethods + ", className="

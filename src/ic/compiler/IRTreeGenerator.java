@@ -27,7 +27,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	// Map of the dispach tables of each class.
 	// Each dispach table is a map of function name and the classname it was dispatched by
-	private Map<String, Map<String,String>> dispachTablesMap = new HashMap<>();
+	private Map<String, Map<String,String>> dispachMethodsTablesMap = new HashMap<>();
+	
+	private Map<String, Map<String,String>> dispachFieldsTablesMap = new HashMap<>();
 	private String mainClassName;
 	
 	public IRTreeGenerator (AST_Node root)
@@ -483,8 +485,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 
 	@Override
-	public Attribute visit(AST_ClassDecl c, SymbolTable symTable) {
-		SymbolTable classSymbolTable = new SymbolTable(symTable, c.getClassName()); // creating symbol table for class
+	public Attribute visit(AST_ClassDecl c, IR_SymbolTable symTable) {
+		IR_SymbolTable classSymbolTable = new IR_SymbolTable(symTable, c.getClassName()); // creating symbol table for class
 		ClassAttribute ca = (ClassAttribute)symTable.getSymbols().get(c.getClassName());
 		classSymbolTable.getSymbols().putAll(ca.getMethodMap());
 		classSymbolTable.getSymbols().putAll(ca.getFieldMap());
@@ -503,24 +505,51 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		for (AST_ClassDecl c : program.getClasses()) {
 			if (c.extendedClassName == null) {
 				classMap.put(c.className, new IR_ClassAttribute(c));
-				dispachTablesMap.put(c.className, createDispachTable(classMap.get(c.className)));
 			} else {
 				// if c extends a superclass, then the super must appear before
 				// c in the list
 				classMap.put(c.className, new IR_ClassAttribute(c, classMap.get(c.extendedClassName)));
-				dispachTablesMap.put(c.className, createDispachTable(classMap.get(c.className)));
 			}
+			dispachMethodsTablesMap.put(c.className, createMethodsDispachTable(classMap.get(c.className)));
+			dispachFieldsTablesMap.put(c.className,createFieldsDispachTable(classMap.get(c.className)));
 		}
 		
-		for (AST_ClassDecl c : program.getClasses()) {
-			c.accept(this, symTable);
+		return classDeclListVisit(program.getClasses(), symTable);
+	}
+	
+	
+
+	private IR_Exp classDeclListVisit(List<AST_ClassDecl> classDeclList,IR_SymbolTable symTable){
+		if (classDeclList.size() == 1){
+			return classDeclList.get(0).accept(this, symTable);
 		}
-		//TODO WHAT TO RETURN??? Hierarchy of sequences?
-		return null;
+		AST_ClassDecl cls = classDeclList.remove(0);
+		return new IR_Seq(cls.accept(this, symTable),classDeclListVisit(classDeclList,symTable));
+		
+	}
+	
+	private Map<String, String> createFieldsDispachTable(IR_ClassAttribute classAttr) {
+		Map<String,String> dispachTable = new HashMap<>();
+		AST_ClassDecl currentClass = classAttr.getClassObject();
+		
+		for (String name : classAttr.getFieldOffsetMap().keySet()) {
+			
+			while (currentClass.extendedClassName != null && !currentClass.getFieldsNames().contains(name)) {
+				currentClass = classMap.get(currentClass.extendedClassName).getClassObject();
+			}
+			
+			if (currentClass.getFieldsNames().contains(name)) {
+				dispachTable.put(name, currentClass.className);
+			}
+			
+			currentClass = classAttr.getClassObject();
+		}
+		
+		return dispachTable;
 	}
 
 	
-	private Map<String,String> createDispachTable(IR_ClassAttribute classAttr) {
+	private Map<String,String> createMethodsDispachTable(IR_ClassAttribute classAttr) {
 		Map<String,String> dispachTable = new HashMap<>();
 		AST_ClassDecl currentClass = classAttr.getClassObject();
 		
@@ -536,8 +565,6 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			
 			currentClass = classAttr.getClassObject();
 		}
-		
-		
 		
 		return dispachTable;
 	}
