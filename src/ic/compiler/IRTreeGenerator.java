@@ -95,7 +95,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_ExpNewClass expr, IR_SymbolTable symTable) {
-		return null;
+		  return new IR_NewObject(expr.className);
 	}
 
 	@Override
@@ -485,18 +485,11 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 
 	@Override
-	public Attribute visit(AST_ClassDecl c, IR_SymbolTable symTable) {
-		IR_SymbolTable classSymbolTable = new IR_SymbolTable(symTable, c.getClassName()); // creating symbol table for class
-		ClassAttribute ca = (ClassAttribute)symTable.getSymbols().get(c.getClassName());
-		classSymbolTable.getSymbols().putAll(ca.getMethodMap());
-		classSymbolTable.getSymbols().putAll(ca.getFieldMap());
-		for (AST_Field f : c.getClassFields()){
-			f.accept(this, classSymbolTable);
-		}
-		for (AST_Method m: c.getClassMethods()){
-			m.accept(this, classSymbolTable);
-		}
-		return null;
+	public IR_Exp visit(AST_ClassDecl c, IR_SymbolTable symTable) {
+		IR_SymbolTable classSymbolTable = new IR_SymbolTable(symTable, c.getClassName()); // creating symboltable for class
+
+	
+		return methodDeclListVisit(c.getClassMethods(), symTable);
 	}
 
 	@Override
@@ -517,7 +510,13 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		return classDeclListVisit(program.getClasses(), symTable);
 	}
 	
-	
+	private IR_Exp methodDeclListVisit(List<AST_Method> methodDeclList, IR_SymbolTable symTable){
+		if (methodDeclList.size() == 1){
+			return methodDeclList.get(0).accept(this, symTable);
+		}
+		AST_Method cls = methodDeclList.remove(0);
+		return new IR_Seq(cls.accept(this, symTable),methodDeclListVisit(methodDeclList,symTable));
+	}
 
 	private IR_Exp classDeclListVisit(List<AST_ClassDecl> classDeclList,IR_SymbolTable symTable){
 		if (classDeclList.size() == 1){

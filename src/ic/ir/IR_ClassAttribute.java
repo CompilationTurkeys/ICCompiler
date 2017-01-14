@@ -6,6 +6,7 @@ import java.util.Map;
 import ic.ast.AST_ClassDecl;
 import ic.ast.AST_Field;
 import ic.ast.AST_Method;
+import ic.compiler.IR_Attribute;
 
 public class IR_ClassAttribute {
 
