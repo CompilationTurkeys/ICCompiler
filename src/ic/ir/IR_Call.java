@@ -1,18 +1,24 @@
 package ic.ir;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
 public class IR_Call extends IR_Exp{
 	
-	public TempRegister tr;
-	public ArrayList<IR_Exp> args;
+	public TempLabel label;
+	public List<IR_Exp> args;
 	
-	public IR_Call(TempRegister tr, ArrayList<IR_Exp> args)
+	public IR_Call(TempLabel label, IR_Exp... args)
 	{
-		this.tr = tr;
-		this.args = args;
+		this.label = label;
+		if (args != null){
+			this.args = Arrays.asList(args);
+		}
+		else{
+			this.args = null;
+		}
 	}
 
 	@Override
