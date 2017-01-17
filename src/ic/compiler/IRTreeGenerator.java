@@ -424,7 +424,10 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_ClassDecl c, IR_SymbolTable symTable) {
+		
 		IR_SymbolTable classSymbolTable = new IR_SymbolTable(symTable, c.getClassName()); // creating symboltable for class
+		
+		symTable.getChildren().put(c, classSymbolTable);
 
 	
 		return methodDeclListVisit(c.getClassMethods(), symTable);
