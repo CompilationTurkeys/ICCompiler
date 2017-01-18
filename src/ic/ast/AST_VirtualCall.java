@@ -7,6 +7,43 @@ import java.util.List;
 
 public class AST_VirtualCall extends AST_Exp
 {
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((argList == null) ? 0 : argList.hashCode());
+		result = prime * result + ((callingExp == null) ? 0 : callingExp.hashCode());
+		result = prime * result + ((funcName == null) ? 0 : funcName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AST_VirtualCall other = (AST_VirtualCall) obj;
+		if (argList == null) {
+			if (other.argList != null)
+				return false;
+		} else if (!argList.equals(other.argList))
+			return false;
+		if (callingExp == null) {
+			if (other.callingExp != null)
+				return false;
+		} else if (!callingExp.equals(other.callingExp))
+			return false;
+		if (funcName == null) {
+			if (other.funcName != null)
+				return false;
+		} else if (!funcName.equals(other.funcName))
+			return false;
+		return true;
+	}
+
 	public AST_Exp 	callingExp;
 	public ArrayList<AST_Exp> argList;
 	public String funcName;

@@ -8,12 +8,19 @@ import ic.ast.*;
 
 public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		
+	private static SemanticEvaluator _instance;
 	private AST_Node root;
 	private SymbolTable program;
+	public Map<AST_Exp, String> callingExpMap = new HashMap<>();
 	
 	public SemanticEvaluator (AST_Node root)
 	{
 		this.root= root;
+		_instance = this;
+	}
+	
+	public static SemanticEvaluator Get(){
+		return _instance;
 	}
 	
 	public void evaluate() {
@@ -286,6 +293,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		//expression exists (method is a field of a different class), not an explicit call, evaluate the exp
 		if (call.getCallingExpression() != null) {
 			callExpAttr = call.getCallingExpression().accept(this, symTable);
+			callingExpMap.put(call.callingExp, callExpAttr.getType().getName());
 			
 			if (callExpAttr.getType().isPrimitive()) {
 				throw new RuntimeException("Primitive type" + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
@@ -356,6 +364,9 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		if (expAttr.isNull()) {
 			throw new RuntimeException("Null pointer exception, trying to access field of null expression.");
 		}
+		
+		callingExpMap.put(var.exp, expAttr.getType().getName());
+
 		//check expression type
 		expAttr.getType().accept(this, symTable);
 		

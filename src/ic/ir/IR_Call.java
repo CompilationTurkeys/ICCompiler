@@ -10,15 +10,11 @@ public class IR_Call extends IR_Exp{
 	public TempLabel label;
 	public List<IR_Exp> args;
 	
-	public IR_Call(TempLabel label, IR_Exp... args)
+	public IR_Call(TempLabel label, List<IR_Exp> args)
 	{
 		this.label = label;
-		if (args != null){
-			this.args = Arrays.asList(args);
-		}
-		else{
-			this.args = null;
-		}
+		// the arguments are already reversed
+		this.args = args;
 	}
 
 	@Override

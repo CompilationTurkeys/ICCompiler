@@ -4,6 +4,31 @@ import ic.compiler.Visitor;
 
 public class AST_StmtReturn extends AST_Stmt
 {
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((returnExp == null) ? 0 : returnExp.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AST_StmtReturn other = (AST_StmtReturn) obj;
+		if (returnExp == null) {
+			if (other.returnExp != null)
+				return false;
+		} else if (!returnExp.equals(other.returnExp))
+			return false;
+		return true;
+	}
+
 	public AST_Exp returnExp;
 
 	public AST_StmtReturn(AST_Exp exp){

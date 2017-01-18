@@ -19,9 +19,16 @@ public class MethodFrame extends Frame{
 		
 		public void initializeFrame(){
 			numOfLocalVars = 0;
-			size = 0;
 			for (int i=0; i < numOfArguments; i++){
 				argOffsets.add(new FrameMember((numOfArguments+1-i)*WORD_SIZE));
 			}
+		}
+		
+		public void incNumOfLocalVars(){
+			numOfLocalVars++;
+		}
+		
+		public int getFrameSize(){
+			return numOfLocalVars * WORD_SIZE;
 		}
 }

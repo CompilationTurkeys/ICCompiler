@@ -2,6 +2,7 @@ package ic.compiler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import ic.ir.*;
@@ -12,6 +13,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		
 	public static final String FP="$fp";
 	public static final String SP="$sp";
+	private static final int THIS_OFFSET = 8;
 
 	private IR_Exp irRoot;
 	private IR_SymbolTable program;
@@ -91,19 +93,28 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 									new IR_JumpLabel(endLabel))))),
 					new IR_Seq(new IR_Label(endLabel),new IR_Temp(newTemp)));
 			
+			default:
+				return null;	
 		}
 	}
 
 	@Override
 	public IR_Exp visit(AST_ExpNewClass expr, IR_SymbolTable symTable) {
-		  return new IR_NewObject(expr.className);
+		 int allocSize = classMap.get(expr.className).getAllocSize();
+		 ArrayList<IR_Exp> arrLst = new ArrayList<>();
+		 arrLst.add(new IR_Const(allocSize));
+		 return new IR_Call(
+				 new TempLabel("objectAlloc"),
+				 arrLst);
 	}
 
 	@Override
 	public IR_Exp visit(AST_ExpNewTypeArray expr, IR_SymbolTable symTable) {
-		return new IR_Call( 
+		ArrayList<IR_Exp> arrLst = new ArrayList<>();
+		arrLst.add(expr.sizeExpression.accept(this, symTable));
+		return new IR_Call(
 				new TempLabel("arrayAlloc"),
-				expr.sizeExpression.accept(this, symTable));
+				arrLst);
 		
 	}
 
@@ -141,9 +152,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	@Override
 	public IR_Exp visit(AST_StmtVariableDeclaration stmt, IR_SymbolTable symTable) {		
 	
-		int numOfLocals = ++symTable.getFrame().numOfLocalVars;
-		symTable.getFrame().size += MethodFrame.WORD_SIZE;
-		FrameMember newMem = new FrameMember(-(numOfLocals*MethodFrame.WORD_SIZE));
+		symTable.getFrame().incNumOfLocalVars();
+		FrameMember newMem = new FrameMember(-(symTable.getFrame().numOfLocalVars*MethodFrame.WORD_SIZE));
 		symTable.getSymbols().put(stmt.varName, new IR_Attribute(newMem, stmt.varType));
 
 		if (stmt.assignedExp != null){
@@ -166,43 +176,16 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	
 	
 	@Override
-	public Attribute visit(AST_StmtReturn stmt, SymbolTable symTable) {
-		AST_Type expectedRetType = null;
-		
-		if (!(symTable instanceof MethodSymbolTable)){
-			throw new RuntimeException("Encountered return out of method scope.");
-		}
-		
-		MethodSymbolTable methodST = (MethodSymbolTable)symTable;
-		
-		//check if the method exists as part of the class and get its type
-		if (((ClassAttribute)(program.getSymbols().get(methodST.getClassName())))
-		    .getMethodMap().containsKey(methodST.getMethodName())){
-			expectedRetType = ((ClassAttribute) (program.getSymbols().get(methodST.getClassName())))
-				.getMethodMap().get(methodST.getMethodName()).getType();
+	public IR_Exp visit(AST_StmtReturn stmt, IR_SymbolTable symTable) {
+		Register returnReg = new SpecialRegister("$v0");
 
+		if (stmt.returnExp !=null) {
+			IR_Exp returnExp = stmt.returnExp.accept(this, symTable);
+			return new IR_Move(new IR_Temp(returnReg), returnExp);
 		}
-		//check void type compatibility
-		if (expectedRetType.isVoid()){
-			if (stmt.returnExp != null) {
-				throw new RuntimeException("Method " + methodST.getMethodName() + " is void and cannot return a value");
-			}
-			else {
-				return null;
-			}
+		else{
+			return new IR_Move(new IR_Temp(returnReg), null);
 		}
-		else if (stmt.returnExp == null) {
-			throw new RuntimeException("Method " + methodST.getMethodName() + " is missing a return value "+ " return type is " + expectedRetType.getName());
-		}
-		//traverse the expression
-		Attribute exprAttr = stmt.returnExp.accept(this, symTable);
-		
-		//check if method return type is subtype of method return type
-		if (!IsProperInheritance(exprAttr.getType(), expectedRetType)){
-			throw new RuntimeException("Can not return type "+ exprAttr.getType() + "from method " + methodST.getMethodName() + " with type "+ expectedRetType.getName());
-		}
-		
-		return exprAttr;
 	}
 
 	@Override
@@ -278,13 +261,48 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	}
 
+	
+	public IR_Exp expList(List<AST_Exp> lst, IR_SymbolTable symTable){
+		if (lst.size() == 1){
+			return lst.get(0).accept(this,symTable);
+		}
+		AST_Exp head = lst.remove(0);
+		
+		return new IR_Seq(expList(lst,symTable),head.accept(this, symTable));
+	}
+	
 	@Override
 	public IR_Exp visit(AST_VirtualCall call, IR_SymbolTable symTable) {
+		String callingExpType;
+		IR_Exp callingExp;
 		
-		IR_Exp argsIRNode = ASTNodeListVisit(symTable, (ArrayList<AST_Node>)(ArrayList<?>)call.argList);
+		if (call.callingExp != null){
+			callingExp = call.callingExp.accept(this, symTable);
+			callingExpType = SemanticEvaluator.Get().callingExpMap.get(call.callingExp);
+		}
+		else{
+			callingExp = null;
+			callingExpType = symTable.getClassName();
+		}
 		
+		LinkedList<IR_Exp> argsList = new LinkedList<>();
+		if (call.argList != null){
+			call.argList.stream().forEach(arg -> argsList.addLast(arg.accept(this,symTable)));
+		}
+
+		if (callingExp == null){
+			callingExp = new IR_Mem(
+					new IR_Binop(
+							new IR_Temp(new SpecialRegister(FP)),
+							new IR_Const(THIS_OFFSET),
+							BinaryOpTypes.PLUS)); 
+		}
 		
-		return new IR_Seq(call.callingExp.accept(this, symTable));
+		argsList.addLast(callingExp);
+		
+		TempLabel newFuncLabel = new TempLabel(call.funcName, callingExpType);
+	
+		return new IR_Call(newFuncLabel, argsList);
 		
 	}
 	
@@ -294,101 +312,101 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	}
 
 	@Override
-	public Attribute visit(AST_VariableExpField var, SymbolTable symTable) {
-		//traverse the expression and evaluate it
-		Attribute expAttr = var.exp.accept(this, symTable);
+	public IR_Exp visit(AST_VariableExpField var, IR_SymbolTable symTable) {
 
-		if (expAttr.isNull()) {
-			throw new RuntimeException("Null pointer exception, trying to access field of null expression.");
-		}
-		//check expression type
-		expAttr.getType().accept(this, symTable);
+		String varExpType;
+		IR_Exp varExp;
 		
-		if (expAttr.getType().isPrimitive()){
-			throw new RuntimeException("Expression is of primitive type and doesn't have fields.");
-		}
+		varExp = var.exp.accept(this, symTable);
+		varExpType = SemanticEvaluator.Get().callingExpMap.get(var.exp);
 		
-		//check if the field exists in this expression type
-		Attribute expFieldAttr = ((ClassAttribute) (program.getSymbols().get(expAttr.getType().getName()))).getFieldMap().get(var.fieldName);
+		int fieldOffset = classMap.get(varExpType).getFieldOffset(var.fieldName);
 		
-		if (expFieldAttr == null){
-			throw new RuntimeException("Field " + var.fieldName + " does not exist in type " + expAttr.getType().getName());
-		}
-		
-		return expFieldAttr;
+		return new IR_Mem(
+				   new IR_Binop(
+						new IR_Const((fieldOffset+1)*MethodFrame.WORD_SIZE),
+						varExp,
+						BinaryOpTypes.PLUS));		
 	}
 
 	@Override
-	public Attribute visit(AST_VariableExpArray var, SymbolTable symTable) {
-		//evaluate the size and the expression of the array
-		Attribute arrExpAttr = var.arrayExp.accept(this, symTable);
-		Attribute arrIndexAttr = var.arraySize.accept(this, symTable);
+	public IR_Exp visit(AST_VariableExpArray var, IR_SymbolTable symTable) {
 		
-		if (var.arrayExp instanceof AST_ExpNewTypeArray || 
-		   (var.arrayExp instanceof AST_VariableExpArray && ((AST_VariableExpArray) var.arrayExp).isDeclarationExp)){
-			var.isDeclarationExp = true;
-		}
-
-		if (arrExpAttr.isNull()){
-			throw new RuntimeException("Null pointer exception, trying to access index of null expression.");
-		}
-
-		if (arrExpAttr.getType().getDimension() == 0){
-			throw new RuntimeException("Expression of type " + arrExpAttr.getType().getName() + " is not an array.");
-		}
-		// check validity of expression type
-		arrExpAttr.getType().accept(this, symTable);
+		IR_Exp arrExp = var.arrayExp.accept(this, symTable);
+		IR_Exp arrSizeExp = var.arraySize.accept(this, symTable);
 		
-		if (!arrIndexAttr.getType().isInt()){
-			throw new RuntimeException("Array index expression must be integer value");
-		}
+		return new IR_Mem(
+				   new IR_Binop(
+						arrSizeExp,
+						arrExp,
+						BinaryOpTypes.PLUS));
 		
-		int dimension = var.isDeclarationExp ? arrExpAttr.getType().getDimension()+1 : arrExpAttr.getType().getDimension()-1;
-		//returns new attribute, with same type as array expression but with lower dimension(the internal index was already computed)
-		Attribute resultAttr =  new Attribute(new AST_Type(arrExpAttr.getType().getName(), dimension));
-		return resultAttr;
+		//TODO: IMPORTANT
+		//TODO: ACCESS VIOLATION!!!!!!!!!!!!!!!!
 	}
 
 	@Override
-	public Attribute visit(AST_VariableID var, SymbolTable symTable) {
+	public IR_Exp visit(AST_VariableID var, IR_SymbolTable symTable) {
+	    
+		int varOffset;
+		IR_Attribute varAttr = findVar(var.fieldName, symTable);
 		
-		Attribute varAttr = findVar(var.fieldName, symTable);
-		//if function returned null then variable was not found in any of the parent copes
-		if (varAttr == null) {
-			throw new RuntimeException("Variable name " + var.fieldName + " does not exist");
+		if (varAttr != null){
+			varOffset = varAttr.frameMember.offset;
+			return new IR_Mem(
+					   new IR_Binop(
+							new IR_Const(varOffset),
+							new IR_Temp(new SpecialRegister(FP)),
+							BinaryOpTypes.PLUS));
 		}
-		return varAttr;
+		else{
+			varOffset = classMap.get(symTable.getClassName()).getFieldOffset(var.fieldName);
+			//$fp+8 == this location
+			IR_Exp thisAddr = new IR_Mem(
+					   new IR_Binop(
+							new IR_Const(THIS_OFFSET),
+							new IR_Temp(new SpecialRegister(FP)),
+							BinaryOpTypes.PLUS));
+			
+			return new IR_Mem(
+						new IR_Binop(
+								new IR_Const(varOffset*Frame.WORD_SIZE),
+								thisAddr,
+								BinaryOpTypes.PLUS));	
+		}
 	}
 
 
 	@Override
-	public Attribute visit(AST_Type type, SymbolTable symTable) {
-		//check for non existent types
-		if (!type.checkTypePrimitive() && !type.getName().equals("null") && !program.getSymbols().containsKey(type.getName())) {
-			throw new RuntimeException("Unknown type: " + type.getName());
-		}
-		else if (type.getName().equals(PrimitiveDataTypes.VOID.getName())){
-			throw new RuntimeException("Variable cannot be declared as void type.");
-		}
+	public IR_Exp visit(AST_Type type, IR_SymbolTable symTable) {
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_FuncArgument funcArg, SymbolTable symTable) {
-		funcArg.getArgType().accept(this, symTable);
-		Attribute attribute =  new Attribute(funcArg.getArgType());
-		symTable.getSymbols().put(funcArg.getArgName(), attribute);
-		return attribute;
-	}
-
-	@Override
-	public Attribute visit(AST_Field field, SymbolTable symTable) {
-		field.getType().accept(this, symTable);
+	public IR_Exp visit(AST_FuncArgument funcArg, IR_SymbolTable symTable) {
 		return null;
 	}
 
 	@Override
-	public Attribute visit(AST_Method method, SymbolTable symTable) {
+	public IR_Exp visit(AST_Field field, IR_SymbolTable symTable) {
+		return null;
+	}
+
+	@Override
+	public IR_Exp visit(AST_Method method, IR_SymbolTable symTable) {
+		//TODO: ENTER ARGS TO SYMTABLE AND CHECK THEM!!
+		TempLabel funcLabel = new TempLabel(method.methodName, symTable.getClassName());
+		
+		symTable.getFrame().incNumOfLocalVars();
+		FrameMember newMem = new FrameMember(-(symTable.getFrame().numOfLocalVars*MethodFrame.WORD_SIZE));
+		symTable.getSymbols().put(stmt.varName, new IR_Attribute(newMem, stmt.varType));
+		
+		
+		
+		Frame newFrame
+		
+		IR_SymbolTable newSymTable = new IR_SymbolTable()
+		
 		SymbolTable methodSymbolTable = new MethodSymbolTable(symTable, method.getName());
 		symTable.getChildren().put(method, methodSymbolTable);
 		if (!method.getType().isPrimitive() && !program.getSymbols().containsKey(method.getType().getName())) {
@@ -429,7 +447,6 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		
 		symTable.getChildren().put(c, classSymbolTable);
 
-	
 		return methodDeclListVisit(c.getClassMethods(), symTable);
 	}
 
@@ -512,67 +529,6 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	/**
 	 * Non visit functions 
 	 * */
-
-	private void setClassAttribute(AST_ClassDecl cl) {
-		//create main method attribute
-		ArrayList<AST_FuncArgument> mainArgs = new ArrayList<AST_FuncArgument>(); 
-		mainArgs.add(new AST_FuncArgument(new AST_Type(PrimitiveDataTypes.STRING, 1), "args"));
-		MethodAttribute main = new MethodAttribute(new AST_Type(PrimitiveDataTypes.VOID,0), mainArgs);
-		
-		Map<String, Attribute> fieldMap = new HashMap<>();
-		Map<String, MethodAttribute> methodMap = new HashMap<>();
-		String superClass = cl.getExtendedClassName();
-		boolean hasMain = false;
-		
-		//fill the fields map of cl class symbol table
-		for (AST_Field fld : cl.getClassFields()){
-			for (String name : fld.getFieldNamesList()){
-				if (fieldMap.containsKey(name)){
-					throw new RuntimeException("Duplicate decleration of field " + name);
-				}
-				Attribute attr = new Attribute(fld.getType());
-				fieldMap.put(name, attr);
-			}
-		}
-		
-		//fill the methods map of cl class symbol table
-		for (AST_Method method : cl.getClassMethods()){
-			if (methodMap.containsKey(method.getName()) || fieldMap.containsKey(method.getName())){
-				throw new RuntimeException("duplicate declerations");
-			}
-			
-			MethodAttribute methodAttr = new MethodAttribute(method.getType(), method.getArguments());
-			
-			if (method.getName().equals("main") && methodAttr.equals(main)){
-				hasMain = true;
-			}
-			
-			methodMap.put(method.getName(), methodAttr);
-		}
-
-		ClassAttribute thisClassAttr = new ClassAttribute(fieldMap, methodMap);
-		thisClassAttr.setHasMainMethod(hasMain);
-		thisClassAttr.getAncestors().add(cl.getClassName());
-		program.getSymbols().put(cl.getClassName(), thisClassAttr);
-		
-		// if class doesn't extend a superClass	
-		if (superClass != null){
-			if (superClass.equals(cl.getClassName())){
-				throw new RuntimeException("invalid class extension");
-			}
-			if (!program.getSymbols().containsKey(superClass)){
-				throw new RuntimeException("class " + superClass + " has not been declared yet");
-			}
-			
-			addAttrsFromSuperClasses(cl, (ClassAttribute)program.getSymbols().get(cl.getClassName()), (ClassAttribute)program.getSymbols().get(superClass));
-
-			//if (program.getSymbols().get(superClass) != null){ 
-			//}
-			//else{
-			//	throw new RuntimeException("cannot extend from undecleared function");
-			//}
-		}
-	}
 
 	private void addAttrsFromSuperClasses(AST_ClassDecl c, ClassAttribute currentClassAttribute, ClassAttribute superClassAttribute) {
 		for (String key : superClassAttribute.getMethodMap().keySet()){

@@ -10,5 +10,8 @@ public class TempLabel {
 	public TempLabel(String name){
 		_name =LABEL_PREFIX + ++counter + "_" + name + ":";
 	}
-
+	
+	public TempLabel(String funcName, String className){
+		_name = funcName + "_" + className + ":";
+	}
 }

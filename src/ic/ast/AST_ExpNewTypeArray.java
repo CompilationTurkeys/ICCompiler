@@ -4,6 +4,37 @@ import ic.compiler.Visitor;
 
 public class AST_ExpNewTypeArray extends AST_Exp
 {
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((arrayType == null) ? 0 : arrayType.hashCode());
+		result = prime * result + ((sizeExpression == null) ? 0 : sizeExpression.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AST_ExpNewTypeArray other = (AST_ExpNewTypeArray) obj;
+		if (arrayType == null) {
+			if (other.arrayType != null)
+				return false;
+		} else if (!arrayType.equals(other.arrayType))
+			return false;
+		if (sizeExpression == null) {
+			if (other.sizeExpression != null)
+				return false;
+		} else if (!sizeExpression.equals(other.sizeExpression))
+			return false;
+		return true;
+	}
+
 	public AST_Type arrayType;
 	public AST_Exp	sizeExpression;
 

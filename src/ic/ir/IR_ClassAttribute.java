@@ -71,8 +71,8 @@ public class IR_ClassAttribute {
 		return this.cls.className;
 	}
 
-	public Integer getFieldOffset(AST_Field f) {
-		return fieldOffset.get(f);
+	public Integer getFieldOffset(String fieldName) {
+		return fieldOffset.get(fieldName);
 	}
 	
 	public Map<String, Integer> getMethodOffsetMap() {

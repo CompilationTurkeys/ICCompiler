@@ -88,7 +88,8 @@ public class AST_Type extends AST_Node
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
+		result = prime * result + ((defVal == null) ? 0 : defVal.hashCode());
 		result = prime * result + dimension;
 		result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
 		return result;
@@ -98,11 +99,16 @@ public class AST_Type extends AST_Node
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		AST_Type other = (AST_Type) obj;
+		if (defVal == null) {
+			if (other.defVal != null)
+				return false;
+		} else if (!defVal.equals(other.defVal))
+			return false;
 		if (dimension != other.dimension)
 			return false;
 		if (typeName == null) {
