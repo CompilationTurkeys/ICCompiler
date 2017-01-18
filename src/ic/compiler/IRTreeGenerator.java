@@ -394,30 +394,39 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_Method method, IR_SymbolTable symTable) {
-		//TODO: ENTER ARGS TO SYMTABLE AND CHECK THEM!!
+
 		TempLabel funcLabel = new TempLabel(method.methodName, symTable.getClassName());
+		MethodFrame newFuncFrame = new MethodFrame(funcLabel, method.methodArgs.size()+1);
 		
-		symTable.getFrame().incNumOfLocalVars();
-		FrameMember newMem = new FrameMember(-(symTable.getFrame().numOfLocalVars*MethodFrame.WORD_SIZE));
-		symTable.getSymbols().put(stmt.varName, new IR_Attribute(newMem, stmt.varType));
+		IR_SymbolTable newSymTable = new IR_SymbolTable(symTable, symTable.getClassName(), newFuncFrame);
+		symTable.addChild(method, newSymTable);
 		
-		
-		
-		Frame newFrame
-		
-		IR_SymbolTable newSymTable = new IR_SymbolTable()
-		
-		SymbolTable methodSymbolTable = new MethodSymbolTable(symTable, method.getName());
-		symTable.getChildren().put(method, methodSymbolTable);
-		if (!method.getType().isPrimitive() && !program.getSymbols().containsKey(method.getType().getName())) {
-			throw new RuntimeException("non primitive type of " + method.getType().getName() + "is not declared");
+		if (method.methodArgs != null){
+			// put args in symtable
+			//newSymTable.put();
+			
+			int initialOffset = THIS_OFFSET + MethodFrame.WORD_SIZE;
+			
+			for (AST_FuncArgument arg : method.methodArgs){
+				IR_Attribute newArgAttr= new IR_Attribute(new FrameMember(initialOffset), arg.argType);
+				newSymTable.getSymbols().put(arg.argName, newArgAttr);
+				initialOffset+=Frame.WORD_SIZE;
+			}
+
 		}
-		if (method.getArguments() != null) {
-			method.getArguments().stream().forEach(arg -> arg.accept(this, methodSymbolTable));
-		}
-		if (method.getMethodStmtList() != null)
-			method.getMethodStmtList().accept(this, methodSymbolTable);
-		return null;
+		
+		IR_Exp body = method.methodStmtList.accept(this, newSymTable);
+		
+		IR_Exp prologue = new IR_Prologue(newFuncFrame.getFrameSize());
+
+		IR_Exp epilogue = new IR_Epilogue(newFuncFrame.getFrameSize());
+		
+		TempLabel skipFuncLabel = new TempLabel("skipFunc");
+		return new IR_Seq(
+				new IR_JumpLabel(skipFuncLabel),
+				new IR_Seq(
+						new IR_Function(prologue,body,epilogue,funcLabel),
+						new IR_Label(skipFuncLabel)));
 	}
 	
 	public IR_Exp visit(AST_Literal literal, IR_SymbolTable symTable) {
@@ -472,8 +481,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		if (methodDeclList.size() == 1){
 			return methodDeclList.get(0).accept(this, symTable);
 		}
-		AST_Method cls = methodDeclList.remove(0);
-		return new IR_Seq(cls.accept(this, symTable),methodDeclListVisit(methodDeclList,symTable));
+		AST_Method method = methodDeclList.remove(0);
+		return new IR_Seq(method.accept(this, symTable),methodDeclListVisit(methodDeclList,symTable));
 	}
 
 	private IR_Exp ASTNodeListVisit(IR_SymbolTable symTable,List<AST_Node> lst){

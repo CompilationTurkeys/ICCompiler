@@ -58,5 +58,9 @@ public class IR_SymbolTable {
 	public Map<AST_Node, IR_SymbolTable> getChildren() {
 		return children;
 	}
+	
+	public void addChild(AST_Node node, IR_SymbolTable symTable){
+		getChildren().put(node, symTable);
+	}
 
 }
