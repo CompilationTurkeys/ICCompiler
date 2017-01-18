@@ -262,14 +262,14 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	}
 
 	
-	public IR_Exp expList(List<AST_Exp> lst, IR_SymbolTable symTable){
-		if (lst.size() == 1){
-			return lst.get(0).accept(this,symTable);
-		}
-		AST_Exp head = lst.remove(0);
-		
-		return new IR_Seq(expList(lst,symTable),head.accept(this, symTable));
-	}
+//	public IR_Exp expList(List<AST_Exp> lst, IR_SymbolTable symTable){
+//		if (lst.size() == 1){
+//			return lst.get(0).accept(this,symTable);
+//		}
+//		AST_Exp head = lst.remove(0);
+//		
+//		return new IR_Seq(expList(lst,symTable),head.accept(this, symTable));
+//	}
 	
 	@Override
 	public IR_Exp visit(AST_VirtualCall call, IR_SymbolTable symTable) {
