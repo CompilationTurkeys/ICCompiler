@@ -178,7 +178,7 @@ exp          ::=       var:v                      					  {: RESULT = v; :}
                        | NEW type:t LBRACK exp:e RBRACK    			  {: RESULT = new AST_ExpNewTypeArray(t, e); :}
                        | NEW CLASS_ID:name LPAREN RPAREN   			  {: RESULT = new AST_ExpNewClass(name); :}
                        | literal:l   							      {: RESULT = l; :}
-                       | LPAREN exp:e RPAREN    					  {: RESULT = e; :}
+                       | LPAREN exp:e RPAREN    					  {: RESULT = new AST_ExpParen(e); :}
                        ;
 
 

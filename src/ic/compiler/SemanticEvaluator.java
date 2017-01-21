@@ -32,6 +32,12 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	public Attribute visit(AST_Exp expr, SymbolTable symTable) {
 		throw new UnsupportedOperationException("Unexepcted visit in Exp!");
 	}
+	
+	public Attribute visit(AST_ExpParen expr,SymbolTable symTable) {
+		return expr.exp.accept(this,symTable);
+	}
+	
+	
 
 	@Override
 	public Attribute visit(AST_ExpBinop expr, SymbolTable symTable) {		

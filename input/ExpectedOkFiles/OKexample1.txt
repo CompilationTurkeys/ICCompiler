@@ -10,6 +10,7 @@ class A{
 class B extends A{
 	A a;
 	int f(){
+		int c = (new int[8])[6];
 		B b = new B();
 		if (b == a){
 			return 1;

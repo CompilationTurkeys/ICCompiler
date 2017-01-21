@@ -8,6 +8,7 @@ import ic.ast.*;
 public interface Visitor<ContextType, ResultType> {
 
 	public ResultType visit(AST_Exp expr, ContextType symTable); // V
+	public ResultType visit(AST_ExpParen expr, ContextType symTable); // V
 	public ResultType visit(AST_ExpBinop expr, ContextType symTable); // V
 	public ResultType visit(AST_ExpNewClass expr, ContextType symTable); // V
 	public ResultType visit(AST_ExpNewTypeArray expr, ContextType symTable); // V
