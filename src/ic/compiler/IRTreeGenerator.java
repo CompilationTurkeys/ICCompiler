@@ -112,11 +112,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_ExpNewTypeArray expr, IR_SymbolTable symTable) {
-		ArrayList<IR_Exp> arrLst = new ArrayList<>();
-		arrLst.add(expr.sizeExpression.accept(this, symTable));
-		return new IR_Call(
-				new TempLabel("arrayAlloc"),
-				arrLst);
+		return expr.sizeExpression.accept(this, symTable);
 		
 	}
 
@@ -125,6 +121,17 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public IR_Exp visit(AST_StmtVarAssignment stmt, IR_SymbolTable symTable) {
 		IR_Exp assignExp = stmt.assignExp.accept(this, symTable);
 		IR_Exp var = stmt.var.accept(this,symTable);
+		
+		if ((stmt.assignExp instanceof AST_VariableExpArray 
+				&& ((AST_VariableExpArray) stmt.assignExp).isArrayDeclarationExp) 
+			|| stmt.assignExp instanceof AST_ExpNewTypeArray){
+			
+			ArrayList<IR_Exp> arrLst = new ArrayList<>();
+			arrLst.add(assignExp);
+			assignExp = new IR_Call(new TempLabel("arrayAlloc"),arrLst);
+
+		}
+		
 		return new IR_Move(var, assignExp);
 	}
 
@@ -337,25 +344,40 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp arrExp = var.arrayExp.accept(this, symTable);
 		IR_Exp arrSizeExp = var.arraySize.accept(this, symTable);
 		
-		if (var.arrayExp instanceof AST_ExpNewTypeArray || 
-		   (var.arrayExp instanceof AST_VariableExpArray && 
-				   ((AST_VariableExpArray) var.arrayExp).isDeclarationExp)){
-			var.isDeclarationExp = true;
-		} 
+		var.isArrayDeclarationExp = isArrayDeclerationExpression(var.arrayExp);
 		
-		if (var.isDeclarationExp) {
-			
+		if (var.arrayExp instanceof AST_ExpParen &&
+			isArrayDeclerationExpression(((AST_ExpParen)var.arrayExp).exp)) {
+				ArrayList<IR_Exp> arrLst = new ArrayList<>();
+				arrLst.add(arrExp);
+				IR_Exp allocAddr = new IR_Call(new TempLabel("arrayAlloc"),arrLst);
+				return new IR_Mem(
+						new IR_Binop(allocAddr,arrSizeExp,BinaryOpTypes.PLUS));
+		}
+		
+		
+		if (var.isArrayDeclarationExp) {
+			return new IR_Binop(arrExp,arrSizeExp,BinaryOpTypes.TIMES);
 		}
 
-		// if not decleration so it's access to array (1 dim or more)
-		return new IR_Mem(
-				   new IR_Binop(
-						arrSizeExp,
-						arrExp,
-						BinaryOpTypes.PLUS));
+		// if not declaration so it's access to array (1 dim or more)
 		
+//		return new IR_Binop(
+//				arrExp,
+//				arrSizeExp,
+//				BinaryOpTypes.PLUS);
+
+		//TODO add MEM to all location (currently they are BINOP)
 		//TODO: IMPORTANT
-		//TODO: ACCESS VIOLATION!!!!!!!!!!!!!!!!
+		//TODO: ACCESS VIOLATION!!!!!!!!!!!!
+		//TODO: IMPORTANT
+		//TODO: ACCESS TO MULTI-LEVEL ARRAY!!!!!!!!!!!!
+	}
+	
+	private boolean isArrayDeclerationExpression(AST_Exp arrayExp) {
+		return (arrayExp instanceof AST_ExpNewTypeArray || 
+				   (arrayExp instanceof AST_VariableExpArray && 
+						   ((AST_VariableExpArray) arrayExp).isArrayDeclarationExp));
 	}
 
 	@Override
@@ -574,8 +596,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_ExpParen expr, IR_SymbolTable symTable) {
-		// TODO Auto-generated method stub
-		return null;
+		return expr.exp.accept(this,symTable);
 	}
 	
 }

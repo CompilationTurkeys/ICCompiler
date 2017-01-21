@@ -397,8 +397,8 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute arrIndexAttr = var.arraySize.accept(this, symTable);
 		
 		if (var.arrayExp instanceof AST_ExpNewTypeArray || 
-		   (var.arrayExp instanceof AST_VariableExpArray && ((AST_VariableExpArray) var.arrayExp).isDeclarationExp)){
-			var.isDeclarationExp = true;
+		   (var.arrayExp instanceof AST_VariableExpArray && ((AST_VariableExpArray) var.arrayExp).isArrayDeclarationExp)){
+			var.isArrayDeclarationExp = true;
 		}
 
 		if (arrExpAttr.isNull()){
@@ -415,7 +415,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			throw new RuntimeException("Array index expression must be integer value");
 		}
 		
-		int dimension = var.isDeclarationExp ? arrExpAttr.getType().getDimension()+1 : arrExpAttr.getType().getDimension()-1;
+		int dimension = var.isArrayDeclarationExp ? arrExpAttr.getType().getDimension()+1 : arrExpAttr.getType().getDimension()-1;
 		//returns new attribute, with same type as array expression but with lower dimension(the internal index was already computed)
 		Attribute resultAttr =  new Attribute(new AST_Type(arrExpAttr.getType().getName(), dimension));
 		return resultAttr;
