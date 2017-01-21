@@ -359,6 +359,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		if (var.isArrayDeclarationExp) {
 			return new IR_Binop(arrExp,arrSizeExp,BinaryOpTypes.TIMES);
 		}
+		return null;
 
 		// if not declaration so it's access to array (1 dim or more)
 		
