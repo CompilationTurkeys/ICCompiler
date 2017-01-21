@@ -233,7 +233,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		
 		if (stmt.body != null){
 			IR_SymbolTable newScopeTable = new IR_SymbolTable(symTable, symTable.getClassName());
-			symTable.getChildren().put(stmt.body, newScopeTable);
+			symTable.addChild(stmt.body, newScopeTable);
 			body = stmt.body.accept(this, newScopeTable);
 			symTable.getChildren().remove(stmt.body);
 		}
