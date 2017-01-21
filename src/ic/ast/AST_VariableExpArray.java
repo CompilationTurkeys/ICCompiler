@@ -10,7 +10,7 @@ public class AST_VariableExpArray extends AST_Variable
 		int result = super.hashCode();
 		result = prime * result + ((arrayExp == null) ? 0 : arrayExp.hashCode());
 		result = prime * result + ((arraySize == null) ? 0 : arraySize.hashCode());
-		result = prime * result + (isDeclarationExp ? 1231 : 1237);
+		result = prime * result + (isArrayDeclarationExp ? 1231 : 1237);
 		return result;
 	}
 
@@ -33,7 +33,7 @@ public class AST_VariableExpArray extends AST_Variable
 				return false;
 		} else if (!arraySize.equals(other.arraySize))
 			return false;
-		if (isDeclarationExp != other.isDeclarationExp)
+		if (isArrayDeclarationExp != other.isArrayDeclarationExp)
 			return false;
 		return true;
 	}
@@ -41,7 +41,7 @@ public class AST_VariableExpArray extends AST_Variable
 	public AST_Exp arrayExp;
 	public AST_Exp arraySize;
 	
-	public boolean isDeclarationExp;
+	public boolean isArrayDeclarationExp;
 	
 	public AST_VariableExpArray(AST_Exp e1,AST_Exp e2)
 	{
