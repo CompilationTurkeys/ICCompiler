@@ -1,12 +1,11 @@
 package ic.compiler;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import ic.ir.*;
-import javax.management.RuntimeErrorException;
 import ic.ast.*;
 
 public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
@@ -14,13 +13,14 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public static final String FP="$fp";
 	public static final String SP="$sp";
 	private static final int THIS_OFFSET = 8;
+	private static IRTreeGenerator _instance;
 
 	private IR_Exp irRoot;
 	private IR_SymbolTable program;
 	private AST_Node astRoot;
 	
 	// Map of string name to  string value for the the MIPS generation
-	private Map<String, String> stringLabelsMap = new HashMap<>();
+	public Map<String, String> stringLabelsMap = new HashMap<>();
 
 	// Maps the name of the classes in the program to their LIRClassAttributes
 	private Map<String, IR_ClassAttribute> classMap = new HashMap<>();
@@ -30,21 +30,23 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	// Map of the dispach tables of each class.
 	// Each dispach table is a map of function name and the classname it was dispatched by
-	private Map<String, Map<String,String>> dispachMethodsTablesMap = new HashMap<>();
-	
-	private Map<String, Map<String,String>> dispachFieldsTablesMap = new HashMap<>();
-	private String mainClassName;
+	public Map<String, Map<String,DispatchAttribute>> dispachMethodsTablesMap = new HashMap<>();
+	public Map<String, Map<String,String>> dispachFieldsTablesMap = new HashMap<>();
+	public String mainClassName;
 	
 	public IRTreeGenerator (AST_Node root)
 	{
 		this.astRoot= root;
+		_instance = this;
+	}
+	
+	public static IRTreeGenerator Get(){
+		return _instance;
 	}
 	
 	public IR_Exp generateIRTree() {
 		this.program= new IR_SymbolTable(null, "");
-		//Add types and basic funcs??
-		
-		irRoot.accept(this, program);
+		irRoot = astRoot.accept(this, program);
 		return irRoot;
 	}
 	
@@ -474,7 +476,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			dispachFieldsTablesMap.put(c.className,createFieldsDispachTable(classMap.get(c.className)));
 		}
 		List<AST_ClassDecl> lst = program.getClasses();
-		return ASTNodeListVisit(symTable,(List<AST_Node>)(List<?>)lst);
+		return classDeclListVisit(lst, symTable);
 	}
 	
 	private IR_Exp methodDeclListVisit(List<AST_Method> methodDeclList, IR_SymbolTable symTable){
@@ -484,18 +486,17 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		AST_Method method = methodDeclList.remove(0);
 		return new IR_Seq(method.accept(this, symTable),methodDeclListVisit(methodDeclList,symTable));
 	}
-
-	private IR_Exp ASTNodeListVisit(IR_SymbolTable symTable,List<AST_Node> lst){
-		if (lst.size() == 1){
-			return lst.get(0).accept(this, symTable);
+	
+	private IR_Exp classDeclListVisit(List<AST_ClassDecl> classDeclList, IR_SymbolTable symTable){
+		if (classDeclList.size() == 1){
+			return classDeclList.get(0).accept(this, symTable);
 		}
-		AST_Node cls = lst.remove(0);
-		return new IR_Seq(cls.accept(this, symTable),ASTNodeListVisit(symTable,lst));
-		
+		AST_ClassDecl cls = classDeclList.remove(0);
+		return new IR_Seq(cls.accept(this, symTable),classDeclListVisit(classDeclList,symTable));
 	}
 	
 	private Map<String, String> createFieldsDispachTable(IR_ClassAttribute classAttr) {
-		Map<String,String> dispachTable = new HashMap<>();
+		Map<String,String> dispachTable = new LinkedHashMap<>();
 		AST_ClassDecl currentClass = classAttr.getClassObject();
 		
 		for (String name : classAttr.getFieldOffsetMap().keySet()) {
@@ -515,18 +516,26 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	}
 
 	
-	private Map<String,String> createMethodsDispachTable(IR_ClassAttribute classAttr) {
-		Map<String,String> dispachTable = new HashMap<>();
+	private Map<String,DispatchAttribute> createMethodsDispachTable(IR_ClassAttribute classAttr) {
+		Map<String,DispatchAttribute> dispachTable = new LinkedHashMap<>();
 		AST_ClassDecl currentClass = classAttr.getClassObject();
 		
 		for (String name : classAttr.getMethodOffsetMap().keySet()) {
+			
+			int dispatchOffset = 0;
+			//get main class name
+			if (name.equals("main")){
+				mainClassName = currentClass.className;
+			}
 			
 			while (currentClass.extendedClassName != null && !currentClass.getMethodNames().contains(name)) {
 				currentClass = classMap.get(currentClass.extendedClassName).getClassObject();
 			}
 			
 			if (currentClass.getMethodNames().contains(name)) {
-				dispachTable.put(name, currentClass.className);
+				DispatchAttribute newAttr = new DispatchAttribute(currentClass.className, dispatchOffset);
+				dispachTable.put(name, newAttr);
+				dispatchOffset++;
 			}
 			
 			currentClass = classAttr.getClassObject();
@@ -539,27 +548,6 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	 * Non visit functions 
 	 * */
 
-	private void addAttrsFromSuperClasses(AST_ClassDecl c, ClassAttribute currentClassAttribute, ClassAttribute superClassAttribute) {
-		for (String key : superClassAttribute.getMethodMap().keySet()){
-			MethodAttribute value = superClassAttribute.getMethodMap().get(key);
-			if (currentClassAttribute.getMethodMap().containsKey(key) && !currentClassAttribute.getMethodMap().get(key).equals(value)){
-				throw new RuntimeException("same methods in super and current classes cannot have different signatures");
-			}
-			currentClassAttribute.getMethodMap().put(key, value);
-		}
-		
-		for (String key : superClassAttribute.getMethodMap().keySet()){
-			MethodAttribute value = superClassAttribute.getMethodMap().get(key);
-			if (currentClassAttribute.getFieldMap().containsKey(key) && !currentClassAttribute.getFieldMap().get(key).equals(value)){
-				throw new RuntimeException("same fields in super and current classes cannot have different types");
-			}
-			currentClassAttribute.getFieldMap().put(key, value);
-		}
-		
-		// Add all ancestors to current class
-		currentClassAttribute.getAncestors().addAll(superClassAttribute.getAncestors());
-	}
-	
 	
 	private IR_Attribute findVar(String varName, IR_SymbolTable symTable) {
 		IR_SymbolTable st = symTable;

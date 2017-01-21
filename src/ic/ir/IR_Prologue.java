@@ -1,7 +1,7 @@
 package ic.ir;
 
 import ic.compiler.PrinterVisitor;
-import ic.compiler.Visitor;
+import ir.mipsgen.IRVisitor;
 
 public class IR_Prologue extends IR_Exp{
 	
@@ -19,8 +19,8 @@ public class IR_Prologue extends IR_Exp{
 	}
 
 	@Override
-	public <ContextType, ResultType> ResultType accept(Visitor<ContextType, ResultType> visitor, ContextType context) {
-		return null;
+	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
+		return visitor.visit(this);
 	}
 	
 }

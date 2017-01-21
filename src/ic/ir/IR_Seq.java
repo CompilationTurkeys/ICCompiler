@@ -1,6 +1,7 @@
 package ic.ir;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
+import ir.mipsgen.IRVisitor;
 
 public class IR_Seq extends IR_Exp{
 	
@@ -20,9 +21,8 @@ public class IR_Seq extends IR_Exp{
 	}
 
 	@Override
-	public <ContextType, ResultType> ResultType accept(Visitor<ContextType, ResultType> visitor, ContextType context) {
-		// TODO Auto-generated method stub
-		return null;
+	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
+		return visitor.visit(this);
 	}
-	
+
 }

@@ -1,5 +1,6 @@
 package ic.ir;
 import ic.ir.IR_Exp;
+import ir.mipsgen.IRVisitor;
 import ic.ast.BinaryOpTypes;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
@@ -23,9 +24,7 @@ public class IR_Move extends IR_Exp{
 	}
 
 	@Override
-	public <ContextType, ResultType> ResultType accept(Visitor<ContextType, ResultType> visitor, ContextType context) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
+		return visitor.visit(this);
+	}	
 }
