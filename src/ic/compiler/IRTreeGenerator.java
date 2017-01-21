@@ -337,6 +337,17 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp arrExp = var.arrayExp.accept(this, symTable);
 		IR_Exp arrSizeExp = var.arraySize.accept(this, symTable);
 		
+		if (var.arrayExp instanceof AST_ExpNewTypeArray || 
+		   (var.arrayExp instanceof AST_VariableExpArray && 
+				   ((AST_VariableExpArray) var.arrayExp).isDeclarationExp)){
+			var.isDeclarationExp = true;
+		} 
+		
+		if (var.isDeclarationExp) {
+			
+		}
+
+		// if not decleration so it's access to array (1 dim or more)
 		return new IR_Mem(
 				   new IR_Binop(
 						arrSizeExp,
@@ -558,6 +569,12 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 			st = st.getParentTable();
 		}
+		return null;
+	}
+
+	@Override
+	public IR_Exp visit(AST_ExpParen expr, IR_SymbolTable symTable) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 	
