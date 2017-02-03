@@ -6,7 +6,7 @@ import ir.mipsgen.IRVisitor;
 
 public class IR_Epilogue extends IR_Exp{
 	
-	int frameSize;
+	public int frameSize;
 	
 	public IR_Epilogue(int frameSize)
 	{

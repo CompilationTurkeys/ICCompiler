@@ -186,14 +186,14 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	
 	@Override
 	public IR_Exp visit(AST_StmtReturn stmt, IR_SymbolTable symTable) {
-		Register returnReg = new SpecialRegister("$v0");
+		Register returnReg = new TempRegister();
 
 		if (stmt.returnExp !=null) {
 			IR_Exp returnExp = stmt.returnExp.accept(this, symTable);
 			return new IR_Move(new IR_Temp(returnReg), returnExp);
 		}
 		else{
-			return new IR_Move(new IR_Temp(returnReg), null);
+			return null;
 		}
 	}
 

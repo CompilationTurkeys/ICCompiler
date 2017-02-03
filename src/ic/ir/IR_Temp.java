@@ -6,7 +6,7 @@ import ir.mipsgen.IRVisitor;
 
 public class IR_Temp extends IR_Exp{
 	
-	Register _register;
+	public Register _register;
 	
 	
 	public IR_Temp(Register reg)

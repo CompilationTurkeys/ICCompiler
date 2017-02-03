@@ -6,7 +6,7 @@ import ir.mipsgen.IRVisitor;
 
 public class IR_Const extends IR_Exp{
 	
-	int value;
+	public int value;
 	
 	public IR_Const(int val)
 	{

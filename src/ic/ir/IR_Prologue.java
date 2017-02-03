@@ -5,7 +5,7 @@ import ir.mipsgen.IRVisitor;
 
 public class IR_Prologue extends IR_Exp{
 	
-	int frameSize;
+	public int frameSize;
 	
 	public IR_Prologue(int frameSize)
 	{

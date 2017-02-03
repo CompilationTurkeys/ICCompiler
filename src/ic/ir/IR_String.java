@@ -5,7 +5,7 @@ import ic.compiler.Visitor;
 import ir.mipsgen.IRVisitor;
 
 public class IR_String extends IR_Exp{
-	StringLabel label;
+	public StringLabel label;
 	
 	public IR_String(StringLabel label)
 	{

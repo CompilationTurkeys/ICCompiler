@@ -6,7 +6,7 @@ import ir.mipsgen.IRVisitor;
 
 public class IR_Mem extends IR_Exp{
 	
-	IR_Exp irNode;
+	public IR_Exp irNode;
 	
 	public IR_Mem(IR_Exp irNode)
 	{
