@@ -17,8 +17,10 @@ class B extends A{
 	}
 	
 	void main(string[] args){
-		A a = new B();
+		B a = new B();
 		string x = a.g();
+		string y = "a";
+		int[][][] array = new int[][][4];
 		return;
 	}
 }

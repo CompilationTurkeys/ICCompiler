@@ -108,16 +108,12 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 				throw new RuntimeException("Cannot instantiate unknown type: " + expr.arrayType.getName());
 			}
 		}
-		
-		if (expr.arrayType.getDimension() != 0){
-			throw new RuntimeException("Cannot specify an array dimension after an empty dimension");	
-		}
 			
 		//check if the expr inside the brackets returns int and is legal
 		Attribute expAttr = expr.sizeExpression.accept(this, symTable);
 		//check if the expr is evaluated to INT
 		if(!expAttr.getType().isInt()){
-			throw new RuntimeException("Expected array size of the type INT, the received size is of type: " + expr.arrayType.getName());
+			throw new RuntimeException("Expected array size of the type INT, the received size is of type: " + expAttr.getType());
 		}
 		//creating a return Attribute
 		//notice that according to the grammar the total size of array will be
@@ -396,11 +392,10 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute arrExpAttr = var.arrayExp.accept(this, symTable);
 		Attribute arrIndexAttr = var.arraySize.accept(this, symTable);
 		
-		if (var.arrayExp instanceof AST_ExpNewTypeArray || 
-		   (var.arrayExp instanceof AST_VariableExpArray && ((AST_VariableExpArray) var.arrayExp).isArrayDeclarationExp)){
-			var.isArrayDeclarationExp = true;
+		if (var.arrayExp instanceof AST_ExpNewTypeArray){
+			 throw new RuntimeException("Illegal declaration of array.");
 		}
-
+		
 		if (arrExpAttr.isNull()){
 			throw new RuntimeException("Null pointer exception, trying to access index of null expression.");
 		}
@@ -415,7 +410,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			throw new RuntimeException("Array index expression must be integer value");
 		}
 		
-		int dimension = var.isArrayDeclarationExp ? arrExpAttr.getType().getDimension()+1 : arrExpAttr.getType().getDimension()-1;
+		int dimension = arrExpAttr.getType().getDimension()-1;
 		//returns new attribute, with same type as array expression but with lower dimension(the internal index was already computed)
 		Attribute resultAttr =  new Attribute(new AST_Type(arrExpAttr.getType().getName(), dimension));
 		return resultAttr;
