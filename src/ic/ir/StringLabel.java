@@ -1,8 +1,7 @@
 package ic.ir;
 
-public class StringLabel {
+public class StringLabel extends Label {
 	
-	public String _name;
 	private static int counter = 0 ;
 	private static final String LABEL_PREFIX = "Str_";
 
@@ -11,7 +10,4 @@ public class StringLabel {
 		_name =LABEL_PREFIX + ++counter +":";
 	}
 	
-	public String getName(){
-		return _name;
-	}
 }

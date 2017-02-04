@@ -10,11 +10,11 @@ public class IR_Cjump extends IR_Exp{
 	public BinaryOpTypes OP;
 	public IR_Exp left;
 	public IR_Exp right;
-	public TempLabel jumpHereIfTrue;
-	public TempLabel jumpHereIfFalse;
+	public Label jumpHereIfTrue;
+	public Label jumpHereIfFalse;
 
 	
-	public IR_Cjump(BinaryOpTypes OP, IR_Exp left, IR_Exp right, TempLabel jumpHereIfTrue, TempLabel jumpHereIfFalse)
+	public IR_Cjump(BinaryOpTypes OP, IR_Exp left, IR_Exp right, Label jumpHereIfTrue, Label jumpHereIfFalse)
 	{
 		this.OP = OP;
 		this.left = left;

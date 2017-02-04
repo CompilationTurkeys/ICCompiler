@@ -10,11 +10,13 @@ public class IR_Move extends IR_Exp{
 	public IR_Exp left;
 	public IR_Exp right;
 
+	private boolean isMemoryMove;
 	
-	public IR_Move(IR_Exp left, IR_Exp right)
+	public IR_Move(IR_Exp left, IR_Exp right,boolean isMemoryMove)
 	{
 		this.left = left;
 		this.right = right;
+		this.isMemoryMove = isMemoryMove;
 	}
 
 	@Override
@@ -27,4 +29,12 @@ public class IR_Move extends IR_Exp{
 	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
 		return visitor.visit(this);
 	}	
+	
+	public boolean isMemoryMove(){
+		return isMemoryMove;
+	}
+	
+	public boolean isRegistersMove(){
+		return !isMemoryMove;
+	}
 }

@@ -6,9 +6,9 @@ import ir.mipsgen.IRVisitor;
 
 public class IR_Label extends IR_Exp{
 	
-	public TempLabel _label;
+	public Label _label;
 	
-	public IR_Label(TempLabel label)
+	public IR_Label(Label label)
 	{
 		this._label = label;
 	}

@@ -12,6 +12,7 @@ public class IR_NewObject extends IR_Exp{
 	public IR_NewObject(String className)
 	{
 		this.className = className;
+		
 	}
 
 	@Override

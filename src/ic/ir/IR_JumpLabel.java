@@ -5,10 +5,10 @@ import ic.compiler.PrinterVisitor;
 
 public class IR_JumpLabel extends IR_Exp{
 	
-	public TempLabel tl;
+	public Label tl;
 
 	
-	public IR_JumpLabel(TempLabel tl)
+	public IR_JumpLabel(Label tl)
 	{
 		this.tl = tl;
 	}

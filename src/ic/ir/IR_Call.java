@@ -8,10 +8,10 @@ import ir.mipsgen.IRVisitor;
 
 public class IR_Call extends IR_Exp{
 	
-	public TempLabel label;
+	public Label label;
 	public List<IR_Exp> args;
 	
-	public IR_Call(TempLabel label, List<IR_Exp> args)
+	public IR_Call(Label label, List<IR_Exp> args)
 	{
 		this.label = label;
 		// the arguments are already reversed

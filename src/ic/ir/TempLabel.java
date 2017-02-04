@@ -1,8 +1,7 @@
 package ic.ir;
 
-public class TempLabel {
+public class TempLabel extends Label {
 	
-	public String _name;
 	private static int counter = 0 ;
 	private static final String LABEL_PREFIX = "Label_";
 
