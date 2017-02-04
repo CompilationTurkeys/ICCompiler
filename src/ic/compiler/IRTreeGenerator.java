@@ -316,13 +316,29 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		varExp = var.exp.accept(this, symTable);
 		varExpType = SemanticEvaluator.Get().callingExpMap.get(var.exp);
 
+		Label access_violation_label= new SpecialLabel("Label_Access_Violation");
+		Label okLabel = new TempLabel("AllOK");
+		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp, new IR_Const(0),
+				accessViolationCallLabel, okLabel);
+
 		int fieldOffset = classMap.get(varExpType).getFieldOffset(var.fieldName);
 
-		return new IR_Mem(
-				new IR_Binop(
-						new IR_Const((fieldOffset+1)*MethodFrame.WORD_SIZE),
-						varExp,
-						BinaryOpTypes.PLUS));		
+		return new IR_Seq(
+				new IR_Seq(
+						checkInitialization,
+						new IR_Seq(
+								new IR_JumpLabel(okLabel),
+								new IR_Seq(
+										new IR_Label(accessViolationCallLabel),
+										new IR_Seq(
+												new IR_Call(access_violation_label, null),
+												new IR_Label(okLabel))))),
+
+				new IR_Mem(
+						new IR_Binop(
+								new IR_Const((fieldOffset+1)*MethodFrame.WORD_SIZE),
+								varExp,
+								BinaryOpTypes.PLUS)));		
 	}
 
 	@Override
