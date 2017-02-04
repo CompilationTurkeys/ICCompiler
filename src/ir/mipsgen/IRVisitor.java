@@ -22,6 +22,6 @@ public interface IRVisitor<ResultType> {
 	public ResultType visit(IR_Seq seq); 
 	public ResultType visit(IR_String str); 
 	public ResultType visit(IR_Temp temp); 
-	public ResultType visit(IR_Binop binop); 
-
+	public ResultType visit(IR_Binop binop);
+	public ResultType visit(IR_NewArray array); 
 }
