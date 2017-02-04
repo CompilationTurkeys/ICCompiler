@@ -21,6 +21,7 @@ import ic.ir.IR_JumpRegister;
 import ic.ir.IR_Label;
 import ic.ir.IR_Mem;
 import ic.ir.IR_Move;
+import ic.ir.IR_NewArray;
 import ic.ir.IR_NewObject;
 import ic.ir.IR_Prologue;
 import ic.ir.IR_Seq;
@@ -62,7 +63,6 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 		generatePrintInt();
 		generateArrayAlloc();
-		generateObjectAlloc();
 		generateAccessViolation();
 	}
 
@@ -105,10 +105,6 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	}
 
-	private void generateObjectAlloc() {
-		
-	}
-
 	private void generatePrintInt() {
 
 		fileWriter.write("Label_PrintInt:\n\n");
@@ -144,10 +140,25 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.write(".text\n");
 		fileWriter.write("main:\n");
 		
-		//TODO : Create new object and pass it as 'this' to main
+		//CREATE DUMMY OBJECT FOR MAIN
+		
+		//get allocation size
+		int objAllocSize = IRTreeGenerator.Get().classMap.get(IRTreeGenerator.Get().mainClassName).getAllocSize();
+		String vtableName = "vtable_for_" + IRTreeGenerator.Get().mainClassName;		
+		//pass argument for syscall
+		fileWriter.format("\tli $a0, %d\n\n", objAllocSize);
+		//call sbrk syscall for memory allocation
+		fileWriter.format("\tli $v0 9\n\n");
+		//invoke syscall
+		fileWriter.format("\tsyscall\n\n");
+		//save the address of the relevant dispatch table as a first word
+		fileWriter.format("\tsw %s, 0($v0)\n\n", vtableName);
+		
+		//pass this to main as parameter
+		PushToStack("$v0");
 		
 		fileWriter.write("\tjal main_" + IRTreeGenerator.Get().mainClassName +"\n");
-				
+			
 	}
 
 	private void addMethodDispatchTables() {
@@ -204,15 +215,33 @@ public class MipsGenerator implements IRVisitor<Register> {
 				PushToStack(argValue._name);
 			}
 		}
+				
+		//get static class dispatch table
+		Map<String, DispatchAttribute> classDispatchTable = IRTreeGenerator.Get().dispachMethodsTablesMap.get(call.label.getClassName());
 		
-		fileWriter.format("\tjal %s\n", call.label._name.substring(0, call.label._name.length()-1));
+		//get function Dispatch attribute by name
+		DispatchAttribute funcDispatchAttr = classDispatchTable.get(call.label.getFuncName());
 		
+		//get func vtable offset
+		int funcOffset = funcDispatchAttr.offset * Frame.WORD_SIZE;
+		
+		//Register that contains dispatch table addr
+		Register vtableReg = new TempRegister();
+		fileWriter.format("\tla %s, %s\n\n", vtableReg._name, "vtable_for_" + call.label.getClassName());
+		//func addr inside the vtable
+		fileWriter.format("\taddi %s, %s, %d\n\n", vtableReg._name, vtableReg._name, funcOffset);
+		
+		//save return address in $ra
+		fileWriter.write("\taddi $ra, $sp, 0\n\n");
+
+		//jump to function
+		fileWriter.format("\tjr %s\n\n", vtableReg._name);
+	
 		//pop function arguments if exists
 		if ( call.args != null ){
 			fileWriter.format("\taddi $sp, $sp, %d\n", call.args.size()*Frame.WORD_SIZE);
 		}
-		
-		
+
 		//restoring saved registers from the stack
 		for (int i=7;  i>=0 ; i--){
 			PopFromStack("$t"+i);
@@ -351,7 +380,29 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_Move move) {
-		// TODO Auto-generated method stub
+		
+		// if a move is a memory move
+		if (move.isMemoryMove()){
+			//calculate left expression and place it in destination
+			Register dst = move.left.accept(this);
+
+			//calculate right expression and place it in source
+			Register src = move.right.accept(this);
+
+			fileWriter.format("\tsw %s,0(%s)\n\n", src._name, dst._name);
+		}
+		//else its a register move
+		else{
+			//calculate left expression and place it in destination
+			Register dst = move.left.accept(this);
+
+			//calculate right expression and place it in source
+			Register src = move.right.accept(this);
+
+			//move one register to another
+			fileWriter.format("\taddi %s,%s,0\n\n", dst._name, src._name);
+		}
+
 		return null;
 	}
 
@@ -435,7 +486,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		return res;
 	}
 	
-	
+	//conversion of IR binops to ASM binops
 	public String ConvertIRtoASMBinops(BinaryOpTypes binop)
 	{
 		String asmOpName = null;
@@ -454,6 +505,21 @@ public class MipsGenerator implements IRVisitor<Register> {
 		}
 		
 		return asmOpName;
+	}
+
+	@Override
+	public Register visit(IR_NewArray array) {	
+		//get allocation size
+		Register arraySizeReg = array.arraySize.accept(this);
+
+		//pass argument for syscall
+		fileWriter.format("\tmove $a0, %s\n\n", arraySizeReg._name);
+		//call sbrk syscall for memory allocation
+		fileWriter.format("\tli $v0 9\n\n");
+		//invoke syscall
+		fileWriter.format("\tsyscall\n\n");
+		//return array pointer
+		return new SpecialRegister("$v0");
 	}
 	
 }

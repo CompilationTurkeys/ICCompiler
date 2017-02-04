@@ -23,7 +23,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public Map<String, String> stringLabelsMap = new HashMap<>();
 
 	// Maps the name of the classes in the program to their LIRClassAttributes
-	private Map<String, IR_ClassAttribute> classMap = new HashMap<>();
+	public Map<String, IR_ClassAttribute> classMap = new HashMap<>();
 
 	// Maps the name of the classes to the corresponding ClassDecl objects.
 	//private HashMap<String, HashMap<String, FormalList>> classToMethodFormalsMap = new HashMap<>();
@@ -104,18 +104,13 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_ExpNewClass expr, IR_SymbolTable symTable) {
-
-		//int allocSize = classMap.get(expr.className).getAllocSize();
 		return new IR_NewObject(expr.className);
 	}
 
 	@Override
 	public IR_Exp visit(AST_ExpNewTypeArray expr, IR_SymbolTable symTable) {
 		IR_Exp size = expr.sizeExpression.accept(this, symTable);
-		ArrayList<IR_Exp> arrLst = new ArrayList<>();
-		arrLst.add(size);
-		return new IR_Call(new TempLabel("arrayAlloc"),arrLst);
-
+		return new IR_NewArray(size);
 	}
 
 	@Override
@@ -123,11 +118,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public IR_Exp visit(AST_StmtVarAssignment stmt, IR_SymbolTable symTable) {
 		IR_Exp assignExp = stmt.assignExp.accept(this, symTable);
 		IR_Exp var = stmt.var.accept(this,symTable);
-
-		if (stmt.var instanceof AST_VariableID){
-			IR_Attribute attr = findVar(((AST_VariableID)stmt.var).fieldName, symTable);
-		}
-		return new IR_Move(var, assignExp,true);
+		return new IR_Move(var, assignExp, true);
 	}
 
 	@Override
@@ -361,7 +352,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 										new IR_Seq(
 												new IR_Label(accessViolationCallLabel),
 												new IR_Seq(
-														new IR_Call(access_violation_label, null),
+														new IR_JumpLabel(access_violation_label),
 														new IR_Label(everythingIsOkLabel)))))));
 
 
