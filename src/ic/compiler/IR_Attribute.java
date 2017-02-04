@@ -6,6 +6,8 @@ public class IR_Attribute {
 	
 	public FrameMember frameMember;
 	public AST_Type frameMemberType;
+	public boolean isInitialized;
+
 	
 
 	public IR_Attribute(FrameMember member, AST_Type memberType)
@@ -13,5 +15,6 @@ public class IR_Attribute {
 		this.frameMember = member;
 		this.frameMemberType = memberType;
 	}
+	
 	
 }
