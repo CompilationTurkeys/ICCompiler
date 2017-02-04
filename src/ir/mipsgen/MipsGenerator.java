@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ic.ast.BinaryOpTypes;
 import ic.compiler.DispatchAttribute;
+import ic.compiler.Frame;
 import ic.compiler.IRTreeGenerator;
 import ic.ir.IR_Binop;
 import ic.ir.IR_Call;
@@ -62,6 +63,27 @@ public class MipsGenerator implements IRVisitor<Register> {
 		generatePrintInt();
 		generateArrayAlloc();
 		generateObjectAlloc();
+		generateAccessViolation();
+	}
+
+	private void generateAccessViolation() {
+
+		fileWriter.write("Label_Access_Violation:\n\n");
+		char[] avStr = "Access Violation! NOLOLGTFO!".toCharArray();
+		
+		for (char ch : avStr){
+			//pass char arg to syscall
+			fileWriter.format("\tli $a0,%d\n\n", ch); 
+			//pass syscall number which is print_char
+			fileWriter.write("\tli $v0, 11\n\n"); 
+			//invoke syscall
+			fileWriter.write("\tsyscall\n\n"); 
+		}
+
+		//exit
+		fileWriter.write("\tli $v0,10\n\n");
+		fileWriter.write("\tsyscall\n\n");
+		
 	}
 
 	private void generateArrayAlloc() {
@@ -144,10 +166,46 @@ public class MipsGenerator implements IRVisitor<Register> {
 		}
 	}
 
+	public void PushToStack(String registerName){
+		fileWriter.write("\taddi $sp, $sp, -4\n");
+		fileWriter.format("\tsw %s, 0($sp)\n", registerName);
+	}
+	
+	public void PopFromStack(String registerName){
+		fileWriter.format("\tsw $sp, 0(%s)\n", registerName);
+		fileWriter.write("\taddi $sp, $sp, 4\n");
+	}
+	
 	@Override
 	public Register visit(IR_Call call) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		//saving registers by pushing them to the stack
+		for (int i=0;  i<=7 ; i++){
+			PushToStack("$t"+i);
+		}
+		
+		//push arguments to stack
+		if ( call.args != null ){
+			for (IR_Exp arg : call.args){
+				Register argValue = arg.accept(this);
+				PushToStack(argValue._name);
+			}
+		}
+		
+		fileWriter.format("\tjal %s\n", call.label._name.substring(0, call.label._name.length()-1));
+		
+		//pop function arguments if exists
+		if ( call.args != null ){
+			fileWriter.format("\taddi $sp, $sp, %d\n", call.args.size()*Frame.WORD_SIZE);
+		}
+		
+		
+		//restoring saved registers from the stack
+		for (int i=7;  i>=0 ; i--){
+			PopFromStack("$t"+i);
+		}
+		
+		return new SpecialRegister("$v0");
 	}
 
 	@Override
