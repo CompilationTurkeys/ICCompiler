@@ -22,7 +22,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	// Map of string name to  string value for the the MIPS generation
 	public Map<String, String> stringLabelsMap = new HashMap<>();
 
-	// Maps the name of the classes in the program to their LIRClassAttributes
+	// Maps the name of the classes in the program to their IRClassAttributes
 	public Map<String, IR_ClassAttribute> classMap = new HashMap<>();
 
 	// Maps the name of the classes to the corresponding ClassDecl objects.
@@ -125,7 +125,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public IR_Exp visit(AST_StmtList stmts, IR_SymbolTable symTable) {
 		IR_Exp result;
 
-		if (stmts.stmtList == null){
+		if (stmts.stmtList.isEmpty()){
 			return null;
 		}
 
@@ -428,7 +428,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_Method method, IR_SymbolTable symTable) {
-
+	
 		TempLabel funcLabel = new TempLabel(method.methodName, symTable.getClassName());
 		MethodFrame newFuncFrame = new MethodFrame(funcLabel, method.methodArgs.size()+1);
 
@@ -490,7 +490,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		symTable.getChildren().put(c, classSymbolTable);
 
-		return methodDeclListVisit(c.getClassMethods(), symTable);
+		return methodDeclListVisit(c.getClassMethods(), classSymbolTable);
 	}
 
 	@Override

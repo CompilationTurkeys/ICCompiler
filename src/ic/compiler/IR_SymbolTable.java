@@ -19,7 +19,7 @@ public class IR_SymbolTable {
 		this.className= className;
 		this.symbols= new HashMap<String, IR_Attribute>();
 		this.children=new HashMap<AST_Node, IR_SymbolTable>();
-		this.scopeFrame= parentTable.getFrame();
+		this.scopeFrame= (parentTable == null) ? null : parentTable.getFrame();
 	}
 	
 	public IR_SymbolTable(IR_SymbolTable parentTable, String className, MethodFrame currentFrame)

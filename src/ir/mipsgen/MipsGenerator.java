@@ -50,7 +50,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 		MipsTerminate();
 		
-		MipsExternalFuncs();
+		//MipsExternalFuncs();
 		
 		addMethodDispatchTables();
 		
@@ -73,7 +73,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 		for (char ch : avStr){
 			//pass char arg to syscall
-			fileWriter.format("\tli $a0,%d\n\n", ch); 
+			fileWriter.format("\tli $a0, %d\n\n", (int)ch); 
 			//pass syscall number which is print_char
 			fileWriter.write("\tli $v0, 11\n\n"); 
 			//invoke syscall
@@ -128,7 +128,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	private void MipsTerminate() {
 		
 		fileWriter.write("\tli $v0,10\n");
-		fileWriter.write("\tsyscall\n");
+		fileWriter.write("\tsyscall\n\n");
 		
 	}
 
@@ -137,8 +137,8 @@ public class MipsGenerator implements IRVisitor<Register> {
 		addStrings();
 		
 		//starting of text segment
-		fileWriter.write(".text\n");
-		fileWriter.write("main:\n");
+		fileWriter.write(".text\n\n");
+		fileWriter.write("main:\n\n");
 		
 		//CREATE DUMMY OBJECT FOR MAIN
 		
@@ -146,18 +146,18 @@ public class MipsGenerator implements IRVisitor<Register> {
 		int objAllocSize = IRTreeGenerator.Get().classMap.get(IRTreeGenerator.Get().mainClassName).getAllocSize();
 		String vtableName = "vtable_for_" + IRTreeGenerator.Get().mainClassName;		
 		//pass argument for syscall
-		fileWriter.format("\tli $a0, %d\n\n", objAllocSize);
+		fileWriter.format("\tli $a0, %d\n", objAllocSize);
 		//call sbrk syscall for memory allocation
-		fileWriter.format("\tli $v0 9\n\n");
+		fileWriter.format("\tli $v0 9\n");
 		//invoke syscall
-		fileWriter.format("\tsyscall\n\n");
+		fileWriter.format("\tsyscall\n");
 		//save the address of the relevant dispatch table as a first word
 		fileWriter.format("\tsw %s, 0($v0)\n\n", vtableName);
 		
 		//pass this to main as parameter
 		PushToStack("$v0");
 		
-		fileWriter.write("\tjal main_" + IRTreeGenerator.Get().mainClassName +"\n");
+		fileWriter.write("\tjal main_" + IRTreeGenerator.Get().mainClassName +"\n\n");
 			
 	}
 
@@ -178,7 +178,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 				entriesCnt++;
 			}
 			
-			fileWriter.write("\n");
+			fileWriter.write("\n\n");
 		}	
 	}
 
@@ -192,12 +192,12 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	public void PushToStack(String registerName){
 		fileWriter.write("\taddi $sp, $sp, -4\n");
-		fileWriter.format("\tsw %s, 0($sp)\n", registerName);
+		fileWriter.format("\tsw %s, 0($sp)\n\n", registerName);
 	}
 	
 	public void PopFromStack(String registerName){
 		fileWriter.format("\tsw $sp, 0(%s)\n", registerName);
-		fileWriter.write("\taddi $sp, $sp, 4\n");
+		fileWriter.write("\taddi $sp, $sp, 4\n\n");
 	}
 	
 	@Override
@@ -304,7 +304,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	public Register visit(IR_Epilogue epilogue) {
 		
 		//Remove the current local variables frame
-		fileWriter.write("addi $sp, $sp, +" + epilogue.frameSize +"\n");
+		fileWriter.write("\taddi $sp, $sp, " + epilogue.frameSize +"\n");
 		//Load return address from stack
 		fileWriter.write("\tlw $ra, 8($sp)\n");
 		//Restore old frame pointer from stack
@@ -312,7 +312,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//Reset stack pointer
 		fileWriter.write("\tadd $sp, $sp, 8\n");
 		//Return to caller using saved return address
-		fileWriter.write("\tjr $ra\n");
+		fileWriter.write("\tjr $ra\n\n");
 		return null;
 	}
 
@@ -320,7 +320,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	public Register visit(IR_Function func) {
 		Register returnedValueReg;
 		//print func label
-		fileWriter.format("%s:\n\n", func.tl._name);
+		fileWriter.format("%s\n\n", func.tl._name);
 
 		//generate prologue
 		func.prologue.accept(this);
@@ -360,7 +360,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	@Override
 	public Register visit(IR_Label label) {
 		//write label and return
-		fileWriter.write(label._label._name + ":\n\n");
+		fileWriter.write(label._label._name + "\n\n");
 		return null;
 	}
 
@@ -439,7 +439,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//Set new frame pointer
 		fileWriter.write("\tadd $fp, $sp, 8\n");
 		//Allocate size for the frame
-		fileWriter.write("addi $sp, $sp, -" + prologue.frameSize+"\n");
+		fileWriter.write("\taddi $sp, $sp, -" + prologue.frameSize+"\n\n");
 		return null;
 	}
 
@@ -447,7 +447,12 @@ public class MipsGenerator implements IRVisitor<Register> {
 	public Register visit(IR_Seq seq) {
 		//traverse left son and return the result of right son
 		seq.leftExp.accept(this);
-	 	return seq.rightExp.accept(this);
+		
+		if (seq.rightExp == null){
+			return null;
+		}
+		
+		return seq.rightExp.accept(this);
 	}
 
 	@Override
