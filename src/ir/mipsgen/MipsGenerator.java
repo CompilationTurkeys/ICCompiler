@@ -87,12 +87,25 @@ public class MipsGenerator implements IRVisitor<Register> {
 	}
 
 	private void generateArrayAlloc() {
-		// TODO Auto-generated method stub
-		
+		//store size in a following reg
+		Register sizeReg = new TempRegister();
+		//save the first argument which is the array size in the sizeReg
+		//it is in offset 12 because the first argument is 'this'
+		fileWriter.format("\tlw %s, 12($fp)\n\n", sizeReg._name);
+		//increment size by one (for access violation)
+		fileWriter.format("\taddi %s, %s, 1\n\n", sizeReg._name, sizeReg._name);
+		//pass argument for syscall
+		fileWriter.format("\tmove $a0, %s\n\n", sizeReg._name);
+		//call sbrk syscall for memory allocation
+		fileWriter.format("\tli $v0 9\n\n");
+		//invoke syscall
+		fileWriter.format("\tsyscall\n\n");
+		//put array size in first place of the array for access violation check
+		fileWriter.format("\tsw %s, 0($v0)\n\n", sizeReg._name);
+
 	}
 
 	private void generateObjectAlloc() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -344,8 +357,24 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_NewObject newobj) {
-		// TODO Auto-generated method stub
-		return null;
+		//get tree generator instance
+		IRTreeGenerator treeGenInstance = IRTreeGenerator.Get();
+		//get allocation size
+		int objAllocSize = treeGenInstance.classMap.get(newobj.className).getAllocSize();
+		//Map<String,DispatchAttribute> classDispatchTable = treeGenInstance.dispachMethodsTablesMap.get(newobj.className);
+		
+		//set vtable name
+		String vtableName = "vtable_for_" + newobj.className;		
+		//pass argument for syscall
+		fileWriter.format("\tli $a0, %d\n\n", objAllocSize);
+		//call sbrk syscall for memory allocation
+		fileWriter.format("\tli $v0 9\n\n");
+		//invoke syscall
+		fileWriter.format("\tsyscall\n\n");
+		//save the address of the relevant dispatch table as a first word
+		fileWriter.format("\tsw %s, 0($v0)\n\n", vtableName);
+		
+		return new SpecialRegister("$v0");
 	}
 
 	@Override
