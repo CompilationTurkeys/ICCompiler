@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java_cup.runtime.*;
 import ic.ast.AST_Program;
+import ic.ir.IR_Exp;
 import ir.mipsgen.MipsGenerator;
 
 public class Main
@@ -30,7 +31,8 @@ public class Main
 			semEvaluator.evaluate();
 			
 			IRTreeGenerator treeGen = new IRTreeGenerator(root);
-			MipsGenerator mipsGen = new MipsGenerator(treeGen.generateIRTree());
+			IR_Exp irRoot = treeGen.generateIRTree();
+			MipsGenerator mipsGen = new MipsGenerator(irRoot);
 			mipsGen.generateCode(outputFilename);
 			
     	}

@@ -247,9 +247,13 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 		String leftOperName = leftOper._name;
 		String rightOperName = rightOper._name;
-
+		
 		String jumpToHereIfTrue = jump.jumpHereIfTrue._name.substring(0, jump.jumpHereIfTrue._name.length()-1);
-		String jumpToHereIfFalse = jump.jumpHereIfFalse._name.substring(0, jump.jumpHereIfFalse._name.length()-1);
+		String jumpToHereIfFalse = null;
+		
+		if (jump.jumpHereIfFalse != null){
+			jumpToHereIfFalse = jump.jumpHereIfFalse._name.substring(0, jump.jumpHereIfFalse._name.length()-1);
+		}
 		
 		String opDescription = jump.OP.getOpDescreption();
 		
@@ -272,7 +276,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 			fileWriter.format("\tbge %s,%s,%s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		
-		fileWriter.format("\tj %s\n\n", jumpToHereIfFalse);	
+		if (jumpToHereIfFalse != null){
+			fileWriter.format("\tj %s\n\n", jumpToHereIfFalse);	
+		}
 		return null;
 	}
 
@@ -333,6 +339,11 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_JumpLabel jlabel) {
+		
+		if (jlabel.tl == null){
+			return null;
+		}
+		
 		if (jlabel.tl instanceof SpecialLabel){
 			fileWriter.format("\tj %s\n\n", jlabel.tl._name);
 		}
@@ -351,7 +362,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 	@Override
 	public Register visit(IR_Label label) {
 		//write label and return
-		fileWriter.write(label._label._name + "\n\n");
+		if (label._label != null){
+			fileWriter.write(label._label._name + "\n\n");
+		}
 		return null;
 	}
 
@@ -414,7 +427,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
 		//save the address of the relevant dispatch table as a first word
-		fileWriter.format("\tsw %s,0($v0)\n\n", vtableName);
+		fileWriter.format("\tla $v0,%s\n\n", vtableName);
 		
 		return new SpecialRegister("$v0");
 	}
