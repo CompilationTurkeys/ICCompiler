@@ -29,6 +29,7 @@ import ic.ir.IR_String;
 import ic.ir.IR_Temp;
 import ic.ir.Register;
 import ic.ir.SpecialRegister;
+import ic.ir.TempLabel;
 import ic.ir.TempRegister;
 
 public class MipsGenerator implements IRVisitor<Register> {
@@ -50,9 +51,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 		MipsTerminate();
 		
-		//generateAccessViolation();
-		
-		addMethodDispatchTables();
+		generateAccessViolation();
 		
 		fileWriter.close();
 		
@@ -62,17 +61,14 @@ public class MipsGenerator implements IRVisitor<Register> {
 	private void generateAccessViolation() {
 
 		fileWriter.write("Label_Access_Violation:\n\n");
-		char[] avStr = "Access Violation! NOLOLGTFO!".toCharArray();
+		int magicNum = 666;
 		
-		for (char ch : avStr){
-			//pass char arg to syscall
-			fileWriter.format("\tli $a0, %d\n\n", (int)ch); 
-			//pass syscall number which is print_char
-			fileWriter.write("\tli $v0, 11\n\n"); 
-			//invoke syscall
-			fileWriter.write("\tsyscall\n\n"); 
-		}
-
+		//pass int arg to syscall
+		fileWriter.format("\tli $a0,%d\n\n", magicNum); 
+		//pass syscall number which is print_int
+		fileWriter.write("\tli $v0,1\n\n"); 
+		fileWriter.write("\tsyscall\n\n");
+		
 		//exit
 		fileWriter.write("\tli $v0,10\n\n");
 		fileWriter.write("\tsyscall\n\n");
@@ -82,7 +78,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	private void generatePrintInt() {
 
 		//load first argument to syscall
-		fileWriter.write("\tlw $a0, 12("+ IRTreeGenerator.FP +")\n\n"); 
+		fileWriter.write("\tlw $a0,12("+ IRTreeGenerator.FP +")\n\n"); 
 		//print int syscall is 1
 		fileWriter.write("\tli $v0,1\n\n"); 
 		// invoke syscall
@@ -104,9 +100,10 @@ public class MipsGenerator implements IRVisitor<Register> {
 	}
 
 	private void MipsInit() {
-		//adding strings to mips
+		//adding strings and dispatch tables to data segment
 		addStrings();
-		
+		addMethodDispatchTables();
+
 		//starting of text segment
 		fileWriter.write(".text\n\n");
 		fileWriter.write("main:\n\n");
@@ -115,15 +112,15 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 		//get allocation size
 		int objAllocSize = IRTreeGenerator.Get().classMap.get(IRTreeGenerator.Get().mainClassName).getAllocSize();
-		String vtableName = "vtable_for_" + IRTreeGenerator.Get().mainClassName;		
+		String vtableName = "VFTable_" + IRTreeGenerator.Get().mainClassName;		
 		//pass argument for syscall
-		fileWriter.format("\tli $a0, %d\n", objAllocSize);
+		fileWriter.format("\tli $a0,%d\n", objAllocSize);
 		//call sbrk syscall for memory allocation
-		fileWriter.format("\tli $v0 9\n");
+		fileWriter.format("\tli $v0,9\n");
 		//invoke syscall
 		fileWriter.format("\tsyscall\n");
 		//save the address of the relevant dispatch table as a first word
-		fileWriter.format("\tsw %s, 0($v0)\n\n", vtableName);
+		fileWriter.format("\tsw %s,0($v0)\n\n", vtableName);
 		
 		//pass this to main as parameter
 		PushToStack("$v0");
@@ -135,16 +132,27 @@ public class MipsGenerator implements IRVisitor<Register> {
 	private void addMethodDispatchTables() {
 		
 		for (Map.Entry<String,Map<String,DispatchAttribute>> dispatchEntry : IRTreeGenerator.Get().dispachMethodsTablesMap.entrySet()){
-			fileWriter.write("vtable_for_"+dispatchEntry.getKey()+": .word ");
+			fileWriter.write("\tVFTable_"+dispatchEntry.getKey()+": .word ");
 			int entriesCnt = 0;
 			int mapSize = dispatchEntry.getValue().entrySet().size();
 			
 			for (Map.Entry<String, DispatchAttribute> methodsEntry: dispatchEntry.getValue().entrySet()){
+				
+				String adjustedFuncName = null;
+				
+				for (TempLabel funcLabel : IRTreeGenerator.Get().labelSet){
+					if ( methodsEntry.getKey().equals(funcLabel.getFuncName()) 
+						&& methodsEntry.getValue().className.equals(funcLabel.getClassName())){
+						adjustedFuncName = funcLabel._name.substring(0, funcLabel._name.length()-1);
+						break;
+					}
+				}
+				
 				if (entriesCnt != mapSize - 1){
-					fileWriter.write(methodsEntry.getKey() +"_"+methodsEntry.getValue().className+",");
+					fileWriter.write(adjustedFuncName + ",");
 				}
 				else{
-					fileWriter.write(methodsEntry.getKey() +"_"+methodsEntry.getValue().className);
+					fileWriter.write(adjustedFuncName);
 				}
 				entriesCnt++;
 			}
@@ -162,13 +170,13 @@ public class MipsGenerator implements IRVisitor<Register> {
 	}
 
 	public void PushToStack(String registerName){
-		fileWriter.write("\taddi $sp, $sp, -4\n");
-		fileWriter.format("\tsw %s, 0($sp)\n\n", registerName);
+		fileWriter.write("\taddi $sp,$sp,-4\n");
+		fileWriter.format("\tsw %s,0($sp)\n\n", registerName);
 	}
 	
 	public void PopFromStack(String registerName){
-		fileWriter.format("\tsw $sp, 0(%s)\n", registerName);
-		fileWriter.write("\taddi $sp, $sp, 4\n\n");
+		fileWriter.format("\tsw $sp,0(%s)\n", registerName);
+		fileWriter.write("\taddi $sp,$sp,4\n\n");
 	}
 	
 	@Override
@@ -198,19 +206,19 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 		//Register that contains dispatch table addr
 		Register vtableReg = new TempRegister();
-		fileWriter.format("\tla %s, %s\n\n", vtableReg._name, "vtable_for_" + call.label.getClassName());
+		fileWriter.format("\tla %s,%s\n\n", vtableReg._name, "VFTable_" + call.label.getClassName());
 		//func addr inside the vtable
-		fileWriter.format("\taddi %s, %s, %d\n\n", vtableReg._name, vtableReg._name, funcOffset);
+		fileWriter.format("\taddi %s,%s,%d\n\n", vtableReg._name, vtableReg._name, funcOffset);
 		
 		//save return address in $ra
-		fileWriter.write("\taddi $ra, $sp, 0\n\n");
+		fileWriter.write("\taddi $ra,$sp,0\n\n");
 
 		//jump to function
 		fileWriter.format("\tjr %s\n\n", vtableReg._name);
 	
 		//pop function arguments if exists
 		if ( call.args != null ){
-			fileWriter.format("\taddi $sp, $sp, %d\n\n", call.args.size()*Frame.WORD_SIZE);
+			fileWriter.format("\taddi $sp,$sp,%d\n\n", call.args.size()*Frame.WORD_SIZE);
 		}
 
 		//restoring saved registers from the stack
@@ -236,22 +244,22 @@ public class MipsGenerator implements IRVisitor<Register> {
 		String opDescription = jump.OP.getOpDescreption();
 		
 		if (opDescription.equals(BinaryOpTypes.EQUALS.getOpDescreption())){
-			fileWriter.format("\tbeq %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
+			fileWriter.format("\tbeq %s,%s,%s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.NEQUALS.getOpDescreption())){
-			fileWriter.format("\tbne %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
+			fileWriter.format("\tbne %s,%s,%s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.LT.getOpDescreption())){
-			fileWriter.format("\tblt %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
+			fileWriter.format("\tblt %s,%s,%s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.GT.getOpDescreption())){
-			fileWriter.format("\tbgt %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
+			fileWriter.format("\tbgt %s,%s,%s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.LTE.getOpDescreption())){
-			fileWriter.format("\tble %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
+			fileWriter.format("\tble %s,%s,%s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.GTE.getOpDescreption())){
-			fileWriter.format("\tbge %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
+			fileWriter.format("\tbge %s,%s,%s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		
 		fileWriter.format("\tj %s\n\n", jumpToHereIfFalse);	
@@ -262,7 +270,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	public Register visit(IR_Const constant) {
 		//create register and store there a constant
 		Register reg = new TempRegister();
-		fileWriter.write("\tli "+ reg._name +", " + constant.value + "\n");
+		fileWriter.write("\tli "+ reg._name +"," + constant.value + "\n");
 		return reg;
 	}
 
@@ -270,13 +278,13 @@ public class MipsGenerator implements IRVisitor<Register> {
 	public Register visit(IR_Epilogue epilogue) {
 		
 		//Remove the current local variables frame
-		fileWriter.write("\taddi $sp, $sp, " + epilogue.frameSize +"\n");
+		fileWriter.write("\taddi $sp,$sp," + epilogue.frameSize +"\n");
 		//Load return address from stack
-		fileWriter.write("\tlw $ra, 8($sp)\n");
+		fileWriter.write("\tlw $ra,8($sp)\n");
 		//Restore old frame pointer from stack
-		fileWriter.write("\tlw $fp, 4($sp)\n");
+		fileWriter.write("\tlw $fp,4($sp)\n");
 		//Reset stack pointer
-		fileWriter.write("\tadd $sp, $sp, 8\n");
+		fileWriter.write("\tadd $sp,$sp,8\n");
 		//Return to caller using saved return address
 		fileWriter.write("\tjr $ra\n\n");
 		return null;
@@ -383,15 +391,15 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//Map<String,DispatchAttribute> classDispatchTable = treeGenInstance.dispachMethodsTablesMap.get(newobj.className);
 		
 		//set vtable name
-		String vtableName = "vtable_for_" + newobj.className;		
+		String vtableName = "VFTable_" + newobj.className;		
 		//pass argument for syscall
-		fileWriter.format("\tli $a0, %d\n\n", objAllocSize);
+		fileWriter.format("\tli $a0,%d\n\n", objAllocSize);
 		//call sbrk syscall for memory allocation
-		fileWriter.format("\tli $v0 9\n\n");
+		fileWriter.format("\tli $v0,9\n\n");
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
 		//save the address of the relevant dispatch table as a first word
-		fileWriter.format("\tsw %s, 0($v0)\n\n", vtableName);
+		fileWriter.format("\tsw %s,0($v0)\n\n", vtableName);
 		
 		return new SpecialRegister("$v0");
 	}
@@ -399,15 +407,15 @@ public class MipsGenerator implements IRVisitor<Register> {
 	@Override
 	public Register visit(IR_Prologue prologue) {
 		//Set new stack pointer
-		fileWriter.write("\tsub $sp, $sp, 8\n");
+		fileWriter.write("\tsub $sp,$sp,8\n");
 		//Save return address
-		fileWriter.write("\tsw $ra, 8($sp)\n");
+		fileWriter.write("\tsw $ra,8($sp)\n");
 		//Save old frame pointer
-		fileWriter.write("\tsw $fp, 4($sp)\n");
+		fileWriter.write("\tsw $fp,4($sp)\n");
 		//Set new frame pointer
-		fileWriter.write("\tadd $fp, $sp, 8\n");
+		fileWriter.write("\tadd $fp,$sp,8\n");
 		//Allocate size for the frame
-		fileWriter.write("\taddi $sp, $sp, -" + prologue.frameSize+"\n\n");
+		fileWriter.write("\taddi $sp,$sp,-" + prologue.frameSize+"\n\n");
 		return null;
 	}
 
@@ -429,7 +437,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		String strLabelName = str.label._name.substring(0,str.label._name.length()-1);
 		//load the string address to a new register
 		Register newReg = new TempRegister();
-		fileWriter.format("\tla %s, %s\n\n", newReg._name, strLabelName);
+		fileWriter.format("\tla %s,%s\n\n", newReg._name, strLabelName);
 		return newReg;
 	}
 
@@ -486,16 +494,15 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//get allocation size
 		Register arraySizeReg = array.arraySize.accept(this);
 		//increment size by one (for access violation)
-		fileWriter.format("\taddi %s, %s, 1\n\n", arraySizeReg._name, arraySizeReg._name);
+		fileWriter.format("\taddi %s,%s,1\n\n", arraySizeReg._name, arraySizeReg._name);
 		//pass argument for syscall
-		fileWriter.format("\tmove $a0, %s\n\n", arraySizeReg._name);
+		fileWriter.format("\tmove $a0,%s\n\n", arraySizeReg._name);
 		//call sbrk syscall for memory allocation
-		fileWriter.format("\tli $v0 9\n\n");
+		fileWriter.format("\tli $v0,9\n\n");
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
 		//return array pointer
 		return new SpecialRegister("$v0");
-		
 	}
 	
 }

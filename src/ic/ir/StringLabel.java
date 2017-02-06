@@ -3,7 +3,7 @@ package ic.ir;
 public class StringLabel extends Label {
 	
 	private static int counter = 0 ;
-	private static final String LABEL_PREFIX = "Str_";
+	private static final String LABEL_PREFIX = "String_";
 
 	
 	public StringLabel(){

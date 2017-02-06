@@ -1,10 +1,13 @@
 package ic.compiler;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import ic.ir.*;
 import ic.ast.*;
 
@@ -33,6 +36,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	 */
 	public Map<String, Map<String,DispatchAttribute>> dispachMethodsTablesMap = new HashMap<>();
 	public Map<String, Map<String,String>> dispachFieldsTablesMap = new HashMap<>();
+	public Set<TempLabel> labelSet = new HashSet<TempLabel>();  
+
 	public String mainClassName;
 	public Label accessViolationCallLabel = new TempLabel("AccessViolation");
 
@@ -339,7 +344,6 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp arrIndex = new IR_Binop(var.arraySize.accept(this, symTable),new IR_Const(1)
 				,BinaryOpTypes.PLUS);
 
-		//TODO: ACCESS VIOLATION!
 		Label access_violation_label= new SpecialLabel("Label_Access_Violation");
 
 		//Initialization check
@@ -348,7 +352,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				,accessViolationCallLabel,null);
 
 
-		Label everythingIsOkLabel = new SpecialLabel("OK_Label");
+		Label everythingIsOkLabel = new SpecialLabel("Label_OK");
 		IR_Exp checkSubscriptGeZero = 
 				new IR_Cjump(BinaryOpTypes.LT,arrIndex,new IR_Const(0),accessViolationCallLabel,null);
 
@@ -429,6 +433,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public IR_Exp visit(AST_Method method, IR_SymbolTable symTable) {
 	
 		TempLabel funcLabel = new TempLabel(method.methodName, symTable.getClassName());
+		labelSet.add(funcLabel);
 		MethodFrame newFuncFrame = new MethodFrame(funcLabel, method.methodArgs.size()+1);
 
 		IR_SymbolTable newSymTable = new IR_SymbolTable(symTable, symTable.getClassName(), newFuncFrame);

@@ -14,7 +14,7 @@ public class TempLabel extends Label {
 	public TempLabel(String funcName, String className){
 		this.className = className;
 		this.funcName = funcName;
-		_name = funcName + "_" + className + ":";
+		_name = LABEL_PREFIX + ++counter + "_" +  funcName + "_" + className + ":";
 	}
 	
 	public String getFuncName(){

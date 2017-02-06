@@ -1,4 +1,6 @@
 .data
+	VFTable_A: .word Label_4_f_A,Label_2_printInt_A,Label_12_main_A
+
 .text
 
 main:
@@ -6,16 +8,16 @@ main:
 	li $a0,4
 	li $v0,9
 	syscall
-	sw vtable_for_A,0($v0)
+	sw VFTable_A,0($v0)
 
 	addi $sp,$sp,-4
 	sw $v0,0($sp)
 
 	jal main_A
 
-	j Label_2_skipFunc
+	j Label_3_skipFunc
 
-printInt_A:
+Label_2_printInt_A:
 
 	sub $sp,$sp,8
 	sw $ra,8($sp)
@@ -41,11 +43,11 @@ printInt_A:
 	add $sp,$sp,8
 	jr $ra
 
-Label_2_skipFunc:
+Label_3_skipFunc:
 
-	j Label_8_skipFunc
+	j Label_11_skipFunc
 
-f_A:
+Label_4_f_A:
 
 	sub $sp,$sp,8
 	sw $ra,8($sp)
@@ -65,32 +67,32 @@ f_A:
 	lw Temp_5,0(Temp_6)
 
 	li Temp_8,4
-	bgt Temp_5,Temp_8,Label_3_T
+	bgt Temp_5,Temp_8,Label_5_T
 
-	j Label_4_F
+	j Label_6_F
 
-Label_3_T:
+Label_5_T:
 
 	li Temp_9,1
 	addi Temp_1,Temp_9,0
 
-	j Label_5_END
+	j Label_7_END
 
-Label_4_F:
+Label_6_F:
 
 	li Temp_10,0
 	addi Temp_1,Temp_10,0
 
-	j Label_5_END
+	j Label_7_END
 
-Label_5_END:
+Label_7_END:
 
 	li Temp_11,0
-	bne Temp_1,Temp_11,Label_6_if_cond_T
+	bne Temp_1,Temp_11,Label_9_if_cond_T
 
-	j Label_7_if_cond_F
+	j Label_10_if_cond_F
 
-Label_6_if_cond_T:
+Label_9_if_cond_T:
 
 	addi $sp,$sp,-4
 	sw $t0,0($sp)
@@ -132,7 +134,7 @@ Label_6_if_cond_T:
 	addi $sp,$sp,-4
 	sw Temp_15,0($sp)
 
-	la Temp_18,vtable_for_A
+	la Temp_18,VFTable_A
 
 	addi Temp_18,Temp_18,4
 
@@ -166,7 +168,7 @@ Label_6_if_cond_T:
 	sw $sp,0($t0)
 	addi $sp,$sp,4
 
-Label_7_if_cond_F:
+Label_10_if_cond_F:
 
 	addi $sp,$sp,4
 	lw $ra,8($sp)
@@ -174,11 +176,11 @@ Label_7_if_cond_F:
 	add $sp,$sp,8
 	jr $ra
 
-Label_8_skipFunc:
+Label_11_skipFunc:
 
-	j Label_9_skipFunc
+	j Label_14_skipFunc
 
-main_A:
+Label_12_main_A:
 
 	sub $sp,$sp,8
 	sw $ra,8($sp)
@@ -218,7 +220,7 @@ main_A:
 	addi $sp,$sp,-4
 	sw Temp_19,0($sp)
 
-	la Temp_22,vtable_for_A
+	la Temp_22,VFTable_A
 
 	addi Temp_22,Temp_22,0
 
@@ -258,10 +260,20 @@ main_A:
 	add $sp,$sp,8
 	jr $ra
 
-Label_9_skipFunc:
+Label_14_skipFunc:
 
 	li $v0,10
 	syscall
 
-VFTable_A: .word f_A,printInt_A,main_A
+Label_Access_Violation:
+
+	li $a0,666
+
+	li $v0,1
+
+	syscall
+
+	li $v0,10
+
+	syscall
 
