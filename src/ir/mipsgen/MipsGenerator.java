@@ -50,7 +50,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 		MipsTerminate();
 		
-		//MipsExternalFuncs();
+		//generateAccessViolation();
 		
 		addMethodDispatchTables();
 		
@@ -58,13 +58,6 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 	}
 
-
-	private void MipsExternalFuncs() {
-		
-		generatePrintInt();
-		generateArrayAlloc();
-		generateAccessViolation();
-	}
 
 	private void generateAccessViolation() {
 
@@ -86,30 +79,10 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 	}
 
-	private void generateArrayAlloc() {
-		//store size in a following reg
-		Register sizeReg = new TempRegister();
-		//save the first argument which is the array size in the sizeReg
-		//it is in offset 12 because the first argument is 'this'
-		fileWriter.format("\tlw %s, 12($fp)\n\n", sizeReg._name);
-		//increment size by one (for access violation)
-		fileWriter.format("\taddi %s, %s, 1\n\n", sizeReg._name, sizeReg._name);
-		//pass argument for syscall
-		fileWriter.format("\tmove $a0, %s\n\n", sizeReg._name);
-		//call sbrk syscall for memory allocation
-		fileWriter.format("\tli $v0 9\n\n");
-		//invoke syscall
-		fileWriter.format("\tsyscall\n\n");
-		//put array size in first place of the array for access violation check
-		fileWriter.format("\tsw %s, 0($v0)\n\n", sizeReg._name);
-
-	}
-
 	private void generatePrintInt() {
 
-		fileWriter.write("Label_PrintInt:\n\n");
-		//load argument to syscall
-		fileWriter.write("\tlw $a0,0("+ IRTreeGenerator.SP +")\n\n"); 
+		//load first argument to syscall
+		fileWriter.write("\tlw $a0, 12("+ IRTreeGenerator.FP +")\n\n"); 
 		//print int syscall is 1
 		fileWriter.write("\tli $v0,1\n\n"); 
 		// invoke syscall
@@ -120,8 +93,6 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.write("\tli $v0,11\n\n"); 
 		//invoke syscall
 		fileWriter.write("\tsyscall\n\n"); 
-		//return to caller
-		fileWriter.write("\tjr $ra\n\n");
 		
 	}
 
@@ -239,7 +210,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	
 		//pop function arguments if exists
 		if ( call.args != null ){
-			fileWriter.format("\taddi $sp, $sp, %d\n", call.args.size()*Frame.WORD_SIZE);
+			fileWriter.format("\taddi $sp, $sp, %d\n\n", call.args.size()*Frame.WORD_SIZE);
 		}
 
 		//restoring saved registers from the stack
@@ -259,36 +230,31 @@ public class MipsGenerator implements IRVisitor<Register> {
 		String leftOperName = leftOper._name;
 		String rightOperName = rightOper._name;
 
-		String jumpToHereIfTrue = jump.jumpHereIfTrue._name;
-		String jumpToHereIfFalse = jump.jumpHereIfFalse._name;
+		String jumpToHereIfTrue = jump.jumpHereIfTrue._name.substring(0, jump.jumpHereIfTrue._name.length()-1);
+		String jumpToHereIfFalse = jump.jumpHereIfFalse._name.substring(0, jump.jumpHereIfFalse._name.length()-1);
 		
 		String opDescription = jump.OP.getOpDescreption();
 		
 		if (opDescription.equals(BinaryOpTypes.EQUALS.getOpDescreption())){
 			fileWriter.format("\tbeq %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
-			fileWriter.format("\tbne %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfFalse);
 		}
 		else if (opDescription.equals(BinaryOpTypes.NEQUALS.getOpDescreption())){
 			fileWriter.format("\tbne %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
-			fileWriter.format("\tbeq %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.LT.getOpDescreption())){
 			fileWriter.format("\tblt %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
-			fileWriter.format("\tbge %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.GT.getOpDescreption())){
 			fileWriter.format("\tbgt %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
-			fileWriter.format("\tble %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.LTE.getOpDescreption())){
 			fileWriter.format("\tble %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
-			fileWriter.format("\tbgt %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		else if (opDescription.equals(BinaryOpTypes.GTE.getOpDescreption())){
 			fileWriter.format("\tbge %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
-			fileWriter.format("\tblt %s, %s, %s\n\n",leftOperName,rightOperName,jumpToHereIfTrue);
 		}
 		
+		fileWriter.format("\tj %s\n\n", jumpToHereIfFalse);	
 		return null;
 	}
 
@@ -318,31 +284,33 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_Function func) {
-		Register returnedValueReg;
+		Register returnedValueReg = null;
+		Register funcReturnReg = null;
 		//print func label
 		fileWriter.format("%s\n\n", func.tl._name);
 
 		//generate prologue
 		func.prologue.accept(this);
 		
-		//traverse the body of the function
-		returnedValueReg = func.body.accept(this);
-
-		if (returnedValueReg != null)
-		{
-			//move return value to $v0
-			fileWriter.format("\taddi $v0,%s,0\n\n", returnedValueReg);
-			//generate epilogue
-			func.epilogue.accept(this);
-			//return value in $v0
-			return new SpecialRegister("$v0");
+		
+		//check if the func is PrintInt
+		if (func.tl._name.toLowerCase().contains("printint")){
+			generatePrintInt();
 		}
-		else
-		{
-			//generate epilogue
-			func.epilogue.accept(this);
-			return null;
+		else{
+			//traverse the body of the function
+			returnedValueReg = func.body.accept(this);
+			if (returnedValueReg != null)
+			{
+				//move return value to $v0
+				fileWriter.format("\taddi $v0,%s,0\n\n", returnedValueReg);
+				//return value in $v0
+				funcReturnReg = new SpecialRegister("$v0");
+			}
 		}
+		
+		func.epilogue.accept(this);
+		return funcReturnReg;
 	}
 
 	@Override
@@ -514,9 +482,11 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_NewArray array) {	
+		
 		//get allocation size
 		Register arraySizeReg = array.arraySize.accept(this);
-
+		//increment size by one (for access violation)
+		fileWriter.format("\taddi %s, %s, 1\n\n", arraySizeReg._name, arraySizeReg._name);
 		//pass argument for syscall
 		fileWriter.format("\tmove $a0, %s\n\n", arraySizeReg._name);
 		//call sbrk syscall for memory allocation
@@ -525,6 +495,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("\tsyscall\n\n");
 		//return array pointer
 		return new SpecialRegister("$v0");
+		
 	}
 	
 }

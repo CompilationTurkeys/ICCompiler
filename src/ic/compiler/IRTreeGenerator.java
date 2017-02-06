@@ -161,12 +161,11 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	}
 
-	private IR_Mem IRExpAssign(FrameMember frameMember)
+	private IR_Binop IRExpAssign(FrameMember frameMember)
 	{
-		return new IR_Mem(
-				new IR_Binop(new IR_Const(frameMember.offset), 
+		return new IR_Binop(new IR_Const(frameMember.offset), 
 						new IR_Temp(new SpecialRegister(FP)),
-						BinaryOpTypes.PLUS));
+						BinaryOpTypes.PLUS);
 	}
 
 
@@ -322,7 +321,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 								new IR_Seq(
 										new IR_Label(accessViolationCallLabel),
 										new IR_Seq(
-												new IR_Call(access_violation_label, null),
+												new IR_JumpLabel(access_violation_label),
 												new IR_Label(okLabel))))),
 
 				new IR_Mem(
@@ -552,9 +551,10 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		Map<String,DispatchAttribute> dispachTable = new LinkedHashMap<>();
 		AST_ClassDecl currentClass = classAttr.getClassObject();
 
+		int dispatchOffset = 0;
+		
 		for (String name : classAttr.getMethodOffsetMap().keySet()) {
 
-			int dispatchOffset = 0;
 			//get main class name
 			if (name.equals("main")){
 				mainClassName = currentClass.className;

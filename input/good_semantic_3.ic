@@ -1,0 +1,80 @@
+/* merge sort */
+
+class PRINT {
+	void printInt(int i) {}
+}
+
+class List {
+	int head;
+	int list_length;
+	List tail;
+
+	void append(int i) {
+		list_length = list_length + 1;
+		if (tail == null) {
+			tail = new List();
+			tail.list_length = 0;
+			tail.tail = null;
+			head = i;
+			return;
+		}
+		tail.append(i);
+	}
+}
+
+class MergeSort {
+
+	List merge(List list1, List list2) {
+		List result = new List();
+		result.list_length = 0;
+		result.tail = null;
+
+		while(list1.list_length*list2.list_length != 0) {
+			List tmp1 = list2;
+			List tmp2 = list2;
+			if (tmp1.head <= tmp2.head) {
+				result.append(tmp1.head);
+				list1 = list1.tail;
+			}
+			if (tmp1.head > tmp2.head) {
+				result.append(tmp2.head);
+				list2 = list2.tail;
+			}
+		}
+
+		while(list1.list_length != 0) {
+			result.append(list1.head);
+			list1 = list1.tail;
+		}
+		while(list2.list_length != 0) {
+			result.append(list2.head);
+			list2 = list2.tail;
+		}
+
+		return result;
+	}
+
+
+	void main(string[] args) {
+		PRINT p;
+
+		List x = new List();
+		x.list_length = 0;
+		x.tail = null;
+		List y = new List();
+		y.list_length = 0;
+		y.tail = null;
+
+		x.append(5);
+		x.append(9);
+		x.append(3);
+		y.append(7);
+		y.append(2);
+		y.append(50);
+
+
+		MergeSort ms = new MergeSort();
+		List m = ms.merge(x, y);
+		p.printInt(m.head);
+	} 
+}

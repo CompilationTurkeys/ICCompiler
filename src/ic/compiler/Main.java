@@ -2,7 +2,6 @@ package ic.compiler;
    
 import java.io.File;
 import java.io.FileReader;
-import java.io.PrintWriter;
 import java_cup.runtime.*;
 import ic.ast.AST_Program;
 import ir.mipsgen.MipsGenerator;

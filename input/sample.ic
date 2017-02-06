@@ -1,0 +1,15 @@
+class A{
+
+	void printInt(int x) {}
+
+	void f(){
+		int x = 5;
+		if ( x > 4 ){
+			printInt(x);
+		}
+	}
+
+	void main(string[] args){
+		f();
+	}
+}

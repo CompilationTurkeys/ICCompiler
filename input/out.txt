@@ -1,0 +1,267 @@
+.data
+.text
+
+main:
+
+	li $a0, 4
+	li $v0 9
+	syscall
+	sw vtable_for_A, 0($v0)
+
+	addi $sp, $sp, -4
+	sw $v0, 0($sp)
+
+	jal main_A
+
+	j Label_2_skipFunc
+
+printInt_A:
+
+	sub $sp, $sp, 8
+	sw $ra, 8($sp)
+	sw $fp, 4($sp)
+	add $fp, $sp, 8
+	addi $sp, $sp, -0
+
+	lw $a0, 12($fp)
+
+	li $v0,1
+
+	syscall
+
+	li $a0,32
+
+	li $v0,11
+
+	syscall
+
+	addi $sp, $sp, 0
+	lw $ra, 8($sp)
+	lw $fp, 4($sp)
+	add $sp, $sp, 8
+	jr $ra
+
+Label_2_skipFunc:
+
+	j Label_8_skipFunc
+
+f_A:
+
+	sub $sp, $sp, 8
+	sw $ra, 8($sp)
+	sw $fp, 4($sp)
+	add $fp, $sp, 8
+	addi $sp, $sp, -4
+
+	li _t3, -4
+	add _t2,_t3,$fp
+
+	li _t4, 5
+	sw _t4,0(_t2)
+
+	li _t7, -4
+	add _t6,_t7,$fp
+
+	lw _t5,0(_t6)
+
+	li _t8, 4
+	bgt _t5, _t8, Label_3_T
+
+	j Label_4_F
+
+Label_3_T:
+
+	li _t9, 1
+	addi _t1,_t9,0
+
+	j Label_5_END
+
+Label_4_F:
+
+	li _t10, 0
+	addi _t1,_t10,0
+
+	j Label_5_END
+
+Label_5_END:
+
+	li _t11, 0
+	bne _t1, _t11, Label_6_if_cond_T
+
+	j Label_7_if_cond_F
+
+Label_6_if_cond_T:
+
+	addi $sp, $sp, -4
+	sw $t0, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t1, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t2, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t3, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t4, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t5, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t6, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t7, 0($sp)
+
+	li _t14, -4
+	add _t13,_t14,$fp
+
+	lw _t12,0(_t13)
+
+	addi $sp, $sp, -4
+	sw _t12, 0($sp)
+
+	li _t17, 8
+	add _t16,$fp,_t17
+
+	lw _t15,0(_t16)
+
+	addi $sp, $sp, -4
+	sw _t15, 0($sp)
+
+	la _t18, vtable_for_A
+
+	addi _t18, _t18, 4
+
+	addi $ra, $sp, 0
+
+	jr _t18
+
+	addi $sp, $sp, 8
+
+	sw $sp, 0($t7)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t6)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t5)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t4)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t3)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t2)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t1)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t0)
+	addi $sp, $sp, 4
+
+Label_7_if_cond_F:
+
+	addi $sp, $sp, 4
+	lw $ra, 8($sp)
+	lw $fp, 4($sp)
+	add $sp, $sp, 8
+	jr $ra
+
+Label_8_skipFunc:
+
+	j Label_9_skipFunc
+
+main_A:
+
+	sub $sp, $sp, 8
+	sw $ra, 8($sp)
+	sw $fp, 4($sp)
+	add $fp, $sp, 8
+	addi $sp, $sp, -0
+
+	addi $sp, $sp, -4
+	sw $t0, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t1, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t2, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t3, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t4, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t5, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t6, 0($sp)
+
+	addi $sp, $sp, -4
+	sw $t7, 0($sp)
+
+	li _t21, 8
+	add _t20,$fp,_t21
+
+	lw _t19,0(_t20)
+
+	addi $sp, $sp, -4
+	sw _t19, 0($sp)
+
+	la _t22, vtable_for_A
+
+	addi _t22, _t22, 0
+
+	addi $ra, $sp, 0
+
+	jr _t22
+
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t7)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t6)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t5)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t4)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t3)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t2)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t1)
+	addi $sp, $sp, 4
+
+	sw $sp, 0($t0)
+	addi $sp, $sp, 4
+
+	addi $sp, $sp, 0
+	lw $ra, 8($sp)
+	lw $fp, 4($sp)
+	add $sp, $sp, 8
+	jr $ra
+
+Label_9_skipFunc:
+
+	li $v0,10
+	syscall
+
+vtable_for_A: .word f_A,printInt_A,main_A
+

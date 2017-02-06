@@ -82,7 +82,7 @@ WHITESPACE		= {LINETERMINATOR} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
 IDENTIFIER		= [a-z][a-zA-Z_0-9]*
 STR			    = \"([^\\\"]|\\.)*\"
-CLASSID 		= [A-Z][a-z_0-9]*
+CLASSID 		= [A-Z][a-zA-Z_0-9]*
 COMMENTS		= "/*"((("*"[^/])?)|[^*])*"*/" | "//".*
 
    
