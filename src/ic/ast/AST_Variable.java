@@ -3,13 +3,13 @@ package ic.ast;
 
 public abstract class AST_Variable extends AST_Exp
 {
-	int moish;
+	public boolean isAssigned = true;
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + moish;
+		result = prime * result + (isAssigned ? 1231 : 1237);
 		return result;
 	}
 
@@ -22,8 +22,9 @@ public abstract class AST_Variable extends AST_Exp
 		if (getClass() != obj.getClass())
 			return false;
 		AST_Variable other = (AST_Variable) obj;
-		if (moish != other.moish)
+		if (isAssigned != other.isAssigned)
 			return false;
 		return true;
 	}
+
 }

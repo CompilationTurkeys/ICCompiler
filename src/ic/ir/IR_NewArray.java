@@ -20,8 +20,7 @@ public class IR_NewArray extends IR_Exp {
 
 	@Override
 	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
-		// TODO Auto-generated method stub
-		return null;
+		return visitor.visit(this);
 	}
 
 }

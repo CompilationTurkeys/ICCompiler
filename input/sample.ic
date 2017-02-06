@@ -1,15 +1,15 @@
 class A{
+	int x;
+	int[] y;	
 
 	void printInt(int x) {}
 
 	void f(){
-		int x = 5;
-		if ( x > 4 ){
-			printInt(x);
-		}
+		printInt(1);
 	}
 
 	void main(string[] args){
-		f();
+		A newobj = new A();
+		newobj.y = new int[10];
 	}
 }

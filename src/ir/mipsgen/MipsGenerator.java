@@ -28,6 +28,7 @@ import ic.ir.IR_Seq;
 import ic.ir.IR_String;
 import ic.ir.IR_Temp;
 import ic.ir.Register;
+import ic.ir.SpecialLabel;
 import ic.ir.SpecialRegister;
 import ic.ir.TempLabel;
 import ic.ir.TempRegister;
@@ -60,7 +61,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	private void generateAccessViolation() {
 
-		fileWriter.write("Label_Access_Violation:\n\n");
+		fileWriter.write("Label_0_Access_Violation:\n\n");
 		int magicNum = 666;
 		
 		//pass int arg to syscall
@@ -120,12 +121,21 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//invoke syscall
 		fileWriter.format("\tsyscall\n");
 		//save the address of the relevant dispatch table as a first word
-		fileWriter.format("\tsw %s,0($v0)\n\n", vtableName);
+		fileWriter.format("\tla $v0,%s\n\n", vtableName);
 		
 		//pass this to main as parameter
 		PushToStack("$v0");
 		
-		fileWriter.write("\tjal main_" + IRTreeGenerator.Get().mainClassName +"\n\n");
+		String adjustedMainName = null;
+		for (TempLabel funcLabel : IRTreeGenerator.Get().labelSet){
+			if ( "main".equals(funcLabel.getFuncName()) 
+				&& IRTreeGenerator.Get().mainClassName.equals(funcLabel.getClassName())){
+				adjustedMainName = funcLabel._name.substring(0, funcLabel._name.length()-1);
+				break;
+			}
+		}
+		
+		fileWriter.write("\tjal " + adjustedMainName +"\n\n");
 			
 	}
 
@@ -205,16 +215,16 @@ public class MipsGenerator implements IRVisitor<Register> {
 		int funcOffset = funcDispatchAttr.offset * Frame.WORD_SIZE;
 		
 		//Register that contains dispatch table addr
-		Register vtableReg = new TempRegister();
-		fileWriter.format("\tla %s,%s\n\n", vtableReg._name, "VFTable_" + call.label.getClassName());
+		String vtableReg = "$t0";
+		fileWriter.format("\tla %s,%s\n\n", vtableReg, "VFTable_" + call.label.getClassName());
 		//func addr inside the vtable
-		fileWriter.format("\taddi %s,%s,%d\n\n", vtableReg._name, vtableReg._name, funcOffset);
+		fileWriter.format("\taddi %s,%s,%d\n\n", vtableReg, vtableReg, funcOffset);
 		
 		//save return address in $ra
 		fileWriter.write("\taddi $ra,$sp,0\n\n");
 
 		//jump to function
-		fileWriter.format("\tjr %s\n\n", vtableReg._name);
+		fileWriter.format("\tjr %s\n\n", vtableReg);
 	
 		//pop function arguments if exists
 		if ( call.args != null ){
@@ -284,7 +294,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//Restore old frame pointer from stack
 		fileWriter.write("\tlw $fp,4($sp)\n");
 		//Reset stack pointer
-		fileWriter.write("\tadd $sp,$sp,8\n");
+		fileWriter.write("\taddi $sp,$sp,8\n");
 		//Return to caller using saved return address
 		fileWriter.write("\tjr $ra\n\n");
 		return null;
@@ -323,7 +333,12 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_JumpLabel jlabel) {
-		fileWriter.format("\tj %s\n\n", jlabel.tl._name.substring(0, jlabel.tl._name.length()-1));
+		if (jlabel.tl instanceof SpecialLabel){
+			fileWriter.format("\tj %s\n\n", jlabel.tl._name);
+		}
+		else{
+			fileWriter.format("\tj %s\n\n", jlabel.tl._name.substring(0, jlabel.tl._name.length()-1));
+		}
 		return null;
 	}
 
@@ -407,13 +422,13 @@ public class MipsGenerator implements IRVisitor<Register> {
 	@Override
 	public Register visit(IR_Prologue prologue) {
 		//Set new stack pointer
-		fileWriter.write("\tsub $sp,$sp,8\n");
+		fileWriter.write("\taddi $sp,$sp,-8\n");
 		//Save return address
 		fileWriter.write("\tsw $ra,8($sp)\n");
 		//Save old frame pointer
 		fileWriter.write("\tsw $fp,4($sp)\n");
 		//Set new frame pointer
-		fileWriter.write("\tadd $fp,$sp,8\n");
+		fileWriter.write("\taddi $fp,$sp,8\n");
 		//Allocate size for the frame
 		fileWriter.write("\taddi $sp,$sp,-" + prologue.frameSize+"\n\n");
 		return null;
@@ -496,7 +511,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//increment size by one (for access violation)
 		fileWriter.format("\taddi %s,%s,1\n\n", arraySizeReg._name, arraySizeReg._name);
 		//pass argument for syscall
-		fileWriter.format("\tmove $a0,%s\n\n", arraySizeReg._name);
+		fileWriter.format("\tmov $a0,%s\n\n", arraySizeReg._name);
 		//call sbrk syscall for memory allocation
 		fileWriter.format("\tli $v0,9\n\n");
 		//invoke syscall

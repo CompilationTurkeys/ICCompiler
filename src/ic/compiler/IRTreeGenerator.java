@@ -122,6 +122,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	public IR_Exp visit(AST_StmtVarAssignment stmt, IR_SymbolTable symTable) {
 		IR_Exp assignExp = stmt.assignExp.accept(this, symTable);
+		stmt.var.isAssigned = false;
 		IR_Exp var = stmt.var.accept(this,symTable);
 		return new IR_Move(var, assignExp, true);
 	}
@@ -169,8 +170,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	private IR_Binop IRExpAssign(FrameMember frameMember)
 	{
 		return new IR_Binop(new IR_Const(frameMember.offset), 
-						new IR_Temp(new SpecialRegister(FP)),
-						BinaryOpTypes.PLUS);
+				new IR_Temp(new SpecialRegister(FP)),
+				BinaryOpTypes.PLUS);
 	}
 
 
@@ -269,7 +270,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		if (call.callingExp != null){
 			callingExp = call.callingExp.accept(this, symTable);
-			callingExpType = SemanticEvaluator.Get().callingExpMap.get(call.callingExp);
+			callingExpType = SemanticEvaluator.Get().callingExpMap.get(call.callingExp);		
 		}
 		else{
 			callingExp = null;
@@ -281,6 +282,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			call.argList.stream().forEach(arg -> argsList.addLast(arg.accept(this,symTable)));
 		}
 
+		IR_Exp boundariesCheck = null;
+
 		if (callingExp == null){
 			callingExp = new IR_Mem(
 					new IR_Binop(
@@ -288,12 +291,28 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 							new IR_Const(THIS_OFFSET),
 							BinaryOpTypes.PLUS)); 
 		}
+		else{
+
+			Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
+			Label okLabel = new TempLabel("AllOK");
+			IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, callingExp, new IR_Const(0),
+					accessViolationCallLabel, okLabel);
+
+			boundariesCheck =	new IR_Seq(
+					checkInitialization,
+					new IR_Seq(
+							new IR_Label(accessViolationCallLabel),
+							new IR_Seq(
+									new IR_JumpLabel(access_violation_label),
+									new IR_Label(okLabel))));
+		}
 
 		argsList.addLast(callingExp);
 
 		TempLabel newFuncLabel = new TempLabel(call.funcName, callingExpType);
 
-		return new IR_Call(newFuncLabel, argsList);
+		return boundariesCheck == null ? new IR_Call(newFuncLabel, argsList) 
+				: new IR_Seq(boundariesCheck, new IR_Call(newFuncLabel, argsList));
 
 	}
 
@@ -311,29 +330,38 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		varExp = var.exp.accept(this, symTable);
 		varExpType = SemanticEvaluator.Get().callingExpMap.get(var.exp);
 
-		Label access_violation_label= new SpecialLabel("Label_Access_Violation");
+		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
 		Label okLabel = new TempLabel("AllOK");
 		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp, new IR_Const(0),
 				accessViolationCallLabel, okLabel);
 
 		int fieldOffset = classMap.get(varExpType).getFieldOffset(var.fieldName);
 
+		IR_Exp varSubTree = null;
+		if (var.isAssigned){
+			varSubTree = new IR_Mem(
+					new IR_Binop(
+							new IR_Const((fieldOffset)*MethodFrame.WORD_SIZE),
+							varExp,
+							BinaryOpTypes.PLUS));
+		}
+		else{
+			varSubTree = 	new IR_Binop(
+					new IR_Const((fieldOffset)*MethodFrame.WORD_SIZE),
+					varExp,
+					BinaryOpTypes.PLUS);
+		}
+
 		return new IR_Seq(
 				new IR_Seq(
 						checkInitialization,
 						new IR_Seq(
-								new IR_JumpLabel(okLabel),
+								new IR_Label(accessViolationCallLabel),
 								new IR_Seq(
-										new IR_Label(accessViolationCallLabel),
-										new IR_Seq(
-												new IR_JumpLabel(access_violation_label),
-												new IR_Label(okLabel))))),
+										new IR_JumpLabel(access_violation_label),
+										new IR_Label(okLabel)))),
 
-				new IR_Mem(
-						new IR_Binop(
-								new IR_Const((fieldOffset+1)*MethodFrame.WORD_SIZE),
-								varExp,
-								BinaryOpTypes.PLUS)));		
+				varSubTree);
 	}
 
 	@Override
@@ -344,7 +372,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp arrIndex = new IR_Binop(var.arraySize.accept(this, symTable),new IR_Const(1)
 				,BinaryOpTypes.PLUS);
 
-		Label access_violation_label= new SpecialLabel("Label_Access_Violation");
+		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
 
 		//Initialization check
 
@@ -352,7 +380,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				,accessViolationCallLabel,null);
 
 
-		Label everythingIsOkLabel = new SpecialLabel("Label_OK");
+		Label everythingIsOkLabel = new SpecialLabel("Label_0_OK");
 		IR_Exp checkSubscriptGeZero = 
 				new IR_Cjump(BinaryOpTypes.LT,arrIndex,new IR_Const(0),accessViolationCallLabel,null);
 
@@ -374,10 +402,16 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 														new IR_JumpLabel(access_violation_label),
 														new IR_Label(everythingIsOkLabel)))))));
 
+		IR_Exp varSubTree = null;
+		if (var.isAssigned){
+			varSubTree = new IR_Mem(new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS));
+		}
+		else{
+			varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
+		}
 
 
-
-		return new IR_Seq(boundariesChecks,new IR_Mem(new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS)));
+		return new IR_Seq(boundariesChecks, varSubTree);
 
 	}
 
@@ -387,14 +421,26 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		int varOffset;
 		IR_Attribute varAttr = findVar(var.fieldName, symTable);
+		IR_Exp varSubTree = null;
 
 		if (varAttr != null){
 			varOffset = varAttr.frameMember.offset;
-			return new IR_Mem(
-					new IR_Binop(
-							new IR_Const(varOffset),
-							new IR_Temp(new SpecialRegister(FP)),
-							BinaryOpTypes.PLUS));
+
+			if (var.isAssigned){
+				varSubTree = new IR_Mem(
+						new IR_Binop(
+								new IR_Const(varOffset),
+								new IR_Temp(new SpecialRegister(FP)),
+								BinaryOpTypes.PLUS));
+			}
+			else{
+				varSubTree = new IR_Binop(
+								new IR_Const(varOffset),
+								new IR_Temp(new SpecialRegister(FP)),
+								BinaryOpTypes.PLUS);
+			}
+
+			return varSubTree;
 		}
 		else{
 			varOffset = classMap.get(symTable.getClassName()).getFieldOffset(var.fieldName);
@@ -405,11 +451,23 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 							new IR_Temp(new SpecialRegister(FP)),
 							BinaryOpTypes.PLUS));
 
-			return new IR_Mem(
-					new IR_Binop(
-							new IR_Const(varOffset*Frame.WORD_SIZE),
-							thisAddr,
-							BinaryOpTypes.PLUS));	
+			
+			if (var.isAssigned){
+				varSubTree = new IR_Mem(
+								new IR_Binop(
+										new IR_Const(varOffset*Frame.WORD_SIZE),
+										thisAddr,
+										BinaryOpTypes.PLUS));
+			}
+			else{
+				varSubTree = new IR_Binop(
+								new IR_Const(varOffset*Frame.WORD_SIZE),
+								thisAddr,
+								BinaryOpTypes.PLUS);
+			}
+
+			return varSubTree;
+			
 		}
 	}
 
@@ -431,7 +489,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_Method method, IR_SymbolTable symTable) {
-	
+
 		TempLabel funcLabel = new TempLabel(method.methodName, symTable.getClassName());
 		labelSet.add(funcLabel);
 		MethodFrame newFuncFrame = new MethodFrame(funcLabel, method.methodArgs.size()+1);
@@ -557,7 +615,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		AST_ClassDecl currentClass = classAttr.getClassObject();
 
 		int dispatchOffset = 0;
-		
+
 		for (String name : classAttr.getMethodOffsetMap().keySet()) {
 
 			//get main class name
