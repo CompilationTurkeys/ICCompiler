@@ -79,7 +79,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	private void generatePrintInt() {
 
 		//load first argument to syscall
-		fileWriter.write("\tlw $a0,12("+ IRTreeGenerator.FP +")\n\n"); 
+		fileWriter.write("\tlw $a0,8("+ IRTreeGenerator.FP +")\n\n"); 
 		//print int syscall is 1
 		fileWriter.write("\tli $v0,1\n\n"); 
 		// invoke syscall
@@ -108,20 +108,32 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//starting of text segment
 		fileWriter.write(".text\n\n");
 		fileWriter.write("main:\n\n");
-		
+
 		//CREATE DUMMY OBJECT FOR MAIN
 		
 		//get allocation size
 		int objAllocSize = IRTreeGenerator.Get().classMap.get(IRTreeGenerator.Get().mainClassName).getAllocSize();
-		String vtableName = "VFTable_" + IRTreeGenerator.Get().mainClassName;		
+		String vtableName = "VFTable_" + IRTreeGenerator.Get().mainClassName;	
+		
+		//initialize registers in use
+		//for (int i=0; i<=7; i++){
+		//	fileWriter.format("\tmov %s,%s\n\n", "$t" + i, vtableName);
+		//}
+		
 		//pass argument for syscall
 		fileWriter.format("\tli $a0,%d\n", objAllocSize);
 		//call sbrk syscall for memory allocation
 		fileWriter.format("\tli $v0,9\n");
 		//invoke syscall
-		fileWriter.format("\tsyscall\n");
-		//save the address of the relevant dispatch table as a first word
-		fileWriter.format("\tla $v0,%s\n\n", vtableName);
+		fileWriter.format("\tsyscall\n\n");
+		
+		//save vftable addr in an object
+		Register vtablePtr = new TempRegister();
+		//Register vtableReg = new TempRegister();
+
+		fileWriter.format("\tla %s,%s\n\n", vtablePtr._name, vtableName);
+		//fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg._name, vtablePtr._name);
+		fileWriter.format("\tsw %s,0(%s)\n\n", vtablePtr._name, "$v0");
 		
 		//pass this to main as parameter
 		PushToStack("$v0");
@@ -134,6 +146,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 				break;
 			}
 		}
+		
 		
 		fileWriter.write("\tjal " + adjustedMainName +"\n\n");
 			
@@ -193,9 +206,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 	public Register visit(IR_Call call) {
 		
 		//saving registers by pushing them to the stack
-		for (int i=0;  i<=7 ; i++){
-			PushToStack("$t"+i);
-		}
+		//for (int i=0;  i<=7 ; i++){
+		//	PushToStack("$t"+i);
+		//}
 		
 		//push arguments to stack
 		if ( call.args != null ){
@@ -214,17 +227,17 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//get func vtable offset
 		int funcOffset = funcDispatchAttr.offset * Frame.WORD_SIZE;
 		
+
 		//Register that contains dispatch table addr
 		String vtableReg = "$t0";
 		fileWriter.format("\tla %s,%s\n\n", vtableReg, "VFTable_" + call.label.getClassName());
-		//func addr inside the vtable
+		//calculate vftable + offset
 		fileWriter.format("\taddi %s,%s,%d\n\n", vtableReg, vtableReg, funcOffset);
-		
-		//save return address in $ra
-		fileWriter.write("\taddi $ra,$sp,0\n\n");
-
+		//func addr inside the vtable
+		fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg, vtableReg);
+			
 		//jump to function
-		fileWriter.format("\tjr %s\n\n", vtableReg);
+		fileWriter.format("\tjalr %s\n\n", vtableReg);
 	
 		//pop function arguments if exists
 		if ( call.args != null ){
@@ -232,9 +245,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 		}
 
 		//restoring saved registers from the stack
-		for (int i=7;  i>=0 ; i--){
-			PopFromStack("$t"+i);
-		}
+		//for (int i=7;  i>=0 ; i--){
+		//	PopFromStack("$t"+i);
+		//}
 		
 		return new SpecialRegister("$v0");
 	}
@@ -293,17 +306,14 @@ public class MipsGenerator implements IRVisitor<Register> {
 	@Override
 	public Register visit(IR_Epilogue epilogue) {
 		
-		//Remove the current local variables frame
-		fileWriter.write("\taddi $sp,$sp," + epilogue.frameSize +"\n");
-		//Load return address from stack
-		fileWriter.write("\tlw $ra,8($sp)\n");
-		//Restore old frame pointer from stack
-		fileWriter.write("\tlw $fp,4($sp)\n");
-		//Reset stack pointer
-		fileWriter.write("\taddi $sp,$sp,8\n");
+		//Restore stack pointer
+		fileWriter.write("\tmov $sp,$fp\n");
+		//Restore ebp
+		PopFromStack("$fp");
 		//Return to caller using saved return address
 		fileWriter.write("\tjr $ra\n\n");
 		return null;
+		
 	}
 
 	@Override
@@ -434,14 +444,10 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_Prologue prologue) {
-		//Set new stack pointer
-		fileWriter.write("\taddi $sp,$sp,-8\n");
-		//Save return address
-		fileWriter.write("\tsw $ra,8($sp)\n");
 		//Save old frame pointer
-		fileWriter.write("\tsw $fp,4($sp)\n");
+		PushToStack("$fp");
 		//Set new frame pointer
-		fileWriter.write("\taddi $fp,$sp,8\n");
+		fileWriter.write("\tmov $fp,$sp\n");
 		//Allocate size for the frame
 		fileWriter.write("\taddi $sp,$sp,-" + prologue.frameSize+"\n\n");
 		return null;

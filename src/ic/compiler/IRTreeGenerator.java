@@ -15,7 +15,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	public static final String FP="$fp";
 	public static final String SP="$sp";
-	private static final int THIS_OFFSET = 8;
+	private static final int THIS_OFFSET = 4;
 	private static IRTreeGenerator _instance;
 
 	private IR_Exp irRoot;

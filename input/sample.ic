@@ -1,15 +1,7 @@
 class A{
-	int x;
-	int[] y;	
-
 	void printInt(int x) {}
 
-	void f(){
-		printInt(1);
-	}
-
 	void main(string[] args){
-		A newobj = new A();
-		newobj.y = new int[10];
+		printInt(5);
 	}
 }
