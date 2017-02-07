@@ -225,13 +225,14 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	@Override
 	public IR_Exp visit(AST_StmtWhile stmt, IR_SymbolTable symTable) {
 
-		IR_Exp cond = null, body = null;
+		IR_Exp condFirst = null, body = null, condSecond = null;
 
 		TempLabel loop = new TempLabel("while_loop");
 		TempLabel exitLoop = new TempLabel("while_exit_loop");
 
-		cond = stmt.cond.accept(this, symTable);
-
+		condFirst = stmt.cond.accept(this, symTable);
+		condSecond = stmt.cond.accept(this, symTable);
+		
 		if (stmt.body != null){
 			IR_SymbolTable newScopeTable = new IR_SymbolTable(symTable, symTable.getClassName());
 			symTable.addChild(stmt.body, newScopeTable);
@@ -244,7 +245,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 						new IR_Seq(
 								new IR_Cjump(
 										BinaryOpTypes.NEQUALS,
-										cond,
+										condFirst,
 										new IR_Const(0),
 										loop,
 										exitLoop),
@@ -254,7 +255,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 												body, 
 												new IR_Cjump(
 														BinaryOpTypes.NEQUALS,
-														cond,
+														condSecond,
 														new IR_Const(0),
 														loop,
 														exitLoop)))),

@@ -704,7 +704,7 @@ Label_2_printInt_A:
 
 	sp = fp;
 
-	*(fp) = (int) (sp+(0));
+	fp = (int *) *(sp + 0);
 
 	sp = (int *) ((int) sp + 4);
 
@@ -715,7 +715,7 @@ Label_2_printInt_A:
 
 Label_3_skipFunc:
 
-	goto Label_6_skipFunc;
+	goto Label_7_skipFunc;
 
 Label_4_main_A:
 
@@ -725,23 +725,35 @@ Label_4_main_A:
 
 	fp = sp;
 
-	sp = (int *) ((int) sp + 0);
+	sp = (int *) ((int) sp + -4);
 
-	Temp_2 = (int *) 5;
+	Temp_3 = (int *) -4;
+
+	Temp_2 =(int *) (((int) Temp_3) + ((int) fp));
+
+	Temp_4 = (int *) 1;
+
+	*(Temp_2) = (int) (Temp_4+(0));
+
+	Temp_7 = (int *) -4;
+
+	Temp_6 =(int *) (((int) Temp_7) + ((int) fp));
+
+	Temp_5 = (int *) *(Temp_6 + 0);
 
 	sp = (int *) ((int) sp + -4);
 
-	*(sp) = (int) (Temp_2+(0));
+	*(sp) = (int) (Temp_5+(0));
 
-	Temp_5 = (int *) 4;
+	Temp_10 = (int *) 4;
 
-	Temp_4 =(int *) (((int) fp) + ((int) Temp_5));
+	Temp_9 =(int *) (((int) fp) + ((int) Temp_10));
 
-	Temp_3 = (int *) *(Temp_4 + 0);
+	Temp_8 = (int *) *(Temp_9 + 0);
 
 	sp = (int *) ((int) sp + -4);
 
-	*(sp) = (int) (Temp_3+(0));
+	*(sp) = (int) (Temp_8+(0));
 
 	t0 = (int *) VFTable_A;
 
@@ -762,11 +774,64 @@ Label_4_main_A:
 		jmp t0
 	}
 
-	sp = (int *) ((int) sp + 8);
+	Temp_12 = (int *) -4;
+
+	Temp_11 =(int *) (((int) Temp_12) + ((int) fp));
+
+	Temp_16 = (int *) -4;
+
+	Temp_15 =(int *) (((int) Temp_16) + ((int) fp));
+
+	Temp_14 = (int *) *(Temp_15 + 0);
+
+	Temp_17 = (int *) 1;
+
+	Temp_13 =(int *) (((int) Temp_14) + ((int) Temp_17));
+
+	*(Temp_11) = (int) (Temp_13+(0));
+
+	Temp_20 = (int *) -4;
+
+	Temp_19 =(int *) (((int) Temp_20) + ((int) fp));
+
+	Temp_18 = (int *) *(Temp_19 + 0);
+
+	sp = (int *) ((int) sp + -4);
+
+	*(sp) = (int) (Temp_18+(0));
+
+	Temp_23 = (int *) 4;
+
+	Temp_22 =(int *) (((int) fp) + ((int) Temp_23));
+
+	Temp_21 = (int *) *(Temp_22 + 0);
+
+	sp = (int *) ((int) sp + -4);
+
+	*(sp) = (int) (Temp_21+(0));
+
+	t0 = (int *) VFTable_A;
+
+	t0 = (int *) ((int) t0 + 0);
+
+	t0 = (int *) *(t0 + 0);
+
+	__asm
+	{
+		call _here2
+		_here2: pop eax
+		add eax,15
+		mov ra,eax
+	}
+
+	__asm
+	{
+		jmp t0
+	}
 
 	sp = fp;
 
-	*(fp) = (int) (sp+(0));
+	fp = (int *) *(sp + 0);
 
 	sp = (int *) ((int) sp + 4);
 
@@ -775,7 +840,7 @@ Label_4_main_A:
 		jmp ra
 	}
 
-Label_6_skipFunc:
+Label_7_skipFunc:
 
 	exit(0);
 

@@ -198,7 +198,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	}
 	
 	public void PopFromStack(String registerName){
-		fileWriter.format("\tsw $sp,0(%s)\n", registerName);
+		fileWriter.format("\tlw %s,0($sp)\n", registerName);
 		fileWriter.write("\taddi $sp,$sp,4\n\n");
 	}
 	

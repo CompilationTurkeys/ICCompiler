@@ -2,6 +2,9 @@ class A{
 	void printInt(int x) {}
 
 	void main(string[] args){
-		printInt(5);
+		int x = 1;
+		printInt(x);
+		x = x + 1;
+		printInt(x);
 	}
 }

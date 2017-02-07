@@ -41,14 +41,14 @@ Label_2_printInt_A:
 	syscall
 
 	mov $sp,$fp
-	sw $sp,0($fp)
+	lw $fp,0($sp)
 	addi $sp,$sp,4
 
 	jr $ra
 
 Label_3_skipFunc:
 
-	j Label_6_skipFunc
+	j Label_7_skipFunc
 
 Label_4_main_A:
 
@@ -56,19 +56,29 @@ Label_4_main_A:
 	sw $fp,0($sp)
 
 	mov $fp,$sp
-	addi $sp,$sp,-0
-
-	li Temp_2,5
 	addi $sp,$sp,-4
-	sw Temp_2,0($sp)
 
-	li Temp_5,4
-	add Temp_4,$fp,Temp_5
+	li Temp_3,-4
+	add Temp_2,Temp_3,$fp
 
-	lw Temp_3,0(Temp_4)
+	li Temp_4,1
+	sw Temp_4,0(Temp_2)
+
+	li Temp_7,-4
+	add Temp_6,Temp_7,$fp
+
+	lw Temp_5,0(Temp_6)
 
 	addi $sp,$sp,-4
-	sw Temp_3,0($sp)
+	sw Temp_5,0($sp)
+
+	li Temp_10,4
+	add Temp_9,$fp,Temp_10
+
+	lw Temp_8,0(Temp_9)
+
+	addi $sp,$sp,-4
+	sw Temp_8,0($sp)
 
 	la $t0,VFTable_A
 
@@ -78,15 +88,50 @@ Label_4_main_A:
 
 	jalr $t0
 
-	addi $sp,$sp,8
+	li Temp_12,-4
+	add Temp_11,Temp_12,$fp
+
+	li Temp_16,-4
+	add Temp_15,Temp_16,$fp
+
+	lw Temp_14,0(Temp_15)
+
+	li Temp_17,1
+	add Temp_13,Temp_14,Temp_17
+
+	sw Temp_13,0(Temp_11)
+
+	li Temp_20,-4
+	add Temp_19,Temp_20,$fp
+
+	lw Temp_18,0(Temp_19)
+
+	addi $sp,$sp,-4
+	sw Temp_18,0($sp)
+
+	li Temp_23,4
+	add Temp_22,$fp,Temp_23
+
+	lw Temp_21,0(Temp_22)
+
+	addi $sp,$sp,-4
+	sw Temp_21,0($sp)
+
+	la $t0,VFTable_A
+
+	addi $t0,$t0,0
+
+	lw $t0,0($t0)
+
+	jalr $t0
 
 	mov $sp,$fp
-	sw $sp,0($fp)
+	lw $fp,0($sp)
 	addi $sp,$sp,4
 
 	jr $ra
 
-Label_6_skipFunc:
+Label_7_skipFunc:
 
 	li $v0,10
 	syscall
