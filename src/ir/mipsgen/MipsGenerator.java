@@ -27,6 +27,7 @@ import ic.ir.IR_Prologue;
 import ic.ir.IR_Seq;
 import ic.ir.IR_String;
 import ic.ir.IR_Temp;
+import ic.ir.Label;
 import ic.ir.Register;
 import ic.ir.SpecialLabel;
 import ic.ir.SpecialRegister;
@@ -115,10 +116,6 @@ public class MipsGenerator implements IRVisitor<Register> {
 		int objAllocSize = IRTreeGenerator.Get().classMap.get(IRTreeGenerator.Get().mainClassName).getAllocSize();
 		String vtableName = "VFTable_" + IRTreeGenerator.Get().mainClassName;	
 		
-		//initialize registers in use
-		//for (int i=0; i<=7; i++){
-		//	fileWriter.format("\tmov %s,%s\n\n", "$t" + i, vtableName);
-		//}
 		
 		//pass argument for syscall
 		fileWriter.format("\tli $a0,%d\n", objAllocSize);
@@ -126,7 +123,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("\tli $v0,9\n");
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
-		
+				
 		//save vftable addr in an object
 		Register vtablePtr = new TempRegister();
 		//Register vtableReg = new TempRegister();
@@ -135,6 +132,8 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg._name, vtablePtr._name);
 		fileWriter.format("\tsw %s,0(%s)\n\n", vtablePtr._name, "$v0");
 		
+		objectInitialization();
+
 		//pass this to main as parameter
 		PushToStack("$v0");
 		
@@ -205,9 +204,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 	@Override
 	public Register visit(IR_Call call) {
 		
-		//saving registers by pushing them to the stack
+		//TODO: saving registers by pushing them to the stack
 		//for (int i=0;  i<=7 ; i++){
-		//	PushToStack("$t"+i);
+			PushToStack("$t7");
 		//}
 		
 		//push arguments to stack
@@ -244,9 +243,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 			fileWriter.format("\taddi $sp,$sp,%d\n\n", call.args.size()*Frame.WORD_SIZE);
 		}
 
-		//restoring saved registers from the stack
+		//TODO: restoring saved registers from the stack
 		//for (int i=7;  i>=0 ; i--){
-		//	PopFromStack("$t"+i);
+			PopFromStack("$t7");
 		//}
 		
 		return new SpecialRegister("$v0");
@@ -305,7 +304,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_Epilogue epilogue) {
-		
+
+		//Save $ra in $t7
+		fileWriter.write("\tmov $ra,$t7\n");
 		//Restore stack pointer
 		fileWriter.write("\tmov $sp,$fp\n");
 		//Restore ebp
@@ -420,6 +421,40 @@ public class MipsGenerator implements IRVisitor<Register> {
 		return null;
 	}
 
+	private void objectInitialization(){
+		
+		//initialize object to zeroes
+		Register indexReg = new TempRegister();
+		//starting from 4
+		fileWriter.format("\tli  %s,4\n\n", indexReg._name);
+		
+		Register upperLimReg = new TempRegister();
+		
+		Register sizeReg = new TempRegister();
+		//upper limit of for loop
+		fileWriter.format("\taddi  %s,%s,-4\n\n", sizeReg._name,  "$a0");
+
+		fileWriter.format("\tmov  %s,%s\n\n", upperLimReg._name,  sizeReg._name);
+
+		Label tempForLabel = new TempLabel("for");
+		Label tempEndForLabel = new TempLabel("end_for");
+
+		fileWriter.format("%s\n\n \tbgt %s,%s,%s\n\n", tempForLabel._name, indexReg._name, upperLimReg._name, 
+				tempEndForLabel._name.substring(0,tempEndForLabel._name.length()-1));
+
+		Register objElement = new TempRegister();
+		fileWriter.format("\taddi  %s,%s,4\n\n", objElement._name, "$v0");
+		Register nullValue = new TempRegister();
+		fileWriter.format("\tli %s,0\n\n", nullValue._name);
+		
+		fileWriter.format("\tsw %s,0(%s)\n\n", nullValue._name, objElement._name);
+
+		fileWriter.format("\taddi  %s,%s,4\n\n", indexReg._name,  indexReg._name);
+		fileWriter.format("\tj  %s\n\n", tempForLabel._name.substring(0,tempForLabel._name.length()-1));
+
+		fileWriter.format("%s\n\n", tempEndForLabel._name);
+	}
+	
 	@Override
 	public Register visit(IR_NewObject newobj) {
 		//get tree generator instance
@@ -436,14 +471,22 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("\tli $v0,9\n\n");
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
+		
+		Register vtablePtr = new TempRegister();
 		//save the address of the relevant dispatch table as a first word
-		fileWriter.format("\tla $v0,%s\n\n", vtableName);
+		fileWriter.format("\tla %s,%s\n\n", vtablePtr._name, vtableName);
+		//fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg._name, vtablePtr._name);
+		fileWriter.format("\tsw %s,0(%s)\n\n", vtablePtr._name, "$v0");
+		
+		objectInitialization();
 		
 		return new SpecialRegister("$v0");
 	}
 
 	@Override
 	public Register visit(IR_Prologue prologue) {
+		//Save $ra in $t7
+		fileWriter.write("\tmov $t7,$ra\n");
 		//Save old frame pointer
 		PushToStack("$fp");
 		//Set new frame pointer
@@ -535,6 +578,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("\tli $v0,9\n\n");
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
+		
+		objectInitialization();
+		
 		//return array pointer
 		return new SpecialRegister("$v0");
 	}

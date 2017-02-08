@@ -39,8 +39,6 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public Set<TempLabel> labelSet = new HashSet<TempLabel>();  
 
 	public String mainClassName;
-	public Label accessViolationCallLabel = new TempLabel("AccessViolation");
-
 
 	public IRTreeGenerator (AST_Node root)
 	{
@@ -178,7 +176,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_StmtReturn stmt, IR_SymbolTable symTable) {
-		Register returnReg = new TempRegister();
+		Register returnReg = new SpecialRegister("$v0");
 
 		if (stmt.returnExp !=null) {
 			IR_Exp returnExp = stmt.returnExp.accept(this, symTable);
@@ -295,6 +293,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		else{
 
 			Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
+			Label accessViolationCallLabel = new TempLabel("AccessViolation");
 			Label okLabel = new TempLabel("AllOK");
 			IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, callingExp, new IR_Const(0),
 					accessViolationCallLabel, okLabel);
@@ -333,6 +332,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
 		Label okLabel = new TempLabel("AllOK");
+		Label accessViolationCallLabel = new TempLabel("AccessViolation");
+
 		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp, new IR_Const(0),
 				accessViolationCallLabel, okLabel);
 
@@ -374,6 +375,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				,BinaryOpTypes.PLUS);
 
 		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
+		Label accessViolationCallLabel = new TempLabel("AccessViolation");
 
 		//Initialization check
 
@@ -381,7 +383,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				,accessViolationCallLabel,null);
 
 
-		Label everythingIsOkLabel = new SpecialLabel("Label_0_OK");
+		Label isOkLabel = new SpecialLabel("Label_0_OK:");
+		Label isOkJumpLabel = new SpecialLabel("Label_0_OK");
+
 		IR_Exp checkSubscriptGeZero = 
 				new IR_Cjump(BinaryOpTypes.LT,arrIndex,new IR_Const(0),accessViolationCallLabel,null);
 
@@ -396,12 +400,12 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 						new IR_Seq(
 								checkArrayLeMemorySizeAllocated,
 								new IR_Seq(
-										new IR_JumpLabel(everythingIsOkLabel),
+										new IR_JumpLabel(isOkJumpLabel),
 										new IR_Seq(
 												new IR_Label(accessViolationCallLabel),
 												new IR_Seq(
 														new IR_JumpLabel(access_violation_label),
-														new IR_Label(everythingIsOkLabel)))))));
+														new IR_Label(isOkLabel)))))));
 
 		IR_Exp varSubTree = null;
 		if (var.isAssigned){
