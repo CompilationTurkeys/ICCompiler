@@ -40,6 +40,7 @@ public class Main
 		catch (Exception e)
 		{
 			System.out.println("failed with message: " + e.getMessage());
+			e.printStackTrace();
 			
 		}
 	}

@@ -268,8 +268,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp callingExp;
 
 		if (call.callingExp != null){
+			
+			callingExpType = SemanticEvaluator.Get().callingExpMap.get(call.callingExp);
 			callingExp = call.callingExp.accept(this, symTable);
-			callingExpType = SemanticEvaluator.Get().callingExpMap.get(call.callingExp);		
 		}
 		else{
 			callingExp = null;
@@ -327,15 +328,20 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		String varExpType;
 		IR_Exp varExp;
 
-		varExp = var.exp.accept(this, symTable);
 		varExpType = SemanticEvaluator.Get().callingExpMap.get(var.exp);
+		
+		if (var.exp instanceof AST_Variable){
+			((AST_Variable)var.exp).isAssigned = false;
+		}
+		
+		varExp = var.exp.accept(this, symTable);
 
-		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
-		Label okLabel = new TempLabel("AllOK");
-		Label accessViolationCallLabel = new TempLabel("AccessViolation");
+		//Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
+		//Label okLabel = new TempLabel("AllOK");
+		//Label accessViolationCallLabel = new TempLabel("AccessViolation");
 
-		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp, new IR_Const(0),
-				accessViolationCallLabel, okLabel);
+		//IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp, new IR_Const(0),
+		//		accessViolationCallLabel, okLabel);
 
 		int fieldOffset = classMap.get(varExpType).getFieldOffset(var.fieldName);
 
@@ -354,23 +360,18 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 					BinaryOpTypes.PLUS);
 		}
 
-		return new IR_Seq(
-				new IR_Seq(
-						checkInitialization,
-						new IR_Seq(
-								new IR_Label(accessViolationCallLabel),
-								new IR_Seq(
-										new IR_JumpLabel(access_violation_label),
-										new IR_Label(okLabel)))),
-
-				varSubTree);
+		return  varSubTree;
 	}
 
 	@Override
 	public IR_Exp visit(AST_VariableExpArray var, IR_SymbolTable symTable) {
-
+		
+		if (var.arrayExp instanceof AST_Variable){
+			((AST_Variable)var.arrayExp).isAssigned = false;
+		}
+		
 		IR_Exp arrExp = var.arrayExp.accept(this, symTable);
-
+		
 		IR_Exp arrIndex = new IR_Binop(var.arraySize.accept(this, symTable),new IR_Const(1)
 				,BinaryOpTypes.PLUS);
 
@@ -383,9 +384,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				,accessViolationCallLabel,null);
 
 
-		Label isOkLabel = new SpecialLabel("Label_0_OK:");
-		Label isOkJumpLabel = new SpecialLabel("Label_0_OK");
-
+		Label isOkLabel = new TempLabel("OK");
+		Label isOkJumpLabel = new SpecialLabel(isOkLabel._name.substring(0, isOkLabel._name.length()-1));
+		
 		IR_Exp checkSubscriptGeZero = 
 				new IR_Cjump(BinaryOpTypes.LT,arrIndex,new IR_Const(0),accessViolationCallLabel,null);
 
@@ -506,12 +507,12 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			// put args in symtable
 			//newSymTable.put();
 
-			int initialOffset = THIS_OFFSET + MethodFrame.WORD_SIZE;
+			int initialOffset = THIS_OFFSET + method.methodArgs.size()*MethodFrame.WORD_SIZE;
 
 			for (AST_FuncArgument arg : method.methodArgs){
 				IR_Attribute newArgAttr= new IR_Attribute(new FrameMember(initialOffset), arg.argType);
 				newSymTable.getSymbols().put(arg.argName, newArgAttr);
-				initialOffset+=Frame.WORD_SIZE;
+				initialOffset-=Frame.WORD_SIZE;
 			}
 
 		}
@@ -624,7 +625,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		for (String name : classAttr.getMethodOffsetMap().keySet()) {
 
 			//get main class name
-			if (name.equals("main")){
+			if (name.equals("main") && mainClassName == null ){
 				mainClassName = currentClass.className;
 			}
 
@@ -633,9 +634,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 
 			if (currentClass.getMethodNames().contains(name)) {
-				DispatchAttribute newAttr = new DispatchAttribute(currentClass.className, dispatchOffset);
-				dispachTable.put(name, newAttr);
-				dispatchOffset++;
+					DispatchAttribute newAttr = new DispatchAttribute(currentClass.className, dispatchOffset);
+					dispachTable.put(name, newAttr);
+					dispatchOffset++;
 			}
 
 			currentClass = classAttr.getClassObject();

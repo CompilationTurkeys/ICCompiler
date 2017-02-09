@@ -94,19 +94,14 @@ non terminal AST_Method method;
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
-precedence left PLUS;
-precedence left MINUS;
-precedence left TIMES;
-precedence left DIVIDE;
-precedence left LT;
-precedence left LTE;
-precedence left GT;
-precedence left GTE;
-precedence left EQUAL;
-precedence left NEQUAL;
 precedence right ASSIGN;
-precedence left LBRACK, RBRACK, LPAREN, RPAREN, DOT;
-precedence left IF;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+precedence left GT, LT, GTE, LTE;
+precedence left EQUAL, NEQUAL;
+precedence left DOT;
+precedence left LBRACE, LBRACK;
+precedence left LPAREN;
 
 /************************/
 /* START WITH: program */

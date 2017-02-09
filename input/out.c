@@ -652,6 +652,8 @@ void main()
 	int b6=6;
 	int *AlonzoMorales = (sp = &b3);
 	int *KamrashAlura  = (fp = &b2);
+	const char *String_1 = "hello";
+
 	int VFTable_A[] = {0,0,};
 	__asm
 	{
@@ -660,19 +662,17 @@ void main()
 		mov eax, Label_3_main_A
 		mov VFTable_A+4, eax
 	}
-	int VFTable_B[] = {0,};
+	int VFTable_B[] = {0,0,0,0,};
 	__asm
 	{
-		mov eax, Label_11_f_B
+		mov eax, Label_1_printInt_A
 		mov VFTable_B+0, eax
-	}
-	int VFTable_C[] = {0,0,};
-	__asm
-	{
-		mov eax, Label_11_f_B
-		mov VFTable_C+0, eax
-		mov eax, Label_16_g_C
-		mov VFTable_C+4, eax
+		mov eax, Label_3_main_A
+		mov VFTable_B+4, eax
+		mov eax, Label_12_func_B
+		mov VFTable_B+8, eax
+		mov eax, Label_14_g_B
+		mov VFTable_B+12, eax
 	}
 	a0 = (int *) 8;
 
@@ -758,7 +758,7 @@ Label_1_printInt_A:
 
 Label_2_skipFunc:
 
-	goto Label_10_skipFunc;
+	goto Label_11_skipFunc;
 
 Label_3_main_A:
 
@@ -772,153 +772,282 @@ Label_3_main_A:
 
 	sp = (int *) ((int) sp + -8);
 
-	Temp_8 = (int *) -4;
+	Temp_8 = (int *) 4;
 
-	Temp_7 =(int *) (((int) Temp_8) + ((int) fp));
+	Temp_11 = (int *) 4;
 
-	a0 = (int *) 8;
+	Temp_10 =(int *) (((int) Temp_11) + ((int) fp));
+
+	Temp_9 = (int *) *(Temp_10 + 0);
+
+	Temp_7 =(int *) (((int) Temp_8) + ((int) Temp_9));
+
+	Temp_12 = (int *) 1;
+
+	*(Temp_7) = (int) (Temp_12+(0));
+
+	Temp_14 = (int *) -4;
+
+	Temp_13 =(int *) (((int) Temp_14) + ((int) fp));
+
+	Temp_15 = (int *) 10;
+
+	Temp_15 = (int *) ((int) Temp_15 + 1);
+
+	a0 = Temp_15;
 
 	v0 = (int *) malloc((int) a0);
 
-	Temp_9 = (int *) VFTable_A;
+	*(v0) = (int) (Temp_15+(0));
 
-	*(v0) = (int) (Temp_9+(0));
+	Temp_16 = (int *) 4;
 
-	Temp_10 = (int *) 4;
+	Temp_18 = (int *) ((int) a0 + -4);
 
-	Temp_12 = (int *) ((int) a0 + -4);
-
-	Temp_11 = Temp_12;
+	Temp_17 = Temp_18;
 
 Label_20_for:
 
-	if (((int) (Temp_10)) > ((int) (Temp_11)))
+	if (((int) (Temp_16)) > ((int) (Temp_17)))
 	{
 		goto Label_21_end_for;
 	}
 
-	Temp_13 = (int *) ((int) v0 + 4);
+	Temp_19 = (int *) ((int) v0 + 4);
 
-	Temp_14 = (int *) 0;
+	Temp_20 = (int *) 0;
 
-	*(Temp_13) = (int) (Temp_14+(0));
+	*(Temp_19) = (int) (Temp_20+(0));
 
-	Temp_10 = (int *) ((int) Temp_10 + 4);
+	Temp_16 = (int *) ((int) Temp_16 + 4);
 
 	goto Label_20_for;
 
 Label_21_end_for:
 
-	*(Temp_7) = (int) (v0+(0));
+	*(Temp_13) = (int) (v0+(0));
 
-	Temp_16 = (int *) -8;
+	Temp_22 = (int *) -4;
 
-	Temp_15 =(int *) (((int) Temp_16) + ((int) fp));
+	Temp_21 =(int *) (((int) Temp_22) + ((int) fp));
 
-	a0 = (int *) 12;
+	Temp_23 = (int *) 0;
 
-	v0 = (int *) malloc((int) a0);
-
-	Temp_17 = (int *) VFTable_C;
-
-	*(v0) = (int) (Temp_17+(0));
-
-	Temp_18 = (int *) 4;
-
-	Temp_20 = (int *) ((int) a0 + -4);
-
-	Temp_19 = Temp_20;
-
-Label_22_for:
-
-	if (((int) (Temp_18)) > ((int) (Temp_19)))
-	{
-		goto Label_23_end_for;
-	}
-
-	Temp_21 = (int *) ((int) v0 + 4);
-
-	Temp_22 = (int *) 0;
-
-	*(Temp_21) = (int) (Temp_22+(0));
-
-	Temp_18 = (int *) ((int) Temp_18 + 4);
-
-	goto Label_22_for;
-
-Label_23_end_for:
-
-	*(Temp_15) = (int) (v0+(0));
-
-	Temp_25 = (int *) -4;
-
-	Temp_24 =(int *) (((int) Temp_25) + ((int) fp));
-
-	Temp_23 = (int *) *(Temp_24 + 0);
-
-	Temp_26 = (int *) 0;
-
-	if (((int) (Temp_23)) == ((int) (Temp_26)))
-	{
-		goto Label_7_AccessViolation;
-	}
-
-	goto Label_8_AllOK;
-
-Label_7_AccessViolation:
-
-	goto Label_0_Access_Violation;
-
-Label_8_AllOK:
-
-	sp = (int *) ((int) sp + -4);
-
-	*(sp) = (int) (t7+(0));
-
-	Temp_29 = (int *) -8;
-
-	Temp_28 =(int *) (((int) Temp_29) + ((int) fp));
-
-	Temp_27 = (int *) *(Temp_28 + 0);
-
-	Temp_30 = (int *) 0;
-
-	if (((int) (Temp_27)) == ((int) (Temp_30)))
+	if (((int) (Temp_21)) == ((int) (Temp_23)))
 	{
 		goto Label_4_AccessViolation;
 	}
 
-	goto Label_5_AllOK;
+	Temp_25 = (int *) 2;
+
+	Temp_26 = (int *) 1;
+
+	Temp_24 =(int *) (((int) Temp_25) + ((int) Temp_26));
+
+	Temp_27 = (int *) 0;
+
+	if (((int) (Temp_24)) < ((int) (Temp_27)))
+	{
+		goto Label_4_AccessViolation;
+	}
+
+	Temp_29 = (int *) 2;
+
+	Temp_30 = (int *) 1;
+
+	Temp_28 =(int *) (((int) Temp_29) + ((int) Temp_30));
+
+	Temp_33 = (int *) -4;
+
+	Temp_32 =(int *) (((int) Temp_33) + ((int) fp));
+
+	Temp_31 = (int *) *(Temp_32 + 0);
+
+	if (((int) (Temp_28)) > ((int) (Temp_31)))
+	{
+		goto Label_4_AccessViolation;
+	}
+
+	goto Label_5_OK;
 
 Label_4_AccessViolation:
 
 	goto Label_0_Access_Violation;
 
-Label_5_AllOK:
+Label_5_OK:
+
+	Temp_36 = (int *) -4;
+
+	Temp_35 =(int *) (((int) Temp_36) + ((int) fp));
+
+	Temp_38 = (int *) 2;
+
+	Temp_39 = (int *) 1;
+
+	Temp_37 =(int *) (((int) Temp_38) + ((int) Temp_39));
+
+	Temp_34 =(int *) (((int) Temp_35) + ((int) Temp_37));
+
+	Temp_40 = (int *) 5;
+
+	*(Temp_34) = (int) (Temp_40+(0));
+
+	Temp_42 = (int *) -8;
+
+	Temp_41 =(int *) (((int) Temp_42) + ((int) fp));
+
+	a0 = (int *) 12;
+
+	v0 = (int *) malloc((int) a0);
+
+	Temp_43 = (int *) VFTable_B;
+
+	*(v0) = (int) (Temp_43+(0));
+
+	Temp_44 = (int *) 4;
+
+	Temp_46 = (int *) ((int) a0 + -4);
+
+	Temp_45 = Temp_46;
+
+Label_22_for:
+
+	if (((int) (Temp_44)) > ((int) (Temp_45)))
+	{
+		goto Label_23_end_for;
+	}
+
+	Temp_47 = (int *) ((int) v0 + 4);
+
+	Temp_48 = (int *) 0;
+
+	*(Temp_47) = (int) (Temp_48+(0));
+
+	Temp_44 = (int *) ((int) Temp_44 + 4);
+
+	goto Label_22_for;
+
+Label_23_end_for:
+
+	*(Temp_41) = (int) (v0+(0));
+
+	Temp_50 = (int *) 4;
+
+	Temp_52 = (int *) -8;
+
+	Temp_51 =(int *) (((int) Temp_52) + ((int) fp));
+
+	Temp_49 =(int *) (((int) Temp_50) + ((int) Temp_51));
+
+	Temp_53 = (int *) 1;
+
+	*(Temp_49) = (int) (Temp_53+(0));
+
+	Temp_56 = (int *) -8;
+
+	Temp_55 =(int *) (((int) Temp_56) + ((int) fp));
+
+	Temp_54 = (int *) *(Temp_55 + 0);
+
+	Temp_57 = (int *) 0;
+
+	if (((int) (Temp_54)) == ((int) (Temp_57)))
+	{
+		goto Label_8_AccessViolation;
+	}
+
+	goto Label_9_AllOK;
+
+Label_8_AccessViolation:
+
+	goto Label_0_Access_Violation;
+
+Label_9_AllOK:
 
 	sp = (int *) ((int) sp + -4);
 
 	*(sp) = (int) (t7+(0));
 
-	Temp_31 = (int *) 5;
+	Temp_59 = (int *) -4;
+
+	Temp_58 =(int *) (((int) Temp_59) + ((int) fp));
+
+	Temp_60 = (int *) 0;
+
+	if (((int) (Temp_58)) == ((int) (Temp_60)))
+	{
+		goto Label_6_AccessViolation;
+	}
+
+	Temp_62 = (int *) 2;
+
+	Temp_63 = (int *) 1;
+
+	Temp_61 =(int *) (((int) Temp_62) + ((int) Temp_63));
+
+	Temp_64 = (int *) 0;
+
+	if (((int) (Temp_61)) < ((int) (Temp_64)))
+	{
+		goto Label_6_AccessViolation;
+	}
+
+	Temp_66 = (int *) 2;
+
+	Temp_67 = (int *) 1;
+
+	Temp_65 =(int *) (((int) Temp_66) + ((int) Temp_67));
+
+	Temp_70 = (int *) -4;
+
+	Temp_69 =(int *) (((int) Temp_70) + ((int) fp));
+
+	Temp_68 = (int *) *(Temp_69 + 0);
+
+	if (((int) (Temp_65)) > ((int) (Temp_68)))
+	{
+		goto Label_6_AccessViolation;
+	}
+
+	goto Label_7_OK;
+
+Label_6_AccessViolation:
+
+	goto Label_0_Access_Violation;
+
+Label_7_OK:
+
+	Temp_74 = (int *) -4;
+
+	Temp_73 =(int *) (((int) Temp_74) + ((int) fp));
+
+	Temp_76 = (int *) 2;
+
+	Temp_77 = (int *) 1;
+
+	Temp_75 =(int *) (((int) Temp_76) + ((int) Temp_77));
+
+	Temp_72 =(int *) (((int) Temp_73) + ((int) Temp_75));
+
+	Temp_71 = (int *) *(Temp_72 + 0);
 
 	sp = (int *) ((int) sp + -4);
 
-	*(sp) = (int) (Temp_31+(0));
+	*(sp) = (int) (Temp_71+(0));
 
-	Temp_34 = (int *) -8;
+	Temp_80 = (int *) -8;
 
-	Temp_33 =(int *) (((int) Temp_34) + ((int) fp));
+	Temp_79 =(int *) (((int) Temp_80) + ((int) fp));
 
-	Temp_32 = (int *) *(Temp_33 + 0);
+	Temp_78 = (int *) *(Temp_79 + 0);
 
 	sp = (int *) ((int) sp + -4);
 
-	*(sp) = (int) (Temp_32+(0));
+	*(sp) = (int) (Temp_78+(0));
 
-	t0 = (int *) VFTable_C;
+	t0 = (int *) VFTable_B;
 
-	t0 = (int *) ((int) t0 + 4);
+	t0 = (int *) ((int) t0 + 12);
 
 	t0 = (int *) *(t0 + 0);
 
@@ -926,45 +1055,6 @@ Label_5_AllOK:
 	{
 		call _here1
 		_here1: pop eax
-		add eax,15
-		mov ra,eax
-	}
-
-	__asm
-	{
-		jmp t0
-	}
-
-	sp = (int *) ((int) sp + 8);
-
-	t7 = (int *) *(sp + 0);
-
-	sp = (int *) ((int) sp + 4);
-
-	sp = (int *) ((int) sp + -4);
-
-	*(sp) = (int) (v0+(0));
-
-	Temp_37 = (int *) -4;
-
-	Temp_36 =(int *) (((int) Temp_37) + ((int) fp));
-
-	Temp_35 = (int *) *(Temp_36 + 0);
-
-	sp = (int *) ((int) sp + -4);
-
-	*(sp) = (int) (Temp_35+(0));
-
-	t0 = (int *) VFTable_A;
-
-	t0 = (int *) ((int) t0 + 0);
-
-	t0 = (int *) *(t0 + 0);
-
-	__asm
-	{
-		call _here2
-		_here2: pop eax
 		add eax,15
 		mov ra,eax
 	}
@@ -993,11 +1083,11 @@ Label_5_AllOK:
 		jmp ra
 	}
 
-Label_10_skipFunc:
+Label_11_skipFunc:
 
-	goto Label_15_skipFunc;
+	goto Label_13_skipFunc;
 
-Label_11_f_B:
+Label_12_func_B:
 
 	t7 = ra;
 
@@ -1007,93 +1097,157 @@ Label_11_f_B:
 
 	fp = sp;
 
+	sp = (int *) ((int) sp + 0);
+
+	Temp_84 = (int *) 4;
+
+	Temp_87 = (int *) 4;
+
+	Temp_86 =(int *) (((int) Temp_87) + ((int) fp));
+
+	Temp_85 = (int *) *(Temp_86 + 0);
+
+	Temp_83 =(int *) (((int) Temp_84) + ((int) Temp_85));
+
+	Temp_82 = (int *) *(Temp_83 + 0);
+
+	Temp_90 = (int *) 8;
+
+	Temp_89 =(int *) (((int) Temp_90) + ((int) fp));
+
+	Temp_88 = (int *) *(Temp_89 + 0);
+
+	Temp_81 =(int *) (((int) Temp_82) + ((int) Temp_88));
+
+	v0 = (int *) ((int) Temp_81 + 0);
+
+	ra = t7;
+
+	sp = fp;
+
+	fp = (int *) *(sp + 0);
+
+	sp = (int *) ((int) sp + 4);
+
+	__asm
+	{
+		jmp ra
+	}
+
+Label_13_skipFunc:
+
+	goto Label_17_skipFunc;
+
+Label_14_g_B:
+
+	t7 = ra;
+
 	sp = (int *) ((int) sp + -4);
 
-	Temp_39 = (int *) -4;
+	*(sp) = (int) (fp+(0));
 
-	Temp_38 =(int *) (((int) Temp_39) + ((int) fp));
+	fp = sp;
 
-	a0 = (int *) 8;
+	sp = (int *) ((int) sp + 0);
 
-	v0 = (int *) malloc((int) a0);
+	Temp_92 = (int *) 8;
 
-	Temp_40 = (int *) VFTable_A;
+	Temp_95 = (int *) 4;
 
-	*(v0) = (int) (Temp_40+(0));
+	Temp_94 =(int *) (((int) Temp_95) + ((int) fp));
 
-	Temp_41 = (int *) 4;
+	Temp_93 = (int *) *(Temp_94 + 0);
 
-	Temp_43 = (int *) ((int) a0 + -4);
+	Temp_91 =(int *) (((int) Temp_92) + ((int) Temp_93));
 
-	Temp_42 = Temp_43;
+	Temp_96 = (int *) String_1;
 
-Label_24_for:
-
-	if (((int) (Temp_41)) > ((int) (Temp_42)))
-	{
-		goto Label_25_end_for;
-	}
-
-	Temp_44 = (int *) ((int) v0 + 4);
-
-	Temp_45 = (int *) 0;
-
-	*(Temp_44) = (int) (Temp_45+(0));
-
-	Temp_41 = (int *) ((int) Temp_41 + 4);
-
-	goto Label_24_for;
-
-Label_25_end_for:
-
-	*(Temp_38) = (int) (v0+(0));
-
-	Temp_48 = (int *) -4;
-
-	Temp_47 =(int *) (((int) Temp_48) + ((int) fp));
-
-	Temp_46 = (int *) *(Temp_47 + 0);
-
-	Temp_49 = (int *) 0;
-
-	if (((int) (Temp_46)) == ((int) (Temp_49)))
-	{
-		goto Label_12_AccessViolation;
-	}
-
-	goto Label_13_AllOK;
-
-Label_12_AccessViolation:
-
-	goto Label_0_Access_Violation;
-
-Label_13_AllOK:
+	*(Temp_91) = (int) (Temp_96+(0));
 
 	sp = (int *) ((int) sp + -4);
 
 	*(sp) = (int) (t7+(0));
 
-	Temp_52 = (int *) 8;
+	sp = (int *) ((int) sp + -4);
 
-	Temp_51 =(int *) (((int) Temp_52) + ((int) fp));
+	*(sp) = (int) (t7+(0));
 
-	Temp_50 = (int *) *(Temp_51 + 0);
+	Temp_99 = (int *) 8;
+
+	Temp_102 = (int *) 4;
+
+	Temp_101 =(int *) (((int) Temp_102) + ((int) fp));
+
+	Temp_100 = (int *) *(Temp_101 + 0);
+
+	Temp_98 =(int *) (((int) Temp_99) + ((int) Temp_100));
+
+	Temp_97 = (int *) *(Temp_98 + 0);
 
 	sp = (int *) ((int) sp + -4);
 
-	*(sp) = (int) (Temp_50+(0));
+	*(sp) = (int) (Temp_97+(0));
 
-	Temp_55 = (int *) -4;
+	Temp_105 = (int *) 8;
 
-	Temp_54 =(int *) (((int) Temp_55) + ((int) fp));
+	Temp_104 =(int *) (((int) Temp_105) + ((int) fp));
 
-	Temp_53 = (int *) *(Temp_54 + 0);
+	Temp_103 = (int *) *(Temp_104 + 0);
 
 	sp = (int *) ((int) sp + -4);
 
-	*(sp) = (int) (Temp_53+(0));
+	*(sp) = (int) (Temp_103+(0));
 
-	t0 = (int *) VFTable_A;
+	Temp_108 = (int *) 4;
+
+	Temp_107 =(int *) (((int) fp) + ((int) Temp_108));
+
+	Temp_106 = (int *) *(Temp_107 + 0);
+
+	sp = (int *) ((int) sp + -4);
+
+	*(sp) = (int) (Temp_106+(0));
+
+	t0 = (int *) VFTable_B;
+
+	t0 = (int *) ((int) t0 + 8);
+
+	t0 = (int *) *(t0 + 0);
+
+	__asm
+	{
+		call _here2
+		_here2: pop eax
+		add eax,15
+		mov ra,eax
+	}
+
+	__asm
+	{
+		jmp t0
+	}
+
+	sp = (int *) ((int) sp + 12);
+
+	t7 = (int *) *(sp + 0);
+
+	sp = (int *) ((int) sp + 4);
+
+	sp = (int *) ((int) sp + -4);
+
+	*(sp) = (int) (v0+(0));
+
+	Temp_111 = (int *) 4;
+
+	Temp_110 =(int *) (((int) fp) + ((int) Temp_111));
+
+	Temp_109 = (int *) *(Temp_110 + 0);
+
+	sp = (int *) ((int) sp + -4);
+
+	*(sp) = (int) (Temp_109+(0));
+
+	t0 = (int *) VFTable_B;
 
 	t0 = (int *) ((int) t0 + 0);
 
@@ -1117,47 +1271,6 @@ Label_13_AllOK:
 	t7 = (int *) *(sp + 0);
 
 	sp = (int *) ((int) sp + 4);
-
-	ra = t7;
-
-	sp = fp;
-
-	fp = (int *) *(sp + 0);
-
-	sp = (int *) ((int) sp + 4);
-
-	__asm
-	{
-		jmp ra
-	}
-
-Label_15_skipFunc:
-
-	goto Label_17_skipFunc;
-
-Label_16_g_C:
-
-	t7 = ra;
-
-	sp = (int *) ((int) sp + -4);
-
-	*(sp) = (int) (fp+(0));
-
-	fp = sp;
-
-	sp = (int *) ((int) sp + 0);
-
-	Temp_59 = (int *) 8;
-
-	Temp_58 =(int *) (((int) Temp_59) + ((int) fp));
-
-	Temp_57 = (int *) *(Temp_58 + 0);
-
-	Temp_60 = (int *) 1;
-
-	Temp_56 =(int *) (((int) Temp_57) + ((int) Temp_60));
-
-	v0 = (int *) ((int) Temp_56 + 0);
 
 	ra = t7;
 

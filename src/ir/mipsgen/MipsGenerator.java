@@ -579,6 +579,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
 		
+		//put the array size in the first place
+		fileWriter.format("\tsw %s,0(%s)\n\n", arraySizeReg._name, "$v0");
+
 		objectInitialization();
 		
 		//return array pointer

@@ -1,28 +1,29 @@
 class A{
-	int[] arr;
+	int x;
+
 	void printInt(int x) {}
 
 	void main(string[] args){
-		A a = new A();
-		//a.printInt(arr[2]);
-		C b = new C();
-		a.printInt(b.g(5));
+		//A a = new A();
+		x = 1 ;
+		int[] newarr = new int[10];
+		newarr[2]=5;
+		B b = new B();
+		b.x = 1;
+		b.g(newarr[2]);
+
 	}
 }
 
-class B{
-	string x;
-	int y;
-	
-	void f(int x){
-		A a = new A();
-		a.printInt(x);
+class B extends A{
+	string y;
+	int func(string y , int z){
+		return x+z;
 	}
-}
 
-class C extends B{
-	
-	int g(int x){
-	     return x+1;
+	void g(int x){
+	  y = "hello";
+	  printInt(func(y,x));
 	}
+
 }
