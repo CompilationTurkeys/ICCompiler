@@ -55,6 +55,8 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 		generateAccessViolation();
 		
+		fileWriter.flush();
+		
 		fileWriter.close();
 		
 	}
@@ -109,6 +111,10 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//starting of text segment
 		fileWriter.write(".text\n\n");
 		fileWriter.write("main:\n\n");
+		
+		
+		//TODO: CHECK
+		//fileWriter.write("\taddi $sp,$sp,-40\n\n");
 
 		//CREATE DUMMY OBJECT FOR MAIN
 		
@@ -436,8 +442,8 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 		fileWriter.format("\tmov  %s,%s\n\n", upperLimReg._name,  sizeReg._name);
 
-		Label tempForLabel = new TempLabel("for");
-		Label tempEndForLabel = new TempLabel("end_for");
+		Label tempForLabel = new TempLabel("init_for");
+		Label tempEndForLabel = new TempLabel("init_end_for");
 
 		fileWriter.format("%s\n\n \tbgt %s,%s,%s\n\n", tempForLabel._name, indexReg._name, upperLimReg._name, 
 				tempEndForLabel._name.substring(0,tempEndForLabel._name.length()-1));
