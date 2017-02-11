@@ -766,7 +766,7 @@ Label_41_getLenLoop_Start:
 
 	lb $t0,0($a0)
 
-	beq  $t0,0 Label_42_GetLenEnd
+	beq  $t0,0,Label_42_GetLenEnd
 
 	addi Temp_195,Temp_195,1
 
@@ -786,7 +786,7 @@ Label_43_cpy_first:
 
 	lb $t0,0($a0)
 
-	beq  $t0,0 Label_44_cpy_second
+	beq  $t0,0,Label_44_cpy_second
 
 	addi $a0,$a0,1
 
@@ -798,7 +798,7 @@ Label_44_cpy_second:
 
 	lb $t0,0($a1)
 
-	beq  $t0,0 Label_45_strcpy_end
+	beq  $t0,0,Label_45_strcpy_end
 
 	addi $a1,$a1,1
 

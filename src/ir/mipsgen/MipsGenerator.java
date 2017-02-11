@@ -78,7 +78,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("%s\n\n" ,loopStartLabel.getName());
 		fileWriter.write("\tlb $t0,0($a0)\n\n");
 		//encountered a null byte ==> exit loop
-		fileWriter.format("\tbeq  $t0,0 %s\n\n" ,loopEndLabel.getNameWithoutDeclaration());
+		fileWriter.format("\tbeq  $t0,0,%s\n\n" ,loopEndLabel.getNameWithoutDeclaration());
 		//count+=1
 		fileWriter.format("\taddi %s,%s,1\n\n",tmp._name,tmp._name);		
 		fileWriter.format("\taddi %s,%s,1\n\n","$a0","$a0");
@@ -100,7 +100,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("%s\n\n", cpyFirstLabel.getName());
 		fileWriter.write("\tlb $t0,0($a0)\n\n");
 		//encountered a null byte ==> go to second string
-		fileWriter.format("\tbeq  $t0,0 %s\n\n" ,cpySecondLabel.getNameWithoutDeclaration());
+		fileWriter.format("\tbeq  $t0,0,%s\n\n" ,cpySecondLabel.getNameWithoutDeclaration());
 		//next byte
 		fileWriter.format("\taddi %s,%s,1\n\n","$a0","$a0");
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");		
@@ -110,7 +110,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("%s\n\n", cpySecondLabel.getName());
 		fileWriter.write("\tlb $t0,0($a1)\n\n");
 		//encountered a null byte ==> go to end loop
-		fileWriter.format("\tbeq  $t0,0 %s\n\n" ,endLoopLabel.getNameWithoutDeclaration());
+		fileWriter.format("\tbeq  $t0,0,%s\n\n" ,endLoopLabel.getNameWithoutDeclaration());
 		//next byte
 		fileWriter.format("\taddi %s,%s,1\n\n","$a1","$a1");
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");
