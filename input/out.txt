@@ -1,7 +1,7 @@
 .data
 	VFTable_A: .word Label_1_printInt_A,Label_3_main_A
 
-	VFTable_B: .word Label_1_printInt_A,Label_3_main_A,Label_8_g_B,Label_17_factorial_B
+	VFTable_B: .word Label_1_printInt_A,Label_3_main_A,Label_8_g_B,Label_19_factorial_B
 
 .text
 
@@ -21,9 +21,9 @@ main:
 
 	mov  Temp_4,Temp_5
 
-Label_25_init_for:
+Label_27_init_for:
 
- 	bgt Temp_3,Temp_4,Label_26_init_end_for
+ 	bgt Temp_3,Temp_4,Label_28_init_end_for
 
 	addi  Temp_6,$v0,4
 
@@ -33,9 +33,9 @@ Label_25_init_for:
 
 	addi  Temp_3,Temp_3,4
 
-	j  Label_25_init_for
+	j  Label_27_init_for
 
-Label_26_init_end_for:
+Label_28_init_end_for:
 
 	addi $sp,$sp,-4
 	sw $v0,0($sp)
@@ -104,9 +104,9 @@ Label_3_main_A:
 
 	mov  Temp_12,Temp_13
 
-Label_27_init_for:
+Label_29_init_for:
 
- 	bgt Temp_11,Temp_12,Label_28_init_end_for
+ 	bgt Temp_11,Temp_12,Label_30_init_end_for
 
 	addi  Temp_14,$v0,4
 
@@ -116,9 +116,9 @@ Label_27_init_for:
 
 	addi  Temp_11,Temp_11,4
 
-	j  Label_27_init_for
+	j  Label_29_init_for
 
-Label_28_init_end_for:
+Label_30_init_end_for:
 
 	sw $v0,0(Temp_8)
 
@@ -171,7 +171,7 @@ Label_5_AllOK:
 
 Label_7_skipFunc:
 
-	j Label_16_skipFunc
+	j Label_18_skipFunc
 
 Label_8_g_B:
 
@@ -202,9 +202,9 @@ Label_8_g_B:
 
 	mov  Temp_27,Temp_28
 
-Label_29_init_for:
+Label_31_init_for:
 
- 	bgt Temp_26,Temp_27,Label_30_init_end_for
+ 	bgt Temp_26,Temp_27,Label_32_init_end_for
 
 	addi  Temp_29,$v0,4
 
@@ -214,9 +214,9 @@ Label_29_init_for:
 
 	addi  Temp_26,Temp_26,4
 
-	j  Label_29_init_for
+	j  Label_31_init_for
 
-Label_30_init_end_for:
+Label_32_init_end_for:
 
 	sw $v0,0(Temp_23)
 
@@ -283,9 +283,9 @@ Label_10_OK:
 
 	mov  Temp_55,Temp_56
 
-Label_31_init_for:
+Label_33_init_for:
 
- 	bgt Temp_54,Temp_55,Label_32_init_end_for
+ 	bgt Temp_54,Temp_55,Label_34_init_end_for
 
 	addi  Temp_57,$v0,4
 
@@ -295,9 +295,9 @@ Label_31_init_for:
 
 	addi  Temp_54,Temp_54,4
 
-	j  Label_31_init_for
+	j  Label_33_init_for
 
-Label_32_init_end_for:
+Label_34_init_end_for:
 
 	sw $v0,0(Temp_46)
 
@@ -310,14 +310,14 @@ Label_32_init_end_for:
 	lw Temp_59,0(Temp_60)
 
 	li Temp_62,0
-	beq Temp_59,Temp_62,Label_11_AccessViolation
+	beq Temp_59,Temp_62,Label_13_AccessViolation
 
 	li Temp_64,0
 	li Temp_65,1
 	add Temp_63,Temp_64,Temp_65
 
 	li Temp_66,0
-	blt Temp_63,Temp_66,Label_11_AccessViolation
+	blt Temp_63,Temp_66,Label_13_AccessViolation
 
 	li Temp_68,0
 	li Temp_69,1
@@ -330,15 +330,15 @@ Label_32_init_end_for:
 
 	lw Temp_70,0(Temp_71)
 
-	bgt Temp_67,Temp_70,Label_11_AccessViolation
+	bgt Temp_67,Temp_70,Label_13_AccessViolation
 
-	j Label_12_OK
+	j Label_14_OK
 
-Label_11_AccessViolation:
+Label_13_AccessViolation:
 
 	j Label_0_Access_Violation
 
-Label_12_OK:
+Label_14_OK:
 
 	li Temp_77,-4
 	add Temp_76,Temp_77,$fp
@@ -352,15 +352,15 @@ Label_12_OK:
 	add Temp_74,Temp_75,Temp_78
 
 	li Temp_81,0
-	beq Temp_74,Temp_81,Label_14_AccessViolation
+	beq Temp_74,Temp_81,Label_16_AccessViolation
 
-	j Label_13_AllOK
+	j Label_15_AllOK
 
-Label_14_AccessViolation:
+Label_16_AccessViolation:
 
 	j Label_0_Access_Violation
 
-Label_13_AllOK:
+Label_15_AllOK:
 
 	li Temp_84,4
 	li Temp_87,-4
@@ -445,11 +445,11 @@ Label_12_OK:
 
 	jr $ra
 
-Label_16_skipFunc:
+Label_18_skipFunc:
 
-	j Label_24_skipFunc
+	j Label_26_skipFunc
 
-Label_17_factorial_B:
+Label_19_factorial_B:
 
 	mov $t7,$ra
 	addi $sp,$sp,-4
@@ -464,32 +464,32 @@ Label_17_factorial_B:
 	lw Temp_110,0(Temp_111)
 
 	li Temp_113,1
-	ble Temp_110,Temp_113,Label_18_T
+	ble Temp_110,Temp_113,Label_20_T
 
-	j Label_19_F
+	j Label_21_F
 
-Label_18_T:
+Label_20_T:
 
 	li Temp_114,1
 	addi Temp_1,Temp_114,0
 
-	j Label_20_END
+	j Label_22_END
 
-Label_19_F:
+Label_21_F:
 
 	li Temp_115,0
 	addi Temp_1,Temp_115,0
 
-	j Label_20_END
+	j Label_22_END
 
-Label_20_END:
+Label_22_END:
 
 	li Temp_116,0
-	bne Temp_1,Temp_116,Label_21_if_cond_T
+	bne Temp_1,Temp_116,Label_23_if_cond_T
 
-	j Label_22_if_cond_F
+	j Label_24_if_cond_F
 
-Label_21_if_cond_T:
+Label_23_if_cond_T:
 
 	li Temp_117,1
 	addi $v0,Temp_117,0
@@ -501,7 +501,7 @@ Label_21_if_cond_T:
 
 	jr $ra
 
-Label_22_if_cond_F:
+Label_24_if_cond_F:
 
 	addi $sp,$sp,-4
 	sw $t7,0($sp)
@@ -561,7 +561,7 @@ Label_22_if_cond_F:
 
 	jr $ra
 
-Label_24_skipFunc:
+Label_26_skipFunc:
 
 	li $v0,10
 	syscall

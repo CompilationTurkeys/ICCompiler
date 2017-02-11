@@ -337,13 +337,17 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			((AST_Variable)var.exp).isAssigned = false;
 		}
 		
+		IR_Exp varExp2;
+		
+		
 		varExp = var.exp.accept(this, symTable);
-
+		varExp2 = varExpType.equals("int") || varExpType.equals("string") ? null : var.exp.accept(this,symTable);
+		
 		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
 		Label okLabel = new TempLabel("AllOK");
 		Label accessViolationCallLabel = new TempLabel("AccessViolation");
 
-		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp, new IR_Const(0),
+		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp2==null? varExp : varExp2, new IR_Const(0),
 				accessViolationCallLabel, okLabel);
 
 		int fieldOffset = classMap.get(varExpType).getFieldOffset(var.fieldName);
