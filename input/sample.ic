@@ -1,24 +1,27 @@
 class A{
+	
+	int x;
+	
 	void printInt(int x) {}
 
 	void main(string[] args){
 		//A a = new A();
 		B b = new B();
 		// b.h(300);
-		printInt(b.factorial(4));
+		b.g();
 	
 	}
 }
 
 class B extends A{
 	
-	/*void g() {
-		int[][][] c = new int[][][5];
-		int [][] a;
-		c[0]=a;
-		printInt(c[0][1][1]);
+	void g() {
+		A[] arr = new A[5];
+		arr[0]= new A();
+		arr[0].x = 2;
+		printInt(arr[0].x);
 
-	}*/
+	}
 
 
 	  /*void h(int x){

@@ -104,7 +104,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		expr.arrayType.accept(this,symTable);
 		//check if the type specified actually exists 
 		if (!(expr.arrayType.getName().equals(PrimitiveDataTypes.INT.getName())) && !(expr.arrayType.getName().equals(PrimitiveDataTypes.STRING.getName()))){
-			if (!program.getSymbols().containsKey(expr.arrayType)){
+			if (!program.getSymbols().containsKey(expr.arrayType.getName())){
 				throw new RuntimeException("Cannot instantiate unknown type: " + expr.arrayType.getName());
 			}
 		}

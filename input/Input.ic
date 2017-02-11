@@ -1,7 +1,23 @@
-x := 80;
-x := 80;
-y := 70;
-x := 80;
-y := 70;
-y := 70;
-if (x+y) { z:= 30; w := 40; }
+class PRINT {
+	void printInt (int x) {}
+}
+
+class A{
+	
+	PRINT pp;
+	void m (int y)  {
+	 pp.printInt(y);
+	}
+	
+	}
+
+class B {
+
+	PRINT p;
+	void main(string[] args){
+		
+		int x = 6;
+		A a = new A();
+		a.m(x);
+	}
+}
