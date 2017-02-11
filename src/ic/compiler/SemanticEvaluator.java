@@ -45,14 +45,17 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		Attribute rightExpResult = expr.rightExp.accept(this,symTable);
 		
 		boolean properInheritedRTL = IsProperInheritance(rightExpResult.getType(), leftExpResult.getType());
-		boolean properInheritedLTR = IsProperInheritance(leftExpResult.getType(), rightExpResult.getType()) ;
+		boolean properInheritedLTR = IsProperInheritance(leftExpResult.getType(), rightExpResult.getType());
+		
+		callingExpMap.put(expr.leftExp, leftExpResult.getType().getName());
 		switch (expr.OP){
 		case PLUS:
 			if (!(properInheritedRTL || properInheritedLTR) || !leftExpResult.getType().isPrimitive() || leftExpResult.getType().isVoid()){
 				throw new RuntimeException("Can't make " + expr.OP.getOpDescreption() 
 				+" between " + leftExpResult.getType() + " and " + rightExpResult.getType() +  " vars");
 			}
-			break;
+			Attribute attr = new Attribute(leftExpResult.getType());
+			return attr;
 		case MINUS:
 		case DIVIDE:
 		case TIMES:

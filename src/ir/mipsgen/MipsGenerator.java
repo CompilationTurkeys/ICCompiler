@@ -39,6 +39,10 @@ public class MipsGenerator implements IRVisitor<Register> {
 	private IR_Exp irRoot;
 	private PrintWriter fileWriter;
 	
+	private final static String EXIT_LABEL = "Label_0_Exit";
+	private final static SpecialLabel STR_LEN_LABEL = new SpecialLabel("Label_0_StrLen");
+	private static final SpecialLabel STR_CPY_LABEL = new SpecialLabel("Label_0_StrCpy");
+	
 	public MipsGenerator(IR_Exp root){
 		this.irRoot = root;
 	}
@@ -54,6 +58,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 		MipsTerminate();
 		
 		generateAccessViolation();
+		generateGetStringLength();
+		generateStrCpy();
+		generateExit();
 		
 		fileWriter.flush();
 		
@@ -61,6 +68,68 @@ public class MipsGenerator implements IRVisitor<Register> {
 		
 	}
 
+	private void generateGetStringLength(){
+		TempLabel loopStartLabel = new TempLabel("getLenLoop_Start");
+		TempLabel loopEndLabel = new TempLabel("GetLenEnd");
+		//count
+		Register tmp = new TempRegister();
+		fileWriter.format("%s:\n\n",STR_LEN_LABEL._name);
+		fileWriter.format("%s\n\n" ,loopStartLabel.getName());
+		fileWriter.format("\tli %s,0",tmp._name);
+		fileWriter.format("%s\n\n", loopStartLabel.getNameWithoutDeclaration());
+		fileWriter.write("\tlb $t0,0($a0)\n\n");
+		//encountered a null byte ==> exit loop
+		fileWriter.format("\tbeq  $t0,0 %s\n\n" ,loopEndLabel.getNameWithoutDeclaration());
+		//count+=1
+		fileWriter.format("\taddi %s,%s,1\n\n",tmp._name,tmp._name);		
+		fileWriter.format("\taddi %s,%s,1\n\n","$a0","$a0");
+		fileWriter.format("\tj %s\n\n" ,loopStartLabel.getNameWithoutDeclaration());
+		
+		fileWriter.format("%s\n\n" ,loopEndLabel.getName());
+		fileWriter.format("\tmov %s,%s\n\n","$v0",tmp._name);
+		fileWriter.write("\tjr $ra\n\n");
+		
+	}
+	
+	private void generateStrCpy(){
+		//assuming $a0,$a1 are the two strings and $a2 is the new one
+		TempLabel cpyFirstLabel = new TempLabel("cpy_first");
+		TempLabel cpySecondLabel = new TempLabel( "cpy_second");
+		TempLabel endLoopLabel = new TempLabel( "strcpy_end");
+		
+		fileWriter.write(STR_CPY_LABEL._name+":\n\n");
+		fileWriter.format("%s\n\n", cpyFirstLabel.getName());
+		fileWriter.write("\tlb $t0,0($a0)\n\n");
+		//encountered a null byte ==> go to second string
+		fileWriter.format("\tbeq  $t0,0 %s\n\n" ,cpySecondLabel.getNameWithoutDeclaration());
+		//next byte
+		fileWriter.format("\taddi %s,%s,1\n\n","$a0","$a0");
+		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");		
+		fileWriter.format("\tj %s\n\n" ,cpyFirstLabel.getNameWithoutDeclaration());
+		
+		//second string
+		fileWriter.format("%s\n\n", cpySecondLabel.getName());
+		fileWriter.write("\tlb $t0,0($a1)\n\n");
+		//encountered a null byte ==> go to end loop
+		fileWriter.format("\tbeq  $t0,0 %s\n\n" ,endLoopLabel.getNameWithoutDeclaration());
+		//next byte
+		fileWriter.format("\taddi %s,%s,1\n\n","$a1","$a1");
+		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");
+		
+		fileWriter.format("%s\n\n" ,endLoopLabel.getName());
+		fileWriter.format("\tsb 0,0(%s)\n\n","$a2");
+		fileWriter.write("\tjr $ra\n\n");
+		
+	}
+
+	private void generateExit() {
+		fileWriter.write(EXIT_LABEL+":\n\n");
+		
+		//exit
+		fileWriter.write("\tli $v0,10\n\n");
+		fileWriter.write("\tsyscall\n\n");
+		
+	}
 
 	private void generateAccessViolation() {
 
@@ -73,9 +142,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.write("\tli $v0,1\n\n"); 
 		fileWriter.write("\tsyscall\n\n");
 		
-		//exit
-		fileWriter.write("\tli $v0,10\n\n");
-		fileWriter.write("\tsyscall\n\n");
+		fileWriter.format("\tj %s\n\n", EXIT_LABEL);
+		
+		
 		
 	}
 
@@ -540,13 +609,56 @@ public class MipsGenerator implements IRVisitor<Register> {
 		// move right operand to t3  temporary
 		Register tRight = binop.rightExp.accept(this);
 		
+		if (binop.isStringBinop){
+			Register newStrSize = new TempRegister();
+			//str len of str1
+			fileWriter.format("\tla %s,%s\n\n", "$a0",tLeft._name);			
+			fileWriter.format("\tmov %s,%s\n\n","$t5","$ra");
+			fileWriter.format("\tjal %s\n\n", STR_LEN_LABEL._name);	
+			fileWriter.format("\tmov %s,%s\n\n","$ra","$t5");
+			fileWriter.format("\tmov %s,%s\n\n",newStrSize._name,"$v0");
+			
+			//str len of str2
+			fileWriter.format("\tla %s,%s\n\n", "$a0",tRight._name);			
+			fileWriter.format("\tmov %s,%s\n\n","$t5","$ra");
+			fileWriter.format("\tjal %s\n\n", STR_LEN_LABEL._name);	
+			fileWriter.format("\tmov %s,%s\n\n","$ra","$t5");
+			fileWriter.format("\tadd %s,%s,%s\n\n",newStrSize._name,newStrSize._name,"$v0");
+			
+			//allocate space for new string
+			
+			//pass argument for syscall
+			fileWriter.format("\tlw %s,0(%s)\n\n","$a0",newStrSize._name );
+			//call sbrk syscall for memory allocation
+			fileWriter.format("\tli $v0,9\n\n");
+			//invoke syscall
+			fileWriter.format("\tsyscall\n\n");
+			
+			
+			//Concatenate two strings
+			
+			Register concatString = new TempRegister();
+			
+			fileWriter.format("\tmov %s,%s\n\n",concatString._name,"$v0");			
+
+			fileWriter.format("\tla %s,%s\n\n", "$a0",tLeft._name);			
+			fileWriter.format("\tla %s,%s\n\n", "$a1",tRight._name);
+			fileWriter.format("\tla %s,%s\n\n", "$a2",concatString._name);			
+			fileWriter.format("\tmov %s,%s\n\n","$t5","$ra");
+			fileWriter.format("\tjal %s\n\n", STR_CPY_LABEL._name);	
+			fileWriter.format("\tmov %s,%s\n\n","$ra","$t5");
+
+			return concatString;
+			
+		}
+		
 		//generate binop asm operation
 		fileWriter.format("\t%s %s,%s,%s\n\n",
 				ConvertIRtoASMBinops(binop.OP),
 				res._name,
 				tLeft._name,
 				tRight._name);
-
+		
 		return res;
 	}
 	

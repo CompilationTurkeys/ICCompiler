@@ -11,6 +11,8 @@ public class IR_Binop extends IR_Exp{
 	public IR_Exp leftExp;
 	public IR_Exp rightExp;
 	
+	public boolean isStringBinop;
+	
 	public IR_Binop(IR_Exp left,IR_Exp right,BinaryOpTypes OP)
 	{
 		this.leftExp = left;

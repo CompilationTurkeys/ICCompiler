@@ -24,4 +24,8 @@ public class TempLabel extends Label {
 	public String getClassName(){
 		return className;
 	}
+	
+	public String getNameWithoutDeclaration(){
+		return _name.substring(0,_name.length()-1);
+	}
 }

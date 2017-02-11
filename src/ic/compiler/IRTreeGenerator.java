@@ -69,11 +69,14 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		switch (expr.OP){
 		case PLUS:
+			String type = SemanticEvaluator.Get().callingExpMap.get(expr.leftExp);
+			IR_Binop binop = new IR_Binop(leftExpResult, rightExpResult, expr.OP);
+			binop.isStringBinop = type!=null && type.equals("string");
+			return binop;
 		case MINUS:
 		case DIVIDE:
 		case TIMES:
 			return new IR_Binop(leftExpResult, rightExpResult, expr.OP);
-
 		case EQUALS:
 		case NEQUALS:
 		case LT:
