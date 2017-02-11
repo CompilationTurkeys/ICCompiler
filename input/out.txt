@@ -441,7 +441,7 @@ Label_12_OK:
 
 	lw Temp_119,0(Temp_120)
 
-	la $a0,Temp_116
+	mov $a0,Temp_116
 
 	mov $t5,$ra
 
@@ -451,7 +451,7 @@ Label_12_OK:
 
 	mov Temp_122,$v0
 
-	la $a0,Temp_119
+	mov $a0,Temp_119
 
 	mov $t5,$ra
 
@@ -469,11 +469,11 @@ Label_12_OK:
 
 	mov Temp_123,$v0
 
-	la $a0,Temp_116
+	mov $a0,Temp_116
 
-	la $a1,Temp_119
+	mov $a1,Temp_119
 
-	la $a2,Temp_123
+	mov $a2,Temp_123
 
 	mov $t5,$ra
 

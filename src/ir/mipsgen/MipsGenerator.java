@@ -612,14 +612,14 @@ public class MipsGenerator implements IRVisitor<Register> {
 		if (binop.isStringBinop){
 			Register newStrSize = new TempRegister();
 			//str len of str1
-			fileWriter.format("\tla %s,%s\n\n", "$a0",tLeft._name);			
+			fileWriter.format("\tmov %s,%s\n\n", "$a0",tLeft._name);			
 			fileWriter.format("\tmov %s,%s\n\n","$t5","$ra");
 			fileWriter.format("\tjal %s\n\n", STR_LEN_LABEL._name);	
 			fileWriter.format("\tmov %s,%s\n\n","$ra","$t5");
 			fileWriter.format("\tmov %s,%s\n\n",newStrSize._name,"$v0");
 			
 			//str len of str2
-			fileWriter.format("\tla %s,%s\n\n", "$a0",tRight._name);			
+			fileWriter.format("\tmov %s,%s\n\n", "$a0",tRight._name);			
 			fileWriter.format("\tmov %s,%s\n\n","$t5","$ra");
 			fileWriter.format("\tjal %s\n\n", STR_LEN_LABEL._name);	
 			fileWriter.format("\tmov %s,%s\n\n","$ra","$t5");
@@ -641,9 +641,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 			
 			fileWriter.format("\tmov %s,%s\n\n",concatString._name,"$v0");			
 
-			fileWriter.format("\tla %s,%s\n\n", "$a0",tLeft._name);			
-			fileWriter.format("\tla %s,%s\n\n", "$a1",tRight._name);
-			fileWriter.format("\tla %s,%s\n\n", "$a2",concatString._name);			
+			fileWriter.format("\tmov %s,%s\n\n", "$a0",tLeft._name);			
+			fileWriter.format("\tmov %s,%s\n\n", "$a1",tRight._name);
+			fileWriter.format("\tmov %s,%s\n\n", "$a2",concatString._name);			
 			fileWriter.format("\tmov %s,%s\n\n","$t5","$ra");
 			fileWriter.format("\tjal %s\n\n", STR_CPY_LABEL._name);	
 			fileWriter.format("\tmov %s,%s\n\n","$ra","$t5");
