@@ -16,13 +16,13 @@ class A{
 class B extends A{
 	
 	void g() {
-		A[] arr = new A[5];
-		arr[0] = new A();
-		arr[0].x = 2;
-		string aa = "to";
-		string bb = "mer";
-		string c = aa + bb;
-		printInt(arr[0].x);
+		int[][] arr = new int[][5];
+		arr[0] = new int[3];
+		//arr[0].x = 2;
+		//string aa = "to";
+		//string bb = "mer";
+		//string c = aa + bb;
+		printInt(arr[0][1]);
 
 	}
 

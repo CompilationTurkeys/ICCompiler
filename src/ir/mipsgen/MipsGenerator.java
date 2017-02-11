@@ -42,6 +42,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 	private final static String EXIT_LABEL = "Label_0_Exit";
 	private final static SpecialLabel STR_LEN_LABEL = new SpecialLabel("Label_0_StrLen");
 	private static final SpecialLabel STR_CPY_LABEL = new SpecialLabel("Label_0_StrCpy");
+	private static final Object PRINT_CLASS = "PRINT";
 	
 	public MipsGenerator(IR_Exp root){
 		this.irRoot = root;

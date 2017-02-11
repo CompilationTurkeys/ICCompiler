@@ -394,8 +394,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		if (var.arrayExp instanceof AST_VariableExpArray){
 			
 			arrExp1 = var.arrayExp.accept(this, symTable);
-			arrExp2 = var.arrayExp.accept(this, symTable);
-			arrExp3 = var.arrayExp.accept(this, symTable);
+			arrExp2 = ((IR_Seq) arrExp1).rightExp;
+			//arrExp2 = var.arrayExp.accept(this, symTable);
+			//arrExp3 = var.arrayExp.accept(this, symTable);
 
 		}
 		else{
@@ -457,7 +458,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				varSubTree = new IR_Mem(new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS));
 			}
 			else{
-				varSubTree = new IR_Mem(new IR_Binop(arrExp3,arrIndex,BinaryOpTypes.PLUS));
+				varSubTree = new IR_Mem(new IR_Binop(arrExp2,arrIndex,BinaryOpTypes.PLUS));
 			}
 		}
 		else{
