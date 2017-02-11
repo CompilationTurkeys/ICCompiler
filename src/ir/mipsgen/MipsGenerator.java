@@ -74,9 +74,8 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//count
 		Register tmp = new TempRegister();
 		fileWriter.format("%s:\n\n",STR_LEN_LABEL._name);
+		fileWriter.format("\tli %s,0\n\n",tmp._name);
 		fileWriter.format("%s\n\n" ,loopStartLabel.getName());
-		fileWriter.format("\tli %s,0",tmp._name);
-		fileWriter.format("%s\n\n", loopStartLabel.getNameWithoutDeclaration());
 		fileWriter.write("\tlb $t0,0($a0)\n\n");
 		//encountered a null byte ==> exit loop
 		fileWriter.format("\tbeq  $t0,0 %s\n\n" ,loopEndLabel.getNameWithoutDeclaration());

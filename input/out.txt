@@ -760,9 +760,9 @@ Label_0_Access_Violation:
 
 Label_0_StrLen:
 
-Label_41_getLenLoop_Start:
+	li Temp_195,0
 
-	li Temp_195,0Label_41_getLenLoop_Start
+Label_41_getLenLoop_Start:
 
 	lb $t0,0($a0)
 
