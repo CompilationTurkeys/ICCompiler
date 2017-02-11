@@ -1,7 +1,7 @@
 .data
 	VFTable_A: .word Label_1_printInt_A,Label_3_main_A
 
-	VFTable_B: .word Label_1_printInt_A,Label_3_main_A,Label_8_g_B,Label_21_factorial_B
+	VFTable_B: .word Label_1_printInt_A,Label_3_main_A,Label_8_g_B,Label_17_factorial_B
 
 .text
 
@@ -21,9 +21,9 @@ main:
 
 	mov  Temp_4,Temp_5
 
-Label_29_init_for:
+Label_25_init_for:
 
- 	bgt Temp_3,Temp_4,Label_30_init_end_for
+ 	bgt Temp_3,Temp_4,Label_26_init_end_for
 
 	addi  Temp_6,$v0,4
 
@@ -33,9 +33,9 @@ Label_29_init_for:
 
 	addi  Temp_3,Temp_3,4
 
-	j  Label_29_init_for
+	j  Label_25_init_for
 
-Label_30_init_end_for:
+Label_26_init_end_for:
 
 	addi $sp,$sp,-4
 	sw $v0,0($sp)
@@ -104,9 +104,9 @@ Label_3_main_A:
 
 	mov  Temp_12,Temp_13
 
-Label_31_init_for:
+Label_27_init_for:
 
- 	bgt Temp_11,Temp_12,Label_32_init_end_for
+ 	bgt Temp_11,Temp_12,Label_28_init_end_for
 
 	addi  Temp_14,$v0,4
 
@@ -116,9 +116,9 @@ Label_31_init_for:
 
 	addi  Temp_11,Temp_11,4
 
-	j  Label_31_init_for
+	j  Label_27_init_for
 
-Label_32_init_end_for:
+Label_28_init_end_for:
 
 	sw $v0,0(Temp_8)
 
@@ -171,7 +171,7 @@ Label_5_AllOK:
 
 Label_7_skipFunc:
 
-	j Label_20_skipFunc
+	j Label_16_skipFunc
 
 Label_8_g_B:
 
@@ -202,9 +202,9 @@ Label_8_g_B:
 
 	mov  Temp_27,Temp_28
 
-Label_33_init_for:
+Label_29_init_for:
 
- 	bgt Temp_26,Temp_27,Label_34_init_end_for
+ 	bgt Temp_26,Temp_27,Label_30_init_end_for
 
 	addi  Temp_29,$v0,4
 
@@ -214,9 +214,9 @@ Label_33_init_for:
 
 	addi  Temp_26,Temp_26,4
 
-	j  Label_33_init_for
+	j  Label_29_init_for
 
-Label_34_init_end_for:
+Label_30_init_end_for:
 
 	sw $v0,0(Temp_23)
 
@@ -283,9 +283,9 @@ Label_10_OK:
 
 	mov  Temp_55,Temp_56
 
-Label_35_init_for:
+Label_31_init_for:
 
- 	bgt Temp_54,Temp_55,Label_36_init_end_for
+ 	bgt Temp_54,Temp_55,Label_32_init_end_for
 
 	addi  Temp_57,$v0,4
 
@@ -295,11 +295,14 @@ Label_35_init_for:
 
 	addi  Temp_54,Temp_54,4
 
-	j  Label_35_init_for
+	j  Label_31_init_for
 
-Label_36_init_end_for:
+Label_32_init_end_for:
 
 	sw $v0,0(Temp_46)
+
+	addi $sp,$sp,-4
+	sw $t7,0($sp)
 
 	li Temp_61,-4
 	add Temp_60,Temp_61,$fp
@@ -359,34 +362,34 @@ Label_14_AccessViolation:
 
 Label_13_AllOK:
 
-	li Temp_83,4
-	li Temp_86,-4
-	add Temp_85,Temp_86,$fp
+	li Temp_84,4
+	li Temp_87,-4
+	add Temp_86,Temp_87,$fp
 
-	lw Temp_84,0(Temp_85)
+	lw Temp_85,0(Temp_86)
 
-	li Temp_87,0
-	beq Temp_84,Temp_87,Label_11_AccessViolation
+	li Temp_88,0
+	beq Temp_85,Temp_88,Label_11_AccessViolation
 
-	li Temp_89,0
-	li Temp_90,1
-	add Temp_88,Temp_89,Temp_90
+	li Temp_90,0
+	li Temp_91,1
+	add Temp_89,Temp_90,Temp_91
 
-	li Temp_91,0
-	blt Temp_88,Temp_91,Label_11_AccessViolation
+	li Temp_92,0
+	blt Temp_89,Temp_92,Label_11_AccessViolation
 
-	li Temp_93,0
-	li Temp_94,1
-	add Temp_92,Temp_93,Temp_94
+	li Temp_94,0
+	li Temp_95,1
+	add Temp_93,Temp_94,Temp_95
 
-	li Temp_98,-4
-	add Temp_97,Temp_98,$fp
+	li Temp_99,-4
+	add Temp_98,Temp_99,$fp
+
+	lw Temp_97,0(Temp_98)
 
 	lw Temp_96,0(Temp_97)
 
-	lw Temp_95,0(Temp_96)
-
-	bgt Temp_92,Temp_95,Label_11_AccessViolation
+	bgt Temp_93,Temp_96,Label_11_AccessViolation
 
 	j Label_12_OK
 
@@ -396,145 +399,31 @@ Label_11_AccessViolation:
 
 Label_12_OK:
 
-	li Temp_102,-4
-	add Temp_101,Temp_102,$fp
+	li Temp_103,-4
+	add Temp_102,Temp_103,$fp
 
-	lw Temp_100,0(Temp_101)
+	lw Temp_101,0(Temp_102)
 
-	li Temp_104,0
-	li Temp_105,1
-	add Temp_103,Temp_104,Temp_105
+	li Temp_105,0
+	li Temp_106,1
+	add Temp_104,Temp_105,Temp_106
 
-	add Temp_99,Temp_100,Temp_103
+	add Temp_100,Temp_101,Temp_104
 
-	add Temp_82,Temp_83,Temp_99
+	add Temp_83,Temp_84,Temp_100
 
-	li Temp_106,2
-	sw Temp_106,0(Temp_82)
+	lw Temp_82,0(Temp_83)
 
 	addi $sp,$sp,-4
-	sw $t7,0($sp)
+	sw Temp_82,0($sp)
 
-	li Temp_109,-4
-	add Temp_108,Temp_109,$fp
+	li Temp_109,4
+	add Temp_108,$fp,Temp_109
 
 	lw Temp_107,0(Temp_108)
 
-	li Temp_110,0
-	beq Temp_107,Temp_110,Label_15_AccessViolation
-
-	li Temp_112,0
-	li Temp_113,1
-	add Temp_111,Temp_112,Temp_113
-
-	li Temp_114,0
-	blt Temp_111,Temp_114,Label_15_AccessViolation
-
-	li Temp_116,0
-	li Temp_117,1
-	add Temp_115,Temp_116,Temp_117
-
-	li Temp_121,-4
-	add Temp_120,Temp_121,$fp
-
-	lw Temp_119,0(Temp_120)
-
-	lw Temp_118,0(Temp_119)
-
-	bgt Temp_115,Temp_118,Label_15_AccessViolation
-
-	j Label_16_OK
-
-Label_15_AccessViolation:
-
-	j Label_0_Access_Violation
-
-Label_16_OK:
-
-	li Temp_125,-4
-	add Temp_124,Temp_125,$fp
-
-	lw Temp_123,0(Temp_124)
-
-	li Temp_127,0
-	li Temp_128,1
-	add Temp_126,Temp_127,Temp_128
-
-	add Temp_122,Temp_123,Temp_126
-
-	li Temp_129,0
-	beq Temp_122,Temp_129,Label_18_AccessViolation
-
-	j Label_17_AllOK
-
-Label_18_AccessViolation:
-
-	j Label_0_Access_Violation
-
-Label_17_AllOK:
-
-	li Temp_132,4
-	li Temp_135,-4
-	add Temp_134,Temp_135,$fp
-
-	lw Temp_133,0(Temp_134)
-
-	li Temp_136,0
-	beq Temp_133,Temp_136,Label_15_AccessViolation
-
-	li Temp_138,0
-	li Temp_139,1
-	add Temp_137,Temp_138,Temp_139
-
-	li Temp_140,0
-	blt Temp_137,Temp_140,Label_15_AccessViolation
-
-	li Temp_142,0
-	li Temp_143,1
-	add Temp_141,Temp_142,Temp_143
-
-	li Temp_147,-4
-	add Temp_146,Temp_147,$fp
-
-	lw Temp_145,0(Temp_146)
-
-	lw Temp_144,0(Temp_145)
-
-	bgt Temp_141,Temp_144,Label_15_AccessViolation
-
-	j Label_16_OK
-
-Label_15_AccessViolation:
-
-	j Label_0_Access_Violation
-
-Label_16_OK:
-
-	li Temp_151,-4
-	add Temp_150,Temp_151,$fp
-
-	lw Temp_149,0(Temp_150)
-
-	li Temp_153,0
-	li Temp_154,1
-	add Temp_152,Temp_153,Temp_154
-
-	add Temp_148,Temp_149,Temp_152
-
-	add Temp_131,Temp_132,Temp_148
-
-	lw Temp_130,0(Temp_131)
-
 	addi $sp,$sp,-4
-	sw Temp_130,0($sp)
-
-	li Temp_157,4
-	add Temp_156,$fp,Temp_157
-
-	lw Temp_155,0(Temp_156)
-
-	addi $sp,$sp,-4
-	sw Temp_155,0($sp)
+	sw Temp_107,0($sp)
 
 	la $t0,VFTable_B
 
@@ -556,11 +445,11 @@ Label_16_OK:
 
 	jr $ra
 
-Label_20_skipFunc:
+Label_16_skipFunc:
 
-	j Label_28_skipFunc
+	j Label_24_skipFunc
 
-Label_21_factorial_B:
+Label_17_factorial_B:
 
 	mov $t7,$ra
 	addi $sp,$sp,-4
@@ -569,41 +458,41 @@ Label_21_factorial_B:
 	mov $fp,$sp
 	addi $sp,$sp,-0
 
-	li Temp_160,8
-	add Temp_159,Temp_160,$fp
+	li Temp_112,8
+	add Temp_111,Temp_112,$fp
 
-	lw Temp_158,0(Temp_159)
+	lw Temp_110,0(Temp_111)
 
-	li Temp_161,1
-	ble Temp_158,Temp_161,Label_22_T
+	li Temp_113,1
+	ble Temp_110,Temp_113,Label_18_T
 
-	j Label_23_F
+	j Label_19_F
 
-Label_22_T:
+Label_18_T:
 
-	li Temp_162,1
-	addi Temp_1,Temp_162,0
+	li Temp_114,1
+	addi Temp_1,Temp_114,0
 
-	j Label_24_END
+	j Label_20_END
 
-Label_23_F:
+Label_19_F:
 
-	li Temp_163,0
-	addi Temp_1,Temp_163,0
+	li Temp_115,0
+	addi Temp_1,Temp_115,0
 
-	j Label_24_END
+	j Label_20_END
 
-Label_24_END:
+Label_20_END:
 
-	li Temp_164,0
-	bne Temp_1,Temp_164,Label_25_if_cond_T
+	li Temp_116,0
+	bne Temp_1,Temp_116,Label_21_if_cond_T
 
-	j Label_26_if_cond_F
+	j Label_22_if_cond_F
 
-Label_25_if_cond_T:
+Label_21_if_cond_T:
 
-	li Temp_165,1
-	addi $v0,Temp_165,0
+	li Temp_117,1
+	addi $v0,Temp_117,0
 
 	mov $ra,$t7
 	mov $sp,$fp
@@ -612,29 +501,29 @@ Label_25_if_cond_T:
 
 	jr $ra
 
-Label_26_if_cond_F:
+Label_22_if_cond_F:
 
 	addi $sp,$sp,-4
 	sw $t7,0($sp)
 
-	li Temp_170,8
-	add Temp_169,Temp_170,$fp
+	li Temp_122,8
+	add Temp_121,Temp_122,$fp
 
-	lw Temp_168,0(Temp_169)
+	lw Temp_120,0(Temp_121)
 
-	li Temp_171,1
-	sub Temp_167,Temp_168,Temp_171
-
-	addi $sp,$sp,-4
-	sw Temp_167,0($sp)
-
-	li Temp_174,4
-	add Temp_173,$fp,Temp_174
-
-	lw Temp_172,0(Temp_173)
+	li Temp_123,1
+	sub Temp_119,Temp_120,Temp_123
 
 	addi $sp,$sp,-4
-	sw Temp_172,0($sp)
+	sw Temp_119,0($sp)
+
+	li Temp_126,4
+	add Temp_125,$fp,Temp_126
+
+	lw Temp_124,0(Temp_125)
+
+	addi $sp,$sp,-4
+	sw Temp_124,0($sp)
 
 	la $t0,VFTable_B
 
@@ -649,21 +538,14 @@ Label_26_if_cond_F:
 	lw $t7,0($sp)
 	addi $sp,$sp,4
 
-	li Temp_177,8
-	add Temp_176,Temp_177,$fp
+	li Temp_129,8
+	add Temp_128,Temp_129,$fp
 
-	lw Temp_175,0(Temp_176)
+	lw Temp_127,0(Temp_128)
 
-	mul Temp_166,$v0,Temp_175
+	mul Temp_118,$v0,Temp_127
 
-	addi $v0,Temp_166,0
-
-	mov $ra,$t7
-	mov $sp,$fp
-	lw $fp,0($sp)
-	addi $sp,$sp,4
-
-	jr $ra
+	addi $v0,Temp_118,0
 
 	mov $ra,$t7
 	mov $sp,$fp
@@ -672,7 +554,14 @@ Label_26_if_cond_F:
 
 	jr $ra
 
-Label_28_skipFunc:
+	mov $ra,$t7
+	mov $sp,$fp
+	lw $fp,0($sp)
+	addi $sp,$sp,4
+
+	jr $ra
+
+Label_24_skipFunc:
 
 	li $v0,10
 	syscall

@@ -18,7 +18,7 @@ class B extends A{
 	void g() {
 		A[] arr = new A[5];
 		arr[0]= new A();
-		arr[0].x = 2;
+		//arr[0].x = 2;
 		printInt(arr[0].x);
 
 	}
