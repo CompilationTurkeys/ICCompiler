@@ -73,12 +73,15 @@ public class MipsGenerator implements IRVisitor<Register> {
 		TempLabel loopEndLabel = new TempLabel("GetLenEnd");
 		//count
 		Register tmp = new TempRegister();
+		Register zeroReg = new TempRegister();
+
 		fileWriter.format("%s:\n\n",STR_LEN_LABEL._name);
 		fileWriter.format("\tli %s,0\n\n",tmp._name);
+		fileWriter.format("\tli %s,0\n\n",zeroReg._name);
 		fileWriter.format("%s\n\n" ,loopStartLabel.getName());
 		fileWriter.write("\tlb $t0,0($a0)\n\n");
 		//encountered a null byte ==> exit loop
-		fileWriter.format("\tbeq  $t0,0,%s\n\n" ,loopEndLabel.getNameWithoutDeclaration());
+		fileWriter.format("\tbeq  $t0,%s,%s\n\n" ,zeroReg._name,loopEndLabel.getNameWithoutDeclaration());
 		//count+=1
 		fileWriter.format("\taddi %s,%s,1\n\n",tmp._name,tmp._name);		
 		fileWriter.format("\taddi %s,%s,1\n\n","$a0","$a0");
@@ -95,12 +98,13 @@ public class MipsGenerator implements IRVisitor<Register> {
 		TempLabel cpyFirstLabel = new TempLabel("cpy_first");
 		TempLabel cpySecondLabel = new TempLabel( "cpy_second");
 		TempLabel endLoopLabel = new TempLabel( "strcpy_end");
-		
+		Register zeroReg = new TempRegister();
 		fileWriter.write(STR_CPY_LABEL._name+":\n\n");
+		fileWriter.format("\tli %s,0\n\n",zeroReg._name);
 		fileWriter.format("%s\n\n", cpyFirstLabel.getName());
 		fileWriter.write("\tlb $t0,0($a0)\n\n");
 		//encountered a null byte ==> go to second string
-		fileWriter.format("\tbeq  $t0,0,%s\n\n" ,cpySecondLabel.getNameWithoutDeclaration());
+		fileWriter.format("\tbeq  $t0,%s,%s\n\n" ,zeroReg._name,cpySecondLabel.getNameWithoutDeclaration());
 		//next byte
 		fileWriter.format("\taddi %s,%s,1\n\n","$a0","$a0");
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");		
@@ -110,7 +114,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("%s\n\n", cpySecondLabel.getName());
 		fileWriter.write("\tlb $t0,0($a1)\n\n");
 		//encountered a null byte ==> go to end loop
-		fileWriter.format("\tbeq  $t0,0,%s\n\n" ,endLoopLabel.getNameWithoutDeclaration());
+		fileWriter.format("\tbeq  $t0,%s,%s\n\n" ,zeroReg._name,endLoopLabel.getNameWithoutDeclaration());
 		//next byte
 		fileWriter.format("\taddi %s,%s,1\n\n","$a1","$a1");
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");
