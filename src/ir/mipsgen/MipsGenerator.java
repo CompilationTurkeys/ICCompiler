@@ -485,10 +485,8 @@ public class MipsGenerator implements IRVisitor<Register> {
 	public Register visit(IR_Mem mem) {
 		//register to store the loaded word from memory
 		Register reg = new TempRegister();
-
-		//compute mem address and place it in a register
+ 		//compute mem address and place it in a register
 		Register memReg = mem.irNode.accept(this);
-
 		//get mem contents from address in memReg
 		fileWriter.format("\tlw %s,0(%s)\n\n", reg._name, memReg._name);
 
@@ -667,7 +665,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 			//pass argument for syscall
 			fileWriter.format("\taddi %s,%s,%d",newStrSize._name,newStrSize._name,4*Byte.BYTES);
-			fileWriter.format("\tlw %s,0(%s)\n\n","$a0",newStrSize._name );
+			fileWriter.format("\tmov %s,%s\n\n","$a0",newStrSize._name );
 			//call sbrk syscall for memory allocation
 			fileWriter.format("\tli $v0,9\n\n");
 			//invoke syscall
