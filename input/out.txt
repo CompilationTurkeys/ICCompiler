@@ -1,8 +1,4 @@
 .data
-	VFTable_PRINT: .word 
-
-	VFTable_A: .word 
-
 	VFTable_B: .word Label_8_g_B,Label_18_factorial_B
 
 .text
@@ -13,7 +9,7 @@ main:
 	li $v0,9
 	syscall
 
-	la Temp_2,VFTable_A
+	li Temp_2,0
 
 	sw Temp_2,0($v0)
 

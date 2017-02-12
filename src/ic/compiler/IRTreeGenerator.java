@@ -646,7 +646,10 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				// c in the list
 				classMap.put(c.className, new IR_ClassAttribute(c, classMap.get(c.extendedClassName)));
 			}
-			dispachMethodsTablesMap.put(c.className, createMethodsDispachTable(classMap.get(c.className)));
+			Map<String,DispatchAttribute> methodDispatchTable = createMethodsDispachTable(classMap.get(c.className));
+			if (!methodDispatchTable.isEmpty()){
+				dispachMethodsTablesMap.put(c.className, methodDispatchTable);
+			}
 			dispachFieldsTablesMap.put(c.className,createFieldsDispachTable(classMap.get(c.className)));
 		}
 		List<AST_ClassDecl> lst = program.getClasses();

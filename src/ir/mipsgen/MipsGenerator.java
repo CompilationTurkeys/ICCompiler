@@ -121,7 +121,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");
 
 		fileWriter.format("%s\n\n" ,endLoopLabel.getName());
-				
+
 		fileWriter.format("\tsw %s,0(%s)\n\n",zeroReg._name,"$a2");
 		fileWriter.write("\tjr $ra\n\n");
 
@@ -204,14 +204,21 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
 
-		//save vftable addr in an object
-		Register vtablePtr = new TempRegister();
-		//Register vtableReg = new TempRegister();
+		if (IRTreeGenerator.Get().dispachMethodsTablesMap.get(IRTreeGenerator.Get().mainClassName) == null){
+			Register zeroReg = new TempRegister();
+			//save the address of the relevant dispatch table as a first word
+			fileWriter.format("\tli %s,%d\n\n", zeroReg._name, 0);
+			fileWriter.format("\tsw %s,0(%s)\n\n", zeroReg._name, "$v0");
+		}
+		else {
+			//save vftable addr in an object
+			Register vtablePtr = new TempRegister();
+			//Register vtableReg = new TempRegister();
 
-		fileWriter.format("\tla %s,%s\n\n", vtablePtr._name, vtableName);
-		//fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg._name, vtablePtr._name);
-		fileWriter.format("\tsw %s,0(%s)\n\n", vtablePtr._name, "$v0");
-
+			fileWriter.format("\tla %s,%s\n\n", vtablePtr._name, vtableName);
+			//fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg._name, vtablePtr._name);
+			fileWriter.format("\tsw %s,0(%s)\n\n", vtablePtr._name, "$v0");
+		}
 		objectInitialization();
 
 		//pass this to main as parameter
@@ -301,12 +308,12 @@ public class MipsGenerator implements IRVisitor<Register> {
 		}
 
 		if (call.label.getName().equals(IRTreeGenerator.PRINT_LABEL)){
-			
+
 			fileWriter.format("\tjal %s\n\n", 
 					IRTreeGenerator.PRINT_LABEL.substring(0, IRTreeGenerator.PRINT_LABEL.length()-1));
 		}
 		else if (call.label.getName().equals(IRTreeGenerator.MAIN_LABEL)){
-			
+
 			fileWriter.format("\tjal %s\n\n", IRTreeGenerator.MAIN_LABEL.substring(0, IRTreeGenerator.MAIN_LABEL.length()-1));
 		}
 		else {
@@ -427,7 +434,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 		}
 		else{
 			//traverse the body of the function
-			returnedValueReg = func.body.accept(this);
+			if (func.body!=null){
+				returnedValueReg = func.body.accept(this);
+			}
 			if (returnedValueReg != null)
 			{
 				//move return value to $v0
@@ -565,11 +574,22 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//invoke syscall
 		fileWriter.format("\tsyscall\n\n");
 
-		Register vtablePtr = new TempRegister();
-		//save the address of the relevant dispatch table as a first word
-		fileWriter.format("\tla %s,%s\n\n", vtablePtr._name, vtableName);
-		//fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg._name, vtablePtr._name);
-		fileWriter.format("\tsw %s,0(%s)\n\n", vtablePtr._name, "$v0");
+		if (IRTreeGenerator.Get().dispachMethodsTablesMap.get(newobj.className) == null){
+			Register zeroReg = new TempRegister();
+			//save the address of the relevant dispatch table as a first word
+			fileWriter.format("\tli %s,%d\n\n", zeroReg._name, 0);
+			fileWriter.format("\tsw %s,0(%s)\n\n", zeroReg._name, "$v0");
+		}
+		else {
+
+			Register vtablePtr = new TempRegister();
+			//save the address of the relevant dispatch table as a first word
+			fileWriter.format("\tla %s,%s\n\n", vtablePtr._name, vtableName);
+			//fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg._name, vtablePtr._name);
+			fileWriter.format("\tsw %s,0(%s)\n\n", vtablePtr._name, "$v0");
+
+
+		}
 
 		objectInitialization();
 

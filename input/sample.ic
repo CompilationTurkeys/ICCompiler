@@ -5,14 +5,13 @@ class PRINT{
 class A{
 	
 	int x;
-	
 
 	void main(string[] args){
 		//A a = new A();
 		PRINT p;
 		p.printInt(5);
 		B b = new B();
-		b.g();
+		b.recPrint(5);
 	
 	}
 }
@@ -65,12 +64,14 @@ class B extends A{
 	
 	}*/
 
-	int factorial(int x){
+	void recPrint(int x){
 
-		if (x<=1){
-			return 1;
+		if (x==1){
+			return;
 		}
-		return factorial(x-1)*x;
+		PRINT p;
+		p.printInt(x);
+		recPrint(x-1);
 	}
 
 }
