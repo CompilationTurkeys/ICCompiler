@@ -1,11 +1,16 @@
+class PRINT{
+	void printInt(int x) {}
+}
+
 class A{
 	
 	int x;
 	
-	void printInt(int x) {}
 
 	void main(string[] args){
 		//A a = new A();
+		PRINT p;
+		p.printInt(5);
 		B b = new B();
 		// b.h(300);
 		b.g();
@@ -18,11 +23,11 @@ class B extends A{
 	void g() {
 		int[][] arr = new int[][5];
 		arr[0] = new int[3];
-		//arr[0].x = 2;
+		PRINT p;
 		//string aa = "to";
 		//string bb = "mer";
 		//string c = aa + bb;
-		printInt(arr[0][1]);
+		p.printInt(arr[0][1]);
 
 	}
 

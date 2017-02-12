@@ -1,5 +1,4 @@
 package ic.compiler;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -16,6 +15,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public static final String FP="$fp";
 	public static final String SP="$sp";
 	private static final int THIS_OFFSET = 4;
+	public static final String MAIN_LABEL = "Label_0_Main:";
+	public static final String PRINT_LABEL = "Label_0_PrintInt:";
 	private static IRTreeGenerator _instance;
 
 	private IR_Exp irRoot;
@@ -36,9 +37,10 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	 */
 	public Map<String, Map<String,DispatchAttribute>> dispachMethodsTablesMap = new HashMap<>();
 	public Map<String, Map<String,String>> dispachFieldsTablesMap = new HashMap<>();
-	public Set<TempLabel> labelSet = new HashSet<TempLabel>();  
+	public Set<Label> labelSet = new HashSet<Label>();  
 
 	public String mainClassName;
+	public String printClassName;
 
 	public IRTreeGenerator (AST_Node root)
 	{
@@ -304,20 +306,30 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			Label okLabel = new TempLabel("AllOK");
 			IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, callingExp, new IR_Const(0),
 					accessViolationCallLabel, okLabel);
-
-			boundariesCheck =	new IR_Seq(
-					checkInitialization,
-					new IR_Seq(
-							new IR_Label(accessViolationCallLabel),
-							new IR_Seq(
-									new IR_JumpLabel(access_violation_label),
-									new IR_Label(okLabel))));
+			if (!call.funcName.equals("printInt") && !call.funcName.equals("main")){
+				boundariesCheck =	new IR_Seq(
+						checkInitialization,
+						new IR_Seq(
+								new IR_Label(accessViolationCallLabel),
+								new IR_Seq(
+										new IR_JumpLabel(access_violation_label),
+										new IR_Label(okLabel))));
+				
+			}
+	
 		}
 
 		argsList.addLast(callingExp);
-
-		TempLabel newFuncLabel = new TempLabel(call.funcName, callingExpType);
-
+		Label newFuncLabel;
+		if (call.funcName.equals("main")){
+			newFuncLabel = new SpecialLabel(MAIN_LABEL);
+		}
+		else if (call.funcName.equals("printInt")){
+			newFuncLabel = new SpecialLabel(PRINT_LABEL);
+		}
+		else {
+			newFuncLabel = new TempLabel(call.funcName, callingExpType);
+		}
 		return boundariesCheck == null ? new IR_Call(newFuncLabel, argsList) 
 				: new IR_Seq(boundariesCheck, new IR_Call(newFuncLabel, argsList));
 
@@ -549,8 +561,16 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 	@Override
 	public IR_Exp visit(AST_Method method, IR_SymbolTable symTable) {
-
-		TempLabel funcLabel = new TempLabel(method.methodName, symTable.getClassName());
+		Label funcLabel;
+		if (method.methodName.equals("main")){
+			funcLabel = new SpecialLabel(MAIN_LABEL);
+		}
+		else if(method.methodName.equals("printInt")){
+			funcLabel = new SpecialLabel(PRINT_LABEL);
+		}
+		else {
+			funcLabel = new TempLabel(method.methodName, symTable.getClassName());
+		}
 		labelSet.add(funcLabel);
 		MethodFrame newFuncFrame = new MethodFrame(funcLabel, method.methodArgs.size()+1);
 
@@ -687,10 +707,13 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				currentClass = classMap.get(currentClass.extendedClassName).getClassObject();
 			}
 
-			if (currentClass.getMethodNames().contains(name)) {
-					DispatchAttribute newAttr = new DispatchAttribute(currentClass.className, dispatchOffset);
-					dispachTable.put(name, newAttr);
-					dispatchOffset++;
+			//main and printInt are static methods
+			if (currentClass.getMethodNames().contains(name) && 
+					!name.equals("main") && !name.equals("printInt")) {
+					
+				DispatchAttribute newAttr = new DispatchAttribute(currentClass.className, dispatchOffset);
+				dispachTable.put(name, newAttr);
+				dispatchOffset++;
 			}
 
 			currentClass = classAttr.getClassObject();

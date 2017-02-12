@@ -10,15 +10,15 @@ public class IR_Function extends IR_Exp{
 	public IR_Exp prologue;
 	public IR_Exp body;
 	public IR_Exp epilogue;
-	public TempLabel tl;
+	public Label tl;
 
 	
-	public IR_Function(IR_Exp prologue, IR_Exp body, IR_Exp epilogue, TempLabel tl)
+	public IR_Function(IR_Exp prologue, IR_Exp body, IR_Exp epilogue, Label funcLabel)
 	{
 		this.prologue = prologue;
 		this.body = body;
 		this.epilogue = epilogue;
-		this.tl = tl;
+		this.tl = funcLabel;
 	}
 
 	@Override

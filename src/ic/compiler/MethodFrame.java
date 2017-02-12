@@ -1,13 +1,13 @@
 package ic.compiler;
 
-import ic.ir.TempLabel;
+import ic.ir.Label;
 
 public class MethodFrame extends Frame{
 
 		public int numOfArguments;
 		public int numOfLocalVars;
 		
-		public MethodFrame(TempLabel label, int numOfArguments){
+		public MethodFrame(Label label, int numOfArguments){
 			super(label);
 			this.numOfArguments = numOfArguments;
 		}

@@ -1,12 +1,12 @@
 package ic.compiler;
 
-import ic.ir.TempLabel;
+import ic.ir.Label;
 
 public class Frame {
-	public TempLabel label;
+	public Label label;
 	public static final int WORD_SIZE = 4;
 	
-	public Frame(TempLabel label){
+	public Frame(Label label){
 		this.label = label;
 	}
 }
