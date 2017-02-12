@@ -9,9 +9,9 @@ class A{
 	void main(string[] args){
 		//A a = new A();
 		PRINT p;
-		p.printInt(5);
+		//p.printInt(5);
 		B b = new B();
-		b.recPrint(5);
+		p.printInt(b.fib(3));
 	
 	}
 }
@@ -19,13 +19,13 @@ class A{
 class B extends A{
 	
 	void g() {
-		int[][] arr = new int[][5];
-		arr[0] = new int[3];
+		int[][][] arr = new int[][][5];
+		arr[0] = new int[][3];
 		PRINT p;
-		//string aa = "to";
-		//string bb = "mer";
-		//string c = aa + bb;
-		p.printInt(arr[0][1]);
+		string aa = "to";
+		string bb = "mer";
+		string c = aa + bb;
+		p.printInt(2);
 
 	}
 
@@ -64,14 +64,16 @@ class B extends A{
 	
 	}*/
 
-	void recPrint(int x){
+	int fib(int x){
 
-		if (x==1){
-			return;
+		if (x<=1){
+			return x;
 		}
-		PRINT p;
-		p.printInt(x);
-		recPrint(x-1);
+		
+		int a = fib(x-1);
+		int b = fib(x-2);
+		int sum = a + b;
+		return sum;
 	}
 
 }
