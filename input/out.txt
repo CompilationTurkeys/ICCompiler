@@ -108,7 +108,7 @@ Label_0_Main:
 	addi $sp,$sp,-4
 	sw Temp_12,0($sp)
 
-	jal Label_0_PrintInt:
+	jal Label_0_PrintInt
 
 	addi $sp,$sp,8
 
@@ -455,7 +455,7 @@ Label_14_OK:
 	addi $sp,$sp,-4
 	sw Temp_119,0($sp)
 
-	jal Label_0_PrintInt:
+	jal Label_0_PrintInt
 
 	addi $sp,$sp,8
 
@@ -652,7 +652,7 @@ Label_37_cpy_second:
 
 Label_38_strcpy_end:
 
-	sw 0,0($a2)
+	sw Temp_144,0($a2)
 
 	jr $ra
 

@@ -12,7 +12,6 @@ class A{
 		PRINT p;
 		p.printInt(5);
 		B b = new B();
-		// b.h(300);
 		b.g();
 	
 	}

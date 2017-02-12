@@ -121,7 +121,8 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");
 
 		fileWriter.format("%s\n\n" ,endLoopLabel.getName());
-		fileWriter.format("\tsw 0,0(%s)\n\n","$a2");
+				
+		fileWriter.format("\tsw %s,0(%s)\n\n",zeroReg._name,"$a2");
 		fileWriter.write("\tjr $ra\n\n");
 
 	}
@@ -301,11 +302,12 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 		if (call.label.getName().equals(IRTreeGenerator.PRINT_LABEL)){
 			
-			fileWriter.format("\tjal %s\n\n", IRTreeGenerator.PRINT_LABEL);
+			fileWriter.format("\tjal %s\n\n", 
+					IRTreeGenerator.PRINT_LABEL.substring(0, IRTreeGenerator.PRINT_LABEL.length()-1));
 		}
 		else if (call.label.getName().equals(IRTreeGenerator.MAIN_LABEL)){
 			
-			fileWriter.format("\tjal %s\n\n", IRTreeGenerator.MAIN_LABEL);
+			fileWriter.format("\tjal %s\n\n", IRTreeGenerator.MAIN_LABEL.substring(0, IRTreeGenerator.MAIN_LABEL.length()-1));
 		}
 		else {
 			TempLabel callLabel = (TempLabel) call.label;
