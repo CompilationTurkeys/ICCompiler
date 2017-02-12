@@ -19,8 +19,8 @@ class A{
 class B extends A{
 	
 	void g() {
-		int[][][] arr = new int[][][5];
-		arr[0] = new int[][3];
+		//int[][][] arr = new int[][][5];
+		//arr[0] = new int[][3];
 		PRINT p;
 		string aa = "to";
 		string bb = "mer";

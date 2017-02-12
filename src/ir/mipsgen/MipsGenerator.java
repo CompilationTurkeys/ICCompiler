@@ -100,6 +100,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		TempLabel cpySecondLabel = new TempLabel( "cpy_second");
 		TempLabel endLoopLabel = new TempLabel( "strcpy_end");
 		Register zeroReg = new TempRegister();
+		
 		fileWriter.write(STR_CPY_LABEL._name+":\n\n");
 		fileWriter.format("\tli %s,0\n\n",zeroReg._name);
 		fileWriter.format("%s\n\n", cpyFirstLabel.getName());
@@ -116,6 +117,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.write("\tlb $t0,($a1)\n\n");
 		//encountered a null byte ==> go to end loop
 		fileWriter.format("\tbeq  $t0,%s,%s\n\n" ,zeroReg._name,endLoopLabel.getNameWithoutDeclaration());
+		
 		//next byte
 		fileWriter.format("\taddi %s,%s,1\n\n","$a1","$a1");
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");
@@ -495,14 +497,15 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	@Override
 	public Register visit(IR_Move move) {
-
 		// if a move is a memory move
 		if (move.isMemoryMove()){
 			//calculate left expression and place it in destination
 			Register dst = move.left.accept(this);
-
+			PushToStack(dst._name);
 			//calculate right expression and place it in source
 			Register src = move.right.accept(this);
+			PopFromStack(dst._name);
+			//TODO: if dst is local variable ( FP PLUS offset) then pop its value from the stack?
 
 			fileWriter.format("\tsw %s,0(%s)\n\n", src._name, dst._name);
 		}

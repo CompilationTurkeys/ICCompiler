@@ -88,11 +88,20 @@ Label_0_Main:
 	li Temp_9,-4
 	add Temp_8,Temp_9,$fp
 
+	addi $sp,$sp,-4
+	sw Temp_8,0($sp)
+
 	li Temp_10,0
+	lw Temp_8,0($sp)
+	addi $sp,$sp,4
+
 	sw Temp_10,0(Temp_8)
 
 	li Temp_12,-8
 	add Temp_11,Temp_12,$fp
+
+	addi $sp,$sp,-4
+	sw Temp_11,0($sp)
 
 	li $a0,8
 
@@ -125,6 +134,9 @@ Label_23_init_for:
 	j  Label_23_init_for
 
 Label_24_init_end_for:
+
+	lw Temp_11,0($sp)
+	addi $sp,$sp,4
 
 	sw $v0,0(Temp_11)
 
@@ -191,6 +203,9 @@ Label_6_g_B:
 	li Temp_27,-4
 	add Temp_26,Temp_27,$fp
 
+	addi $sp,$sp,-4
+	sw Temp_26,0($sp)
+
 	li Temp_28,5
 	addi Temp_28,Temp_28,1
 
@@ -223,6 +238,9 @@ Label_25_init_for:
 	j  Label_25_init_for
 
 Label_26_init_end_for:
+
+	lw Temp_26,0($sp)
+	addi $sp,$sp,4
 
 	sw $v0,0(Temp_26)
 
@@ -273,6 +291,9 @@ Label_8_OK:
 
 	add Temp_49,Temp_50,Temp_53
 
+	addi $sp,$sp,-4
+	sw Temp_49,0($sp)
+
 	li Temp_56,3
 	addi Temp_56,Temp_56,1
 
@@ -306,30 +327,54 @@ Label_27_init_for:
 
 Label_28_init_end_for:
 
+	lw Temp_49,0($sp)
+	addi $sp,$sp,4
+
 	sw $v0,0(Temp_49)
 
 	li Temp_63,-8
 	add Temp_62,Temp_63,$fp
 
+	addi $sp,$sp,-4
+	sw Temp_62,0($sp)
+
 	li Temp_64,0
+	lw Temp_62,0($sp)
+	addi $sp,$sp,4
+
 	sw Temp_64,0(Temp_62)
 
 	li Temp_66,-12
 	add Temp_65,Temp_66,$fp
 
+	addi $sp,$sp,-4
+	sw Temp_65,0($sp)
+
 	la Temp_67,String_1
+
+	lw Temp_65,0($sp)
+	addi $sp,$sp,4
 
 	sw Temp_67,0(Temp_65)
 
 	li Temp_69,-16
 	add Temp_68,Temp_69,$fp
 
+	addi $sp,$sp,-4
+	sw Temp_68,0($sp)
+
 	la Temp_70,String_2
+
+	lw Temp_68,0($sp)
+	addi $sp,$sp,4
 
 	sw Temp_70,0(Temp_68)
 
 	li Temp_72,-20
 	add Temp_71,Temp_72,$fp
+
+	addi $sp,$sp,-4
+	sw Temp_71,0($sp)
 
 	li Temp_76,-12
 	add Temp_75,Temp_76,$fp
@@ -380,6 +425,9 @@ Label_28_init_end_for:
 	jal Label_0_StrCpy
 
 	mov $ra,$t5
+
+	lw Temp_71,0($sp)
+	addi $sp,$sp,4
 
 	sw Temp_81,0(Temp_71)
 
@@ -478,6 +526,9 @@ Label_17_if_cond_F:
 	add Temp_96,Temp_97,$fp
 
 	addi $sp,$sp,-4
+	sw Temp_96,0($sp)
+
+	addi $sp,$sp,-4
 	sw $t7,0($sp)
 
 	li Temp_101,8
@@ -512,10 +563,16 @@ Label_17_if_cond_F:
 	lw $t7,0($sp)
 	addi $sp,$sp,4
 
+	lw Temp_96,0($sp)
+	addi $sp,$sp,4
+
 	sw $v0,0(Temp_96)
 
 	li Temp_107,-8
 	add Temp_106,Temp_107,$fp
+
+	addi $sp,$sp,-4
+	sw Temp_106,0($sp)
 
 	addi $sp,$sp,-4
 	sw $t7,0($sp)
@@ -552,10 +609,16 @@ Label_17_if_cond_F:
 	lw $t7,0($sp)
 	addi $sp,$sp,4
 
+	lw Temp_106,0($sp)
+	addi $sp,$sp,4
+
 	sw $v0,0(Temp_106)
 
 	li Temp_117,-12
 	add Temp_116,Temp_117,$fp
+
+	addi $sp,$sp,-4
+	sw Temp_116,0($sp)
 
 	li Temp_121,-4
 	add Temp_120,Temp_121,$fp
@@ -568,6 +631,9 @@ Label_17_if_cond_F:
 	lw Temp_122,0(Temp_123)
 
 	add Temp_118,Temp_119,Temp_122
+
+	lw Temp_116,0($sp)
+	addi $sp,$sp,4
 
 	sw Temp_118,0(Temp_116)
 
