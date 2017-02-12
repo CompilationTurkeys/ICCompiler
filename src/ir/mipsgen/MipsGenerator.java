@@ -666,7 +666,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 			//allocate space for new string
 
 			//pass argument for syscall
-			fileWriter.format("\tsaddi %s,%s,%d",newStrSize._name,newStrSize._name,4*Byte.BYTES);
+			fileWriter.format("\taddi %s,%s,%d",newStrSize._name,newStrSize._name,4*Byte.BYTES);
 			fileWriter.format("\tlw %s,0(%s)\n\n","$a0",newStrSize._name );
 			//call sbrk syscall for memory allocation
 			fileWriter.format("\tli $v0,9\n\n");

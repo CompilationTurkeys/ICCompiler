@@ -386,7 +386,7 @@ Label_30_init_end_for:
 
 	add Temp_84,Temp_84,$v0
 
-	saddi Temp_84,Temp_84,4	lw $a0,0(Temp_84)
+	addi Temp_84,Temp_84,4	lw $a0,0(Temp_84)
 
 	li $v0,9
 
