@@ -107,7 +107,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.write("\tlb $t0,($a0)\n\n");
 		//encountered a null byte ==> go to second string
 		fileWriter.format("\tbeq  $t0,%s,%s\n\n" ,zeroReg._name,cpySecondLabel.getNameWithoutDeclaration());
-		//next byte
+
+		fileWriter.format("\tsb %s,(%s)\n\n","$t0","$a2");
+		//next byte		
 		fileWriter.format("\taddi %s,%s,1\n\n","$a0","$a0");
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");		
 		fileWriter.format("\tj %s\n\n" ,cpyFirstLabel.getNameWithoutDeclaration());
@@ -117,14 +119,15 @@ public class MipsGenerator implements IRVisitor<Register> {
 		fileWriter.write("\tlb $t0,($a1)\n\n");
 		//encountered a null byte ==> go to end loop
 		fileWriter.format("\tbeq  $t0,%s,%s\n\n" ,zeroReg._name,endLoopLabel.getNameWithoutDeclaration());
-		
+
+		fileWriter.format("\tsb %s,(%s)\n\n","$t0","$a2");
 		//next byte
 		fileWriter.format("\taddi %s,%s,1\n\n","$a1","$a1");
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");
 
 		fileWriter.format("%s\n\n" ,endLoopLabel.getName());
 
-		fileWriter.format("\tsw %s,0(%s)\n\n",zeroReg._name,"$a2");
+		fileWriter.format("\tsb %s,(%s)\n\n",zeroReg._name,"$a2");
 		fileWriter.write("\tjr $ra\n\n");
 
 	}
@@ -667,7 +670,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 			//allocate space for new string
 
 			//pass argument for syscall
-			fileWriter.format("\taddi %s,%s,%d",newStrSize._name,newStrSize._name,4*Byte.BYTES);
+			fileWriter.format("\taddi %s,%s,%d",newStrSize._name,newStrSize._name,Byte.BYTES);
 			fileWriter.format("\tmov %s,%s\n\n","$a0",newStrSize._name );
 			//call sbrk syscall for memory allocation
 			fileWriter.format("\tli $v0,9\n\n");
