@@ -403,23 +403,32 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	@Override
 	public IR_Exp visit(AST_VariableExpArray var, IR_SymbolTable symTable) {
 		
+		IR_Exp arrExp1 = null,arrExp2 = null,arrExp3 =null ,arrExp = null;
+		boolean isFieldExp = false;
 		if (var.arrayExp instanceof AST_Variable){
-			((AST_Variable)var.arrayExp).isAssigned = var.arrayExp instanceof AST_VariableID 
-					&& findVar(((AST_VariableID)var.arrayExp).fieldName, symTable) == null;
+			
+			if (var.arrayExp instanceof AST_VariableID && 
+					findVar(((AST_VariableID)var.arrayExp).fieldName, symTable) == null){
+				isFieldExp = true;
+			}
+			else {
+				((AST_Variable)var.arrayExp).isAssigned = false ;
+			}
+			
 		}
 		
-		IR_Exp arrExp1 = null, arrExp2 = null, arrExp3 = null, arrExp = null;
 		
 		if (var.arrayExp instanceof AST_VariableExpArray){
 			
 			arrExp1 = var.arrayExp.accept(this, symTable);
 			arrExp2 = ((IR_Seq) arrExp1).rightExp;
-			//arrExp2 = var.arrayExp.accept(this, symTable);
-			//arrExp3 = var.arrayExp.accept(this, symTable);
-
 		}
 		else{
 			arrExp = var.arrayExp.accept(this, symTable);
+			if (isFieldExp){
+				((AST_Variable)var.arrayExp).isAssigned = false ;
+				arrExp3 = var.arrayExp.accept(this, symTable);
+			}
 		}
 		
 		IR_Exp arrIndex = new IR_Binop(var.arraySize.accept(this, symTable),new IR_Const(1)
@@ -431,7 +440,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp initializationCheck = null;
 		//Initialization check
 		if (arrExp != null){
-			initializationCheck = new IR_Cjump(BinaryOpTypes.EQUALS,arrExp,new IR_Const(0)
+			initializationCheck = new IR_Cjump(BinaryOpTypes.EQUALS,arrExp3!=null? arrExp3 :arrExp,new IR_Const(0)
 					,accessViolationCallLabel,null);
 		}
 		else{
@@ -449,7 +458,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp checkArrayLeMemorySizeAllocated = null;
 		if (arrExp != null){
 			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GT,
-					arrIndex,new IR_Mem(arrExp),accessViolationCallLabel,null);
+					arrIndex,isFieldExp? arrExp : new IR_Mem(arrExp),accessViolationCallLabel,null);
 		}
 		else{
 			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GT,

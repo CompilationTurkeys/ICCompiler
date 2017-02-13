@@ -37,7 +37,7 @@ class C extends A {
 	int[] y;
 	
 	void f(int x){
-		y = new int[4];
+		//y= new int[4];
 		y[0] = 4;
 		PRINT p;
 		p.printInt(y[0]);
