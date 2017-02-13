@@ -5,7 +5,7 @@ class PRINT{
 class A{
 	
 	int x;
-
+	/*
 	void g() {
 		//int[][][] arr = new int[][][5];
 		//arr[0] = new int[][3];
@@ -15,9 +15,9 @@ class A{
 		string c = aa + bb;
 		p.printInt(2);
 
-	}
+	}*/
 	
-	
+	/*
 	int fib(int x){
 
 		if (x<=1){
@@ -28,7 +28,7 @@ class A{
 		int b = fib(x-2);
 		int sum = a + b;
 		return sum;
-	}
+	}*/
 	
 	
 }

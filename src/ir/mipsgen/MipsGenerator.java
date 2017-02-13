@@ -617,7 +617,9 @@ public class MipsGenerator implements IRVisitor<Register> {
 	@Override
 	public Register visit(IR_Seq seq) {
 		//traverse left son and return the result of right son
-		seq.leftExp.accept(this);
+		if (seq.leftExp != null) {
+			seq.leftExp.accept(this);
+		}
 
 		if (seq.rightExp == null){
 			return null;

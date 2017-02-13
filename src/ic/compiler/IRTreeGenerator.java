@@ -348,14 +348,20 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		varExpType = SemanticEvaluator.Get().callingExpMap.get(var.exp);
 		
-		if (var.exp instanceof AST_Variable){
+		if (var.exp instanceof AST_Variable && (varExpType.equals("int") || varExpType.equals("string")) ){
 			((AST_Variable)var.exp).isAssigned = false;
 		}
+		
 		
 		IR_Exp varExp2;
 		
 		
 		varExp = var.exp.accept(this, symTable);
+		
+		if (var.exp instanceof AST_Variable ){
+			((AST_Variable)var.exp).isAssigned = false;
+		}
+		
 		varExp2 = varExpType.equals("int") || varExpType.equals("string") ? null : var.exp.accept(this,symTable);
 		
 		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
@@ -659,6 +665,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	private IR_Exp methodDeclListVisit(List<AST_Method> methodDeclList, IR_SymbolTable symTable){
 		if (methodDeclList.size() == 1){
 			return methodDeclList.get(0).accept(this, symTable);
+		}
+		else if (methodDeclList.size() == 0){
+			return null;
 		}
 		AST_Method method = methodDeclList.remove(0);
 		return new IR_Seq(method.accept(this, symTable),methodDeclListVisit(methodDeclList,symTable));
