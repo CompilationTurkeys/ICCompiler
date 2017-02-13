@@ -152,9 +152,12 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			scope = symTable;
 		}
 		
+		
+		
 		for (AST_Stmt stmt : stmts.stmtList){
 			stmt.accept(this, symTable);
 		}
+		
 		return null;
 	}
 
@@ -466,6 +469,27 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		}
 		if (method.getArguments() != null) {
 			method.getArguments().stream().forEach(arg -> arg.accept(this, methodSymbolTable));
+		}
+		int size = method.getMethodStmtList().stmtList.size();
+		if (size>0 && ! (method.getMethodStmtList().stmtList.get(size-1) instanceof AST_StmtReturn)){
+			MethodSymbolTable methodST = (MethodSymbolTable)methodSymbolTable;
+
+			//check if the method exists as part of the class and get its type
+			if (((ClassAttribute)(program.getSymbols().get(methodST.getClassName())))
+			    .getMethodMap().containsKey(methodST.getMethodName())){
+				
+				AST_Type expectedRetType = ((ClassAttribute) (program.getSymbols()
+						.get(methodST.getClassName())))
+						.getMethodMap().get(methodST.getMethodName())
+						.getType();
+				
+				if (!expectedRetType.isVoid()){
+					throw new RuntimeException("Method " + method.getName() + " should have a return statement of type " + expectedRetType);
+				}
+
+			}
+
+			
 		}
 		if (method.getMethodStmtList() != null)
 			method.getMethodStmtList().accept(this, methodSymbolTable);

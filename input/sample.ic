@@ -34,12 +34,13 @@ class A{
 }
 
 class C extends A {
-	A y;
+	int[] y;
 	
-	int f(int x){
-		y = new A();
+	void f(int x){
+		y = new int[4];
+		y[0] = 4;
 		PRINT p;
-		p.printInt(y.x);
+		p.printInt(y[0]);
 	}
 
 }

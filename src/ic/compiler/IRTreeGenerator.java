@@ -404,7 +404,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	public IR_Exp visit(AST_VariableExpArray var, IR_SymbolTable symTable) {
 		
 		if (var.arrayExp instanceof AST_Variable){
-			((AST_Variable)var.arrayExp).isAssigned = false;
+			((AST_Variable)var.arrayExp).isAssigned = var.arrayExp instanceof AST_VariableID 
+					&& findVar(((AST_VariableID)var.arrayExp).fieldName, symTable) == null;
 		}
 		
 		IR_Exp arrExp1 = null, arrExp2 = null, arrExp3 = null, arrExp = null;
