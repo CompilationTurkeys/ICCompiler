@@ -11,7 +11,7 @@ class A{
 		PRINT p;
 		//p.printInt(5);
 		B b = new B();
-		b.g();
+		b.fib(3);
 	
 	}
 }
