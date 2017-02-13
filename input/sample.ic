@@ -38,7 +38,6 @@ class C extends A {
 	
 	int f(int x){
 		y = new A();
-		y.x = x;
 		PRINT p;
 		p.printInt(y.x);
 	}
