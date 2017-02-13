@@ -124,6 +124,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		//next byte
 		fileWriter.format("\taddi %s,%s,1\n\n","$a1","$a1");
 		fileWriter.format("\taddi %s,%s,1\n\n","$a2","$a2");
+		fileWriter.format("\tj %s\n\n" ,cpySecondLabel.getNameWithoutDeclaration());
 
 		fileWriter.format("%s\n\n" ,endLoopLabel.getName());
 

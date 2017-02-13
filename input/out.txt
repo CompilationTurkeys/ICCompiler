@@ -595,6 +595,8 @@ Label_26_cpy_second:
 
 	addi $a2,$a2,1
 
+	j Label_26_cpy_second
+
 Label_27_strcpy_end:
 
 	sb Temp_94,($a2)
