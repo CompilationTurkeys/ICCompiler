@@ -6,18 +6,6 @@ class A{
 	
 	int x;
 
-	void main(string[] args){
-		//A a = new A();
-		PRINT p;
-		//p.printInt(5);
-		B b = new B();
-		b.fib(3);
-	
-	}
-}
-
-class B extends A{
-	
 	void g() {
 		//int[][][] arr = new int[][][5];
 		//arr[0] = new int[][3];
@@ -27,6 +15,47 @@ class B extends A{
 		string c = aa + bb;
 		p.printInt(2);
 
+	}
+	
+	
+	int fib(int x){
+
+		if (x<=1){
+			return x;
+		}
+		
+		int a = fib(x-1);
+		int b = fib(x-2);
+		int sum = a + b;
+		return sum;
+	}
+	
+	
+}
+
+class C extends A {
+	A y;
+	
+	int f(int x){
+		y = new A();
+		y.x = x;
+		PRINT p;
+		p.printInt(y.x);
+	}
+
+}
+
+class B extends C{
+	
+	void g(){}
+	
+	void main(string[] args){
+		//A a = new A();
+		PRINT p;
+		//p.printInt(5);
+		B b = new B();
+		b.f(4);
+	
 	}
 
 
@@ -63,17 +92,5 @@ class B extends A{
 	  }
 	
 	}*/
-
-	int fib(int x){
-
-		if (x<=1){
-			return x;
-		}
-		
-		int a = fib(x-1);
-		int b = fib(x-2);
-		int sum = a + b;
-		return sum;
-	}
 
 }
