@@ -314,6 +314,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 								new IR_Seq(
 										new IR_JumpLabel(access_violation_label),
 										new IR_Label(okLabel))));
+				call.hasAccessViolationCheck = true;
 				
 			}
 	
@@ -346,6 +347,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		String varExpType;
 		IR_Exp varExp;
 
+		var.hasAccessViolationCheck = true;
 		varExpType = SemanticEvaluator.Get().callingExpMap.get(var.exp);
 		
 		if (var.exp instanceof AST_Variable && (varExpType.equals("int") || varExpType.equals("string")) ){
@@ -417,14 +419,13 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			
 		}
 		
-		
-		if (var.arrayExp instanceof AST_VariableExpArray){
+		arrExp = var.arrayExp.accept(this, symTable);
+		if (var.arrayExp instanceof AST_VariableExpArray || var.arrayExp.hasAccessViolationCheck){
 			
-			arrExp1 = var.arrayExp.accept(this, symTable);
-			arrExp2 = ((IR_Seq) arrExp1).rightExp;
+			//arrExp1 = var.arrayExp.accept(this, symTable);
+			arrExp2 = ((IR_Seq) arrExp).rightExp;
 		}
 		else{
-			arrExp = var.arrayExp.accept(this, symTable);
 			if (isFieldExp){
 				((AST_Variable)var.arrayExp).isAssigned = false ;
 				arrExp3 = var.arrayExp.accept(this, symTable);
@@ -439,14 +440,14 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		
 		IR_Exp initializationCheck = null;
 		//Initialization check
-		if (arrExp != null){
-			initializationCheck = new IR_Cjump(BinaryOpTypes.EQUALS,arrExp3!=null? arrExp3 :arrExp,new IR_Const(0)
+		//if (arrExp2 == null){
+		initializationCheck = new IR_Cjump(BinaryOpTypes.EQUALS,arrExp3!=null? arrExp3 :arrExp,new IR_Const(0)
 					,accessViolationCallLabel,null);
-		}
-		else{
-			initializationCheck = new IR_Cjump(BinaryOpTypes.EQUALS,arrExp1,new IR_Const(0)
-					,accessViolationCallLabel,null);
-		}
+		//}
+		//else{
+		//	initializationCheck = new IR_Cjump(BinaryOpTypes.EQUALS,arrExp1,new IR_Const(0)
+		//			,accessViolationCallLabel,null);
+		//}
 
 		Label isOkLabel = new TempLabel("OK");
 		Label isOkJumpLabel = new SpecialLabel(isOkLabel._name.substring(0, isOkLabel._name.length()-1));
@@ -456,7 +457,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		
 		IR_Exp checkArrayLeMemorySizeAllocated = null;
-		if (arrExp != null){
+		if (arrExp2 == null){
 			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GT,
 					arrIndex,isFieldExp? arrExp : new IR_Mem(arrExp),accessViolationCallLabel,null);
 		}
@@ -482,7 +483,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		IR_Exp varSubTree = null;
 		if (var.isAssigned){
-			if (arrExp != null){
+			if (arrExp2 == null){
 				varSubTree = new IR_Mem(new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS));
 			}
 			else{
@@ -490,7 +491,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 		}
 		else{
-			if (arrExp != null){
+			if (arrExp2 == null){
 				varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
 			}
 			else{
@@ -498,7 +499,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 		}
 
-
+		var.hasAccessViolationCheck = true;
 		return new IR_Seq(boundariesChecks, varSubTree);
 
 	}

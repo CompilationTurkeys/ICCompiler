@@ -4,6 +4,7 @@ package ic.ast;
 public abstract class AST_Exp extends AST_Node
 {
 	int moish;
+	public boolean hasAccessViolationCheck;
 
 	@Override
 	public int hashCode() {

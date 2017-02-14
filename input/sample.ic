@@ -4,7 +4,7 @@ class PRINT{
 
 class A{
 	
-	int x;
+	int y;
 	/*
 	void g() {
 		//int[][][] arr = new int[][][5];
@@ -17,30 +17,24 @@ class A{
 
 	}*/
 	
-	/*
-	int fib(int x){
-
-		if (x<=1){
-			return x;
-		}
-		
-		int a = fib(x-1);
-		int b = fib(x-2);
-		int sum = a + b;
-		return sum;
-	}*/
-	
+	int[] func(int x){}
 	
 }
 
-class C extends A {
-	int[] y;
+class C extends A{
 	
 	void f(int x){
-		//y= new int[4];
-		y[0] = 4;
+		y= x;
+		//y[0] = new A();
+		//y[0].y = x;
 		PRINT p;
-		p.printInt(y[0]);
+		//p.printInt(y[0].y);
+	}
+	
+	int[] func(int x){
+		int[] arr = new int[x];
+		arr[0] = 20;
+		return arr;
 	}
 
 }
@@ -50,11 +44,9 @@ class B extends C{
 	void g(){}
 	
 	void main(string[] args){
-		//A a = new A();
 		PRINT p;
-		//p.printInt(5);
-		B b = new B();
-		b.f(4);
+		A b = new C();
+		p.printInt(b.func(5)[0]);
 	
 	}
 

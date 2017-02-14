@@ -136,6 +136,12 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			// incompatible types or inheritance (cannot assign right to left)
 			throw new RuntimeException("Incompatible types, cannot assign type " + right.getType().getName() + " to type "+ left.getType().getName());
 		}
+		
+		if (!right.getType().equals(left.getType()) && stmt.var instanceof AST_VariableID){
+			Attribute attr = symTable.getSymbols().get((((AST_VariableID) stmt.var).fieldName));
+			attr.setDynamicType(right.getType());
+			symTable.getSymbols().put((((AST_VariableID) stmt.var).fieldName), attr);
+		}
 		return null;
 
 	}
@@ -196,6 +202,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		
 		Attribute newVar = new Attribute(stmt.varType);
 		symTable.getSymbols().put(stmt.varName, newVar);
+
 		return null;
 	}
 	
@@ -301,7 +308,8 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		//expression exists (method is a field of a different class), not an explicit call, evaluate the exp
 		if (call.getCallingExpression() != null) {
 			callExpAttr = call.getCallingExpression().accept(this, symTable);
-			callingExpMap.put(call.callingExp, callExpAttr.getType().getName());
+			callingExpMap.put(call.callingExp, callExpAttr.getDynamicType()==null?
+					callExpAttr.getType().getName() : callExpAttr.getDynamicType().getName());
 			
 			if (callExpAttr.getType().isPrimitive()) {
 				throw new RuntimeException("Primitive type" + callExpAttr.getType() + " can't have a member function " + call.getFuncName());
@@ -373,7 +381,8 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			throw new RuntimeException("Null pointer exception, trying to access field of null expression.");
 		}
 		
-		callingExpMap.put(var.exp, expAttr.getType().getName());
+		callingExpMap.put(var.exp, expAttr.getDynamicType()==null?expAttr.getType().getName()
+																 :expAttr.getDynamicType().getName());
 
 		//check expression type
 		expAttr.getType().accept(this, symTable);
@@ -464,8 +473,8 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 	public Attribute visit(AST_Method method, SymbolTable symTable) {
 		SymbolTable methodSymbolTable = new MethodSymbolTable(symTable, method.getName());
 		symTable.getChildren().put(method, methodSymbolTable);
-		if (!method.getType().isPrimitive() && !program.getSymbols().containsKey(method.getType().getName())) {
-			throw new RuntimeException("non primitive type of " + method.getType().getName() + "is not declared");
+		if (!method.getType().checkTypePrimitive() && !program.getSymbols().containsKey(method.getType().getName())) {
+			throw new RuntimeException("non primitive type of " + method.getType().getName() + " is not declared");
 		}
 		if (method.getArguments() != null) {
 			method.getArguments().stream().forEach(arg -> arg.accept(this, methodSymbolTable));
