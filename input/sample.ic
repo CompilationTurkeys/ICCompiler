@@ -45,7 +45,8 @@ class B extends C{
 	
 	void main(string[] args){
 		PRINT p;
-		A b = new C();
+		A b;
+		b = new C();
 		p.printInt(b.func(5)[0]);
 	
 	}

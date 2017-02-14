@@ -183,6 +183,7 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		//check if var type is valid
 		stmt.varType.accept(this, symTable);
 
+		AST_Type dynamicVarType = null;
 		if (symTable.getSymbols().containsKey(stmt.varName)){
 			throw new RuntimeException("Var name " + stmt.varName + " has already been used!");
 		}
@@ -198,9 +199,15 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 			if (expAttr.isMethod() && (stmt.assignedExp instanceof AST_Variable)){
 				throw new RuntimeException("Cannot assign method to variable!");
 			}
+			
+			if (!expAttr.getType().equals(stmt.varType) ){
+				dynamicVarType = expAttr.getType();
+			}
+			
+
 		}
-		
 		Attribute newVar = new Attribute(stmt.varType);
+		newVar.setDynamicType(dynamicVarType);
 		symTable.getSymbols().put(stmt.varName, newVar);
 
 		return null;
