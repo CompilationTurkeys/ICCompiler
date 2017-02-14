@@ -1,0 +1,28 @@
+class PRINT {
+void printInt(int i){}
+}
+
+class A
+{
+	void concat()
+	{
+		
+		int x = (0==1);
+		string h = "hello";
+		string w = "world";
+		string hw = h+w;
+		
+
+	}
+
+}
+
+class M
+{
+	void main(string[] args)
+	{
+		PRINT p = new PRINT();
+		A a = new A();
+		a.concat();
+	}
+}
