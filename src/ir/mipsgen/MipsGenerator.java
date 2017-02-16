@@ -298,12 +298,16 @@ public class MipsGenerator implements IRVisitor<Register> {
 		PushToStack("$t7");
 		//}
 
+		Register thisReg = null;
+
 		//push arguments to stack
 		if ( call.args != null ){
+			Register argValue = null;
 			for (IR_Exp arg : call.args){
-				Register argValue = arg.accept(this);
+				argValue = arg.accept(this);
 				PushToStack(argValue._name);
 			}
+			thisReg = argValue;
 		}
 
 		if (call.label.getName().equals(IRTreeGenerator.PRINT_LABEL)){
@@ -325,10 +329,12 @@ public class MipsGenerator implements IRVisitor<Register> {
 			//get func vtable offset
 			int funcOffset = funcDispatchAttr.offset * Frame.WORD_SIZE;
 
-
 			//Register that contains dispatch table addr
 			String vtableReg = "$t0";
-			fileWriter.format("\tla %s,%s\n\n", vtableReg, "VFTable_" + callLabel.getClassName());
+			//fileWriter.format("\tla %s,%s\n\n", vtableReg, "VFTable_" + callLabel.getClassName());
+			
+			fileWriter.format("\tlw %s,0(%s)\n\n", vtableReg, thisReg._name);
+
 			//calculate vftable + offset
 			fileWriter.format("\taddi %s,%s,%d\n\n", vtableReg, vtableReg, funcOffset);
 			//func addr inside the vtable

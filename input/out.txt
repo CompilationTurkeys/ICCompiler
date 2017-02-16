@@ -1,19 +1,15 @@
 .data
-	VFTable_A: .word Label_2_func_A
-
-	VFTable_B: .word Label_6_func_C,Label_4_f_C,Label_10_g_B
-
-	VFTable_C: .word Label_6_func_C,Label_4_f_C
+	VFTable_TestSon: .word Label_2_test_TestSon
 
 .text
 
 main:
 
-	li $a0,8
+	li $a0,4
 	li $v0,9
 	syscall
 
-	la Temp_1,VFTable_B
+	li Temp_1,0
 
 	sw Temp_1,0($v0)
 
@@ -23,9 +19,9 @@ main:
 
 	mov  Temp_3,Temp_4
 
-Label_20_init_for:
+Label_14_init_for:
 
- 	bgt Temp_2,Temp_3,Label_21_init_end_for
+ 	bgt Temp_2,Temp_3,Label_15_init_end_for
 
 	addi  Temp_5,$v0,4
 
@@ -35,9 +31,9 @@ Label_20_init_for:
 
 	addi  Temp_2,Temp_2,4
 
-	j  Label_20_init_for
+	j  Label_14_init_for
 
-Label_21_init_end_for:
+Label_15_init_end_for:
 
 	addi $sp,$sp,-4
 	sw $v0,0($sp)
@@ -72,7 +68,7 @@ Label_1_skipFunc:
 
 	j Label_3_skipFunc
 
-Label_2_func_A:
+Label_2_test_TestSon:
 
 	mov $t7,$ra
 	addi $sp,$sp,-4
@@ -80,6 +76,16 @@ Label_2_func_A:
 
 	mov $fp,$sp
 	addi $sp,$sp,-0
+
+	li Temp_7,0
+	addi $v0,Temp_7,0
+
+	mov $ra,$t7
+	mov $sp,$fp
+	lw $fp,0($sp)
+	addi $sp,$sp,4
+
+	jr $ra
 
 	mov $ra,$t7
 	mov $sp,$fp
@@ -90,218 +96,7 @@ Label_2_func_A:
 
 Label_3_skipFunc:
 
-	j Label_5_skipFunc
-
-Label_4_f_C:
-
-	mov $t7,$ra
-	addi $sp,$sp,-4
-	sw $fp,0($sp)
-
-	mov $fp,$sp
-	addi $sp,$sp,-4
-
-	li Temp_8,4
-	li Temp_11,4
-	add Temp_10,Temp_11,$fp
-
-	lw Temp_9,0(Temp_10)
-
-	add Temp_7,Temp_8,Temp_9
-
-	addi $sp,$sp,-4
-	sw Temp_7,0($sp)
-
-	li Temp_14,8
-	add Temp_13,Temp_14,$fp
-
-	lw Temp_12,0(Temp_13)
-
-	lw Temp_7,0($sp)
-	addi $sp,$sp,4
-
-	sw Temp_12,0(Temp_7)
-
-	li Temp_16,-4
-	add Temp_15,Temp_16,$fp
-
-	addi $sp,$sp,-4
-	sw Temp_15,0($sp)
-
-	li Temp_17,0
-	lw Temp_15,0($sp)
-	addi $sp,$sp,4
-
-	sw Temp_17,0(Temp_15)
-
-	mov $ra,$t7
-	mov $sp,$fp
-	lw $fp,0($sp)
-	addi $sp,$sp,4
-
-	jr $ra
-
-Label_5_skipFunc:
-
-	j Label_9_skipFunc
-
-Label_6_func_C:
-
-	mov $t7,$ra
-	addi $sp,$sp,-4
-	sw $fp,0($sp)
-
-	mov $fp,$sp
-	addi $sp,$sp,-4
-
-	li Temp_19,-4
-	add Temp_18,Temp_19,$fp
-
-	addi $sp,$sp,-4
-	sw Temp_18,0($sp)
-
-	li Temp_22,8
-	add Temp_21,Temp_22,$fp
-
-	lw Temp_20,0(Temp_21)
-
-	addi Temp_20,Temp_20,1
-
-	mov $a0,Temp_20
-
-	li $v0,9
-
-	syscall
-
-	sw Temp_20,0($v0)
-
-	li  Temp_23,4
-
-	addi  Temp_25,$a0,-4
-
-	mov  Temp_24,Temp_25
-
-Label_22_init_for:
-
- 	bgt Temp_23,Temp_24,Label_23_init_end_for
-
-	addi  Temp_26,$v0,4
-
-	li Temp_27,0
-
-	sw Temp_27,0(Temp_26)
-
-	addi  Temp_23,Temp_23,4
-
-	j  Label_22_init_for
-
-Label_23_init_end_for:
-
-	lw Temp_18,0($sp)
-	addi $sp,$sp,4
-
-	sw $v0,0(Temp_18)
-
-	li Temp_30,-4
-	add Temp_29,Temp_30,$fp
-
-	lw Temp_28,0(Temp_29)
-
-	li Temp_31,0
-	beq Temp_28,Temp_31,Label_7_AccessViolation
-
-	li Temp_33,0
-	li Temp_34,1
-	add Temp_32,Temp_33,Temp_34
-
-	li Temp_35,0
-	blt Temp_32,Temp_35,Label_7_AccessViolation
-
-	li Temp_37,0
-	li Temp_38,1
-	add Temp_36,Temp_37,Temp_38
-
-	li Temp_42,-4
-	add Temp_41,Temp_42,$fp
-
-	lw Temp_40,0(Temp_41)
-
-	lw Temp_39,0(Temp_40)
-
-	bgt Temp_36,Temp_39,Label_7_AccessViolation
-
-	j Label_8_OK
-
-Label_7_AccessViolation:
-
-	j Label_0_Access_Violation
-
-Label_8_OK:
-
-	li Temp_46,-4
-	add Temp_45,Temp_46,$fp
-
-	lw Temp_44,0(Temp_45)
-
-	li Temp_48,0
-	li Temp_49,1
-	add Temp_47,Temp_48,Temp_49
-
-	add Temp_43,Temp_44,Temp_47
-
-	addi $sp,$sp,-4
-	sw Temp_43,0($sp)
-
-	li Temp_50,20
-	lw Temp_43,0($sp)
-	addi $sp,$sp,4
-
-	sw Temp_50,0(Temp_43)
-
-	li Temp_53,-4
-	add Temp_52,Temp_53,$fp
-
-	lw Temp_51,0(Temp_52)
-
-	addi $v0,Temp_51,0
-
-	mov $ra,$t7
-	mov $sp,$fp
-	lw $fp,0($sp)
-	addi $sp,$sp,4
-
-	jr $ra
-
-	mov $ra,$t7
-	mov $sp,$fp
-	lw $fp,0($sp)
-	addi $sp,$sp,4
-
-	jr $ra
-
-Label_9_skipFunc:
-
-	j Label_11_skipFunc
-
-Label_10_g_B:
-
-	mov $t7,$ra
-	addi $sp,$sp,-4
-	sw $fp,0($sp)
-
-	mov $fp,$sp
-	addi $sp,$sp,-0
-
-	mov $ra,$t7
-	mov $sp,$fp
-	lw $fp,0($sp)
-	addi $sp,$sp,4
-
-	jr $ra
-
-Label_11_skipFunc:
-
-	j Label_19_skipFunc
+	j Label_13_skipFunc
 
 Label_0_Main:
 
@@ -310,112 +105,168 @@ Label_0_Main:
 	sw $fp,0($sp)
 
 	mov $fp,$sp
-	addi $sp,$sp,-8
+	addi $sp,$sp,-12
 
-	li Temp_55,-4
-	add Temp_54,Temp_55,$fp
+	li Temp_9,-4
+	add Temp_8,Temp_9,$fp
 
 	addi $sp,$sp,-4
-	sw Temp_54,0($sp)
+	sw Temp_8,0($sp)
 
-	li Temp_56,0
-	lw Temp_54,0($sp)
+	li Temp_10,0
+	lw Temp_8,0($sp)
 	addi $sp,$sp,4
 
-	sw Temp_56,0(Temp_54)
+	sw Temp_10,0(Temp_8)
 
-	li Temp_58,-8
-	add Temp_57,Temp_58,$fp
+	li Temp_12,-8
+	add Temp_11,Temp_12,$fp
 
 	addi $sp,$sp,-4
-	sw Temp_57,0($sp)
+	sw Temp_11,0($sp)
 
-	li Temp_59,0
-	lw Temp_57,0($sp)
+	li Temp_13,10
+	lw Temp_11,0($sp)
 	addi $sp,$sp,4
 
-	sw Temp_59,0(Temp_57)
-
-	li Temp_62,-8
-	add Temp_61,Temp_62,$fp
-
-	lw Temp_60,0(Temp_61)
+	sw Temp_13,0(Temp_11)
 
 	addi $sp,$sp,-4
-	sw Temp_60,0($sp)
+	sw $t7,0($sp)
 
-	li $a0,8
+	li Temp_16,-8
+	add Temp_15,Temp_16,$fp
+
+	lw Temp_14,0(Temp_15)
+
+	addi $sp,$sp,-4
+	sw Temp_14,0($sp)
+
+	li Temp_19,-4
+	add Temp_18,Temp_19,$fp
+
+	lw Temp_17,0(Temp_18)
+
+	addi $sp,$sp,-4
+	sw Temp_17,0($sp)
+
+	jal Label_0_PrintInt
+
+	addi $sp,$sp,8
+
+	lw $t7,0($sp)
+	addi $sp,$sp,4
+
+	addi $sp,$sp,-4
+	sw $t7,0($sp)
+
+	li Temp_20,20
+	addi $sp,$sp,-4
+	sw Temp_20,0($sp)
+
+	li Temp_23,-4
+	add Temp_22,Temp_23,$fp
+
+	lw Temp_21,0(Temp_22)
+
+	addi $sp,$sp,-4
+	sw Temp_21,0($sp)
+
+	jal Label_0_PrintInt
+
+	addi $sp,$sp,8
+
+	lw $t7,0($sp)
+	addi $sp,$sp,4
+
+	li Temp_25,-12
+	add Temp_24,Temp_25,$fp
+
+	addi $sp,$sp,-4
+	sw Temp_24,0($sp)
+
+	li Temp_26,0
+	lw Temp_24,0($sp)
+	addi $sp,$sp,4
+
+	sw Temp_26,0(Temp_24)
+
+	li Temp_29,-12
+	add Temp_28,Temp_29,$fp
+
+	lw Temp_27,0(Temp_28)
+
+	addi $sp,$sp,-4
+	sw Temp_27,0($sp)
+
+	li $a0,4
 
 	li $v0,9
 
 	syscall
 
-	la Temp_63,VFTable_C
+	la Temp_30,VFTable_TestSon
 
-	sw Temp_63,0($v0)
+	sw Temp_30,0($v0)
 
-	li  Temp_64,4
+	li  Temp_31,4
 
-	addi  Temp_66,$a0,-4
+	addi  Temp_33,$a0,-4
 
-	mov  Temp_65,Temp_66
+	mov  Temp_32,Temp_33
 
-Label_24_init_for:
+Label_16_init_for:
 
- 	bgt Temp_64,Temp_65,Label_25_init_end_for
+ 	bgt Temp_31,Temp_32,Label_17_init_end_for
 
-	addi  Temp_67,$v0,4
+	addi  Temp_34,$v0,4
 
-	li Temp_68,0
+	li Temp_35,0
 
-	sw Temp_68,0(Temp_67)
+	sw Temp_35,0(Temp_34)
 
-	addi  Temp_64,Temp_64,4
+	addi  Temp_31,Temp_31,4
 
-	j  Label_24_init_for
+	j  Label_16_init_for
 
-Label_25_init_end_for:
+Label_17_init_end_for:
 
-	lw Temp_60,0($sp)
+	lw Temp_27,0($sp)
 	addi $sp,$sp,4
 
-	sw $v0,0(Temp_60)
+	sw $v0,0(Temp_27)
 
 	addi $sp,$sp,-4
 	sw $t7,0($sp)
 
-	li Temp_71,-8
-	add Temp_70,Temp_71,$fp
+	li Temp_38,-12
+	add Temp_37,Temp_38,$fp
 
-	lw Temp_69,0(Temp_70)
+	lw Temp_36,0(Temp_37)
 
-	li Temp_72,0
-	beq Temp_69,Temp_72,Label_12_AccessViolation
+	li Temp_39,0
+	beq Temp_36,Temp_39,Label_8_AccessViolation
 
-	j Label_13_AllOK
+	j Label_9_AllOK
 
-Label_12_AccessViolation:
+Label_8_AccessViolation:
 
 	j Label_0_Access_Violation
 
-Label_13_AllOK:
+Label_9_AllOK:
 
 	addi $sp,$sp,-4
 	sw $t7,0($sp)
 
-	li Temp_73,5
-	addi $sp,$sp,-4
-	sw Temp_73,0($sp)
+	li Temp_42,-12
+	add Temp_41,Temp_42,$fp
 
-	li Temp_76,-8
-	add Temp_75,Temp_76,$fp
-
-	lw Temp_74,0(Temp_75)
+	lw Temp_40,0(Temp_41)
 
 	addi $sp,$sp,-4
-	sw Temp_74,0($sp)
+	sw Temp_40,0($sp)
 
-	la $t0,VFTable_C
+	lw $t0,0(Temp_40)
 
 	addi $t0,$t0,0
 
@@ -423,111 +274,21 @@ Label_13_AllOK:
 
 	jalr $t0
 
-	addi $sp,$sp,8
+	addi $sp,$sp,4
 
 	lw $t7,0($sp)
 	addi $sp,$sp,4
 
-	li Temp_77,0
-	beq $v0,Temp_77,Label_15_AccessViolation
+	addi $sp,$sp,-4
+	sw $v0,0($sp)
 
-	li Temp_79,0
-	li Temp_80,1
-	add Temp_78,Temp_79,Temp_80
+	li Temp_45,-4
+	add Temp_44,Temp_45,$fp
 
-	li Temp_81,0
-	blt Temp_78,Temp_81,Label_15_AccessViolation
-
-	li Temp_83,0
-	li Temp_84,1
-	add Temp_82,Temp_83,Temp_84
+	lw Temp_43,0(Temp_44)
 
 	addi $sp,$sp,-4
-	sw $t7,0($sp)
-
-	li Temp_86,5
-	addi $sp,$sp,-4
-	sw Temp_86,0($sp)
-
-	li Temp_89,-8
-	add Temp_88,Temp_89,$fp
-
-	lw Temp_87,0(Temp_88)
-
-	addi $sp,$sp,-4
-	sw Temp_87,0($sp)
-
-	la $t0,VFTable_C
-
-	addi $t0,$t0,0
-
-	lw $t0,0($t0)
-
-	jalr $t0
-
-	addi $sp,$sp,8
-
-	lw $t7,0($sp)
-	addi $sp,$sp,4
-
-	lw Temp_85,0($v0)
-
-	bgt Temp_82,Temp_85,Label_15_AccessViolation
-
-	j Label_16_OK
-
-Label_15_AccessViolation:
-
-	j Label_0_Access_Violation
-
-Label_16_OK:
-
-	addi $sp,$sp,-4
-	sw $t7,0($sp)
-
-	li Temp_92,5
-	addi $sp,$sp,-4
-	sw Temp_92,0($sp)
-
-	li Temp_95,-8
-	add Temp_94,Temp_95,$fp
-
-	lw Temp_93,0(Temp_94)
-
-	addi $sp,$sp,-4
-	sw Temp_93,0($sp)
-
-	la $t0,VFTable_C
-
-	addi $t0,$t0,0
-
-	lw $t0,0($t0)
-
-	jalr $t0
-
-	addi $sp,$sp,8
-
-	lw $t7,0($sp)
-	addi $sp,$sp,4
-
-	li Temp_97,0
-	li Temp_98,1
-	add Temp_96,Temp_97,Temp_98
-
-	add Temp_91,$v0,Temp_96
-
-	lw Temp_90,0(Temp_91)
-
-	addi $sp,$sp,-4
-	sw Temp_90,0($sp)
-
-	li Temp_101,-4
-	add Temp_100,Temp_101,$fp
-
-	lw Temp_99,0(Temp_100)
-
-	addi $sp,$sp,-4
-	sw Temp_99,0($sp)
+	sw Temp_43,0($sp)
 
 	jal Label_0_PrintInt
 
@@ -543,7 +304,7 @@ Label_16_OK:
 
 	jr $ra
 
-Label_19_skipFunc:
+Label_13_skipFunc:
 
 	li $v0,10
 	syscall
@@ -560,37 +321,37 @@ Label_0_Access_Violation:
 
 Label_0_StrLen:
 
-	li Temp_102,0
+	li Temp_46,0
 
-	li Temp_103,0
+	li Temp_47,0
 
-Label_26_getLenLoop_Start:
+Label_18_getLenLoop_Start:
 
 	lb $t0,($a0)
 
-	beq  $t0,Temp_103,Label_27_GetLenEnd
+	beq  $t0,Temp_47,Label_19_GetLenEnd
 
-	addi Temp_102,Temp_102,1
+	addi Temp_46,Temp_46,1
 
 	addi $a0,$a0,1
 
-	j Label_26_getLenLoop_Start
+	j Label_18_getLenLoop_Start
 
-Label_27_GetLenEnd:
+Label_19_GetLenEnd:
 
-	mov $v0,Temp_102
+	mov $v0,Temp_46
 
 	jr $ra
 
 Label_0_StrCpy:
 
-	li Temp_104,0
+	li Temp_48,0
 
-Label_28_cpy_first:
+Label_20_cpy_first:
 
 	lb $t0,($a0)
 
-	beq  $t0,Temp_104,Label_29_cpy_second
+	beq  $t0,Temp_48,Label_21_cpy_second
 
 	sb $t0,($a2)
 
@@ -598,13 +359,13 @@ Label_28_cpy_first:
 
 	addi $a2,$a2,1
 
-	j Label_28_cpy_first
+	j Label_20_cpy_first
 
-Label_29_cpy_second:
+Label_21_cpy_second:
 
 	lb $t0,($a1)
 
-	beq  $t0,Temp_104,Label_30_strcpy_end
+	beq  $t0,Temp_48,Label_22_strcpy_end
 
 	sb $t0,($a2)
 
@@ -612,11 +373,11 @@ Label_29_cpy_second:
 
 	addi $a2,$a2,1
 
-	j Label_29_cpy_second
+	j Label_21_cpy_second
 
-Label_30_strcpy_end:
+Label_22_strcpy_end:
 
-	sb Temp_104,($a2)
+	sb Temp_48,($a2)
 
 	jr $ra
 
