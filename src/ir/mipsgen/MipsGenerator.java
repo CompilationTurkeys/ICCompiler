@@ -3,6 +3,7 @@ package ir.mipsgen;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Map;
 
 import ic.ast.BinaryOpTypes;
@@ -242,6 +243,8 @@ public class MipsGenerator implements IRVisitor<Register> {
 			fileWriter.write("\tVFTable_"+dispatchEntry.getKey()+": .word ");
 			int entriesCnt = 0;
 			int mapSize = dispatchEntry.getValue().entrySet().size();
+			String[] dispatchValues = new String[mapSize];
+			
 
 			for (Map.Entry<String, DispatchAttribute> methodsEntry: dispatchEntry.getValue().entrySet()){
 
@@ -254,11 +257,15 @@ public class MipsGenerator implements IRVisitor<Register> {
 						if (methodsEntry.getKey().equals(tmpFuncLabel.getFuncName()) 
 								&& methodsEntry.getValue().className.equals(tmpFuncLabel.getClassName())){
 							adjustedFuncName = tmpFuncLabel._name.substring(0, tmpFuncLabel._name.length()-1);
+							dispatchValues[methodsEntry.getValue().offset] = adjustedFuncName;
 							break;
 						}
 					}
 				}
 
+			}
+			
+			for (String adjustedFuncName : dispatchValues){
 				if (entriesCnt != mapSize - 1){
 					fileWriter.write(adjustedFuncName + ",");
 				}

@@ -405,13 +405,12 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 	@Override
 	public IR_Exp visit(AST_VariableExpArray var, IR_SymbolTable symTable) {
 		
-		IR_Exp arrExp1 = null,arrExp2 = null,arrExp3 =null ,arrExp = null;
-		boolean isFieldExp = false;
+		IR_Exp arrExp2 = null,arrExp3 =null ,arrExp = null;
+		boolean isVarIDExp = false;
 		if (var.arrayExp instanceof AST_Variable){
 			
-			if (var.arrayExp instanceof AST_VariableID && 
-					findVar(((AST_VariableID)var.arrayExp).fieldName, symTable) == null){
-				isFieldExp = true;
+			if (var.arrayExp instanceof AST_VariableID){
+				isVarIDExp = true;
 			}
 			else {
 				((AST_Variable)var.arrayExp).isAssigned = false ;
@@ -426,9 +425,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			arrExp2 = ((IR_Seq) arrExp).rightExp;
 		}
 		else{
-			if (isFieldExp){
-				((AST_Variable)var.arrayExp).isAssigned = false ;
-				arrExp3 = var.arrayExp.accept(this, symTable);
+			if (isVarIDExp){
+				//((AST_Variable)var.arrayExp).isAssigned = false ;
+				arrExp3 =  ((IR_Mem)arrExp).irNode; //var.arrayExp.accept(this, symTable);
 			}
 		}
 		
@@ -441,7 +440,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp initializationCheck = null;
 		//Initialization check
 		//if (arrExp2 == null){
-		initializationCheck = new IR_Cjump(BinaryOpTypes.EQUALS,arrExp3!=null? arrExp3 :arrExp,new IR_Const(0)
+		initializationCheck = new IR_Cjump(BinaryOpTypes.EQUALS,arrExp,new IR_Const(0)
 					,accessViolationCallLabel,null);
 		//}
 		//else{
@@ -459,7 +458,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		IR_Exp checkArrayLeMemorySizeAllocated = null;
 		if (arrExp2 == null){
 			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GT,
-					arrIndex,isFieldExp? arrExp : new IR_Mem(arrExp),accessViolationCallLabel,null);
+					arrIndex,new IR_Mem(arrExp),accessViolationCallLabel,null);
 		}
 		else{
 			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GT,
@@ -491,12 +490,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 		}
 		else{
-			if (arrExp2 == null){
-				varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
-			}
-			else{
-				varSubTree = new IR_Binop(arrExp3,arrIndex,BinaryOpTypes.PLUS);
-			}
+			varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
 		}
 
 		var.hasAccessViolationCheck = true;
@@ -510,12 +504,15 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 
 		int varOffset;
 		IR_Attribute varAttr = findVar(var.fieldName, symTable);
+		AST_Type varType ;
+
 		IR_Exp varSubTree = null;
 
 		if (varAttr != null){
+			varType = varAttr.frameMemberType;
 			varOffset = varAttr.frameMember.offset;
 
-			if (var.isAssigned || !varAttr.frameMemberType.isInt()){
+			if (var.isAssigned){
 				varSubTree = new IR_Mem(
 						new IR_Binop(
 								new IR_Const(varOffset),
@@ -523,6 +520,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 								BinaryOpTypes.PLUS));
 			}
 			else{
+				
 				varSubTree = new IR_Binop(
 								new IR_Const(varOffset),
 								new IR_Temp(new SpecialRegister(FP)),
@@ -533,6 +531,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		}
 		else{
 			varOffset = classMap.get(symTable.getClassName()).getFieldOffset(var.fieldName);
+			varType = classMap.get(symTable.getClassName()).getFieldType(var.fieldName);
+
 			//$fp+4 == this location
 			IR_Exp thisAddr = new IR_Mem(
 					new IR_Binop(
@@ -734,9 +734,9 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			if (currentClass.getMethodNames().contains(name) && 
 					!name.equals("main") && !name.equals("printInt")) {
 					
-				DispatchAttribute newAttr = new DispatchAttribute(currentClass.className, dispatchOffset);
+				DispatchAttribute newAttr = new DispatchAttribute(currentClass.className, classAttr.getMethodOffset(name));
 				dispachTable.put(name, newAttr);
-				dispatchOffset++;
+				//dispatchOffset++;
 			}
 
 			currentClass = classAttr.getClassObject();

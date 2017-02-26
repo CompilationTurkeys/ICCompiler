@@ -23,6 +23,14 @@ class A{
 
 class C extends A{
 	
+	int[] func(int x){
+		int[][] arr = new int[][x];
+		arr[0] = new int[x];
+		arr[0][0] = 10;
+		return arr[0];
+	}
+	
+	
 	void f(int x){
 		y= x;
 		//y[0] = new A();
@@ -31,11 +39,8 @@ class C extends A{
 		//p.printInt(y[0].y);
 	}
 	
-	int[] func(int x){
-		int[] arr = new int[x];
-		arr[0] = 20;
-		return arr;
-	}
+	void hrr(){}
+
 
 }
 

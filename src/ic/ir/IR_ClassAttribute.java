@@ -6,12 +6,14 @@ import java.util.Map;
 import ic.ast.AST_ClassDecl;
 import ic.ast.AST_Field;
 import ic.ast.AST_Method;
+import ic.ast.AST_Type;
 import ic.compiler.IR_Attribute;
 
 public class IR_ClassAttribute {
 
 	private AST_ClassDecl cls;
 	private Map<String, Integer> fieldOffset = new HashMap<String, Integer>(); // for temporary.field_offset
+	private Map<String,AST_Type> fieldType  = new HashMap<>();
 	private Map<String, Integer> methodOffset = new HashMap<String, Integer>();//for virtual table
 	private int fieldCounter = 1; // 1 for the virtual table in place 0
 	private int methodCounter = 0;
@@ -27,6 +29,8 @@ public class IR_ClassAttribute {
 		for (AST_Field field : cls.classFields) {
 			for (String name : field.fieldNamesList){
 				fieldOffset.put(name, fieldCounter++);
+				fieldType.put(name, field.fieldsType);
+
 			}
 		}
 	}
@@ -35,6 +39,7 @@ public class IR_ClassAttribute {
 	public IR_ClassAttribute(AST_ClassDecl cls, IR_ClassAttribute superCls) {
 		this.cls = cls;
 		fieldOffset.putAll(superCls.getFieldOffsetMap());
+		fieldType.putAll(superCls.getFieldTypesMap());
 		methodOffset.putAll(superCls.getMethodOffsetMap());
 		fieldCounter += fieldOffset.size();	
 		methodCounter += methodOffset.size();
@@ -59,9 +64,16 @@ public class IR_ClassAttribute {
 		for (AST_Field field : cls.classFields) { 
 			for (String name : field.fieldNamesList){
 				fieldOffset.put(name, fieldCounter++);
+				fieldType.put(name, field.fieldsType);
+				
 			}
 		}
 	}
+
+	private Map<String,AST_Type> getFieldTypesMap() {
+		return fieldType;
+	}
+
 
 	public AST_ClassDecl getClassObject() {
 		return this.cls;
@@ -100,5 +112,10 @@ public class IR_ClassAttribute {
 
 	public void addMethodToOffsetMap(AST_Method m, Integer offset) {
 		methodOffset.put(m.getName(), offset);
+	}
+
+
+	public AST_Type getFieldType(String fieldName) {
+		return fieldType.get(fieldName);
 	}
 }

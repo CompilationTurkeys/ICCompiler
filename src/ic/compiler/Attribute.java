@@ -4,7 +4,6 @@ import ic.ast.*;
 public class Attribute {
 
 	private AST_Type type;
-	private AST_Type dynamicType;
 	private boolean isNull;
 	private boolean isMethod;
 
@@ -27,13 +26,6 @@ public class Attribute {
 		return type;
 	}
 	
-	public AST_Type getDynamicType(){
-		return dynamicType;
-	}
-	
-	public void setDynamicType(AST_Type type){
-		dynamicType = type;
-	}
 	public boolean isNull() {
 		return isNull;
 	}
