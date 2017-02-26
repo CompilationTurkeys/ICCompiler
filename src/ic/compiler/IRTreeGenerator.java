@@ -431,8 +431,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 		}
 		
-		IR_Exp arrIndex = new IR_Binop(var.arraySize.accept(this, symTable),new IR_Const(1)
-				,BinaryOpTypes.PLUS);
+		IR_Exp arrIndex = new IR_Binop(new IR_Binop(var.arraySize.accept(this, symTable),new IR_Const(1)
+				,BinaryOpTypes.PLUS),new IR_Const(Integer.BYTES),BinaryOpTypes.TIMES);
 
 		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
 		Label accessViolationCallLabel = new TempLabel("AccessViolation");
@@ -490,7 +490,17 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 		}
 		else{
-			varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
+			if (arrExp2 == null){
+				arrExp = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp) : arrExp;
+
+				varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
+			}
+			else{
+				arrExp2 = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp2) : arrExp2;
+				
+				varSubTree = new IR_Binop(arrExp2,arrIndex,BinaryOpTypes.PLUS);
+			}
+			
 		}
 
 		var.hasAccessViolationCheck = true;
