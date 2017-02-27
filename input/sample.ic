@@ -22,24 +22,32 @@ class A{
 }
 
 class C extends A{
-	
+	/*
 	int[] func(int x){
 		int[][] arr = new int[][x];
 		arr[0] = new int[x];
 		arr[0][0] = 10;
 		return arr[0];
-	}
+	}*/
 	
-	
+	/*
 	void f(int x){
 		y= x;
 		//y[0] = new A();
 		//y[0].y = x;
 		PRINT p;
 		//p.printInt(y[0].y);
-	}
+	}*/
 	
-	void hrr(){}
+	int hrr(int num){
+	
+		if (num == 0){
+			return 1;
+		}
+		
+		return hrr(num-1)*num;
+		
+	}
 
 
 }
@@ -50,16 +58,32 @@ class B extends C{
 	
 	void main(string[] args){
 		PRINT p;
-		A b;
-		b = new C();
-		p.printInt(b.func(5)[0]);
+		C[] arr = new C[3];
+		int x = 10;
+				
+		//arr[0]= new A();
+		//arr[1]= new B();
+		arr[2]= new C();
+		
+		p.printInt(arr[2].hrr(x));
+		//h(b.func(5)[0]);
+		
 	
 	}
+	
 
+	/*
+	int[] func(int x){
+		int[][] arr = new int[][x];
+		arr[0] = new int[x];
+		arr[0][0] = 30;
+		return arr[0];
+	}*/
 
-	  /*void h(int x){
+	/*void h(int x){
 	  
 	  int n = 2;
+	  PRINT p;
 
 	  while ( n <= x ){
 		
@@ -83,12 +107,11 @@ class B extends C{
 		}
 
 		if (is_prime == 1){
-			printInt(n);
+			p.printInt(n);
 		}
 		n=n+1;
 
 	  }
 	
 	}*/
-
 }

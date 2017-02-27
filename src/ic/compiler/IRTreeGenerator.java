@@ -317,9 +317,11 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 				call.hasAccessViolationCheck = true;
 				
 			}
-	
-		}
+			callingExp = call.callingExp.accept(this, symTable);
 
+		}
+		
+		
 		argsList.addLast(callingExp);
 		Label newFuncLabel;
 		if (call.funcName.equals("main")){
@@ -350,27 +352,19 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		var.hasAccessViolationCheck = true;
 		varExpType = SemanticEvaluator.Get().callingExpMap.get(var.exp);
 		
-		if (var.exp instanceof AST_Variable && (varExpType.equals("int") || varExpType.equals("string")) ){
-			((AST_Variable)var.exp).isAssigned = false;
-		}
-		
-		
-		IR_Exp varExp2;
-		
-		
+		//if (var.exp instanceof AST_Variable && (varExpType.equals("int") || varExpType.equals("string")) ){
+		//	((AST_Variable)var.exp).isAssigned = false;
+		//}
+
 		varExp = var.exp.accept(this, symTable);
 		
-		if (var.exp instanceof AST_Variable ){
-			((AST_Variable)var.exp).isAssigned = false;
-		}
-		
-		varExp2 = varExpType.equals("int") || varExpType.equals("string") ? null : var.exp.accept(this,symTable);
+		IR_Exp varExp2 =  var.exp.accept(this,symTable);
 		
 		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
 		Label okLabel = new TempLabel("AllOK");
 		Label accessViolationCallLabel = new TempLabel("AccessViolation");
 
-		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp2==null? varExp : varExp2, new IR_Const(0),
+		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp2, new IR_Const(0),
 				accessViolationCallLabel, okLabel);
 
 		int fieldOffset = classMap.get(varExpType).getFieldOffset(var.fieldName);
@@ -431,8 +425,8 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 		}
 		
-		IR_Exp arrIndex = new IR_Binop(var.arraySize.accept(this, symTable),new IR_Const(1)
-				,BinaryOpTypes.PLUS);
+		IR_Exp arrIndex = new IR_Binop(new IR_Binop(var.arraySize.accept(this, symTable),new IR_Const(1)
+				,BinaryOpTypes.PLUS),new IR_Const(Integer.BYTES),BinaryOpTypes.TIMES);
 
 		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
 		Label accessViolationCallLabel = new TempLabel("AccessViolation");
@@ -490,7 +484,17 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			}
 		}
 		else{
-			varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
+			if (arrExp2 == null){
+				arrExp = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp) : arrExp;
+
+				varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
+			}
+			else{
+				arrExp2 = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp2) : arrExp2;
+				
+				varSubTree = new IR_Binop(arrExp2,arrIndex,BinaryOpTypes.PLUS);
+			}
+			
 		}
 
 		var.hasAccessViolationCheck = true;
@@ -717,7 +721,6 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		Map<String,DispatchAttribute> dispachTable = new LinkedHashMap<>();
 		AST_ClassDecl currentClass = classAttr.getClassObject();
 
-		int dispatchOffset = 0;
 
 		for (String name : classAttr.getMethodOffsetMap().keySet()) {
 
