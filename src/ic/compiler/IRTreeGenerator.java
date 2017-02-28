@@ -355,10 +355,14 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		//if (var.exp instanceof AST_Variable && (varExpType.equals("int") || varExpType.equals("string")) ){
 		//	((AST_Variable)var.exp).isAssigned = false;
 		//}
-
+		IR_Exp varExp2;
 		varExp = var.exp.accept(this, symTable);
-		
-		IR_Exp varExp2 =  var.exp.accept(this,symTable);
+		if (var.exp.hasAccessViolationCheck){
+			 varExp2 = ((IR_Seq) varExp).rightExp;
+		}
+		else {
+			varExp2 =  var.exp.accept(this,symTable);
+		}
 		
 		Label access_violation_label= new SpecialLabel("Label_0_Access_Violation");
 		Label okLabel = new TempLabel("AllOK");
@@ -475,23 +479,23 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 														new IR_Label(isOkLabel)))))));
 
 		IR_Exp varSubTree = null;
+		
 		if (var.isAssigned){
 			if (arrExp2 == null){
 				varSubTree = new IR_Mem(new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS));
 			}
 			else{
+				arrExp2 = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp2) : arrExp2;
 				varSubTree = new IR_Mem(new IR_Binop(arrExp2,arrIndex,BinaryOpTypes.PLUS));
 			}
 		}
 		else{
 			if (arrExp2 == null){
-				arrExp = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp) : arrExp;
-
+				//arrExp = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp) : arrExp;
 				varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
 			}
 			else{
 				arrExp2 = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp2) : arrExp2;
-				
 				varSubTree = new IR_Binop(arrExp2,arrIndex,BinaryOpTypes.PLUS);
 			}
 			

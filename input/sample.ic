@@ -48,6 +48,8 @@ class C extends A{
 		return hrr(num-1)*num;
 		
 	}
+	
+	
 
 
 }
@@ -58,17 +60,26 @@ class B extends C{
 	
 	void main(string[] args){
 		PRINT p;
-		C[] arr = new C[3];
-		int x = 10;
-				
-		//arr[0]= new A();
-		//arr[1]= new B();
-		arr[2]= new C();
 		
-		p.printInt(arr[2].hrr(x));
-		//h(b.func(5)[0]);
+		int[][] arr = new int[][3];
+		arr[0] = new int[3];
+		//arr[1] = new C[3];
+		//arr[2] = new C[3];
 		
-	
+		arr[0][0] = 10;
+		//arr[1][1] = new C();
+		//arr[2][2] = new C();
+		
+		//int x = 10;
+		//arr[0][0].y = 10;
+		//arr[1][1].y = arr[2][2].hrr(arr[0][0].y);
+		//arr[2][2].y = 1010;
+		
+		//int i=0;
+		//while (i<3){
+		p.printInt(arr[0][0]);
+		//	i=i+1;
+		//}
 	}
 	
 

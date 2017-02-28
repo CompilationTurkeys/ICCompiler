@@ -8,6 +8,7 @@ class List {
 	int head;
 	int list_length;
 	List tail;
+	PRINT p;
 
 	void append(int i) {
 		list_length = list_length + 1;
@@ -20,6 +21,15 @@ class List {
 		}
 		tail.append(i);
 	}
+	
+	void printList(List list){
+		if (list.tail == null){
+			return;
+		}
+		
+		p.printInt(list.head);
+		printList(list.tail);
+	}
 }
 
 class MergeSort {
@@ -30,7 +40,7 @@ class MergeSort {
 		result.tail = null;
 
 		while(list1.list_length*list2.list_length != 0) {
-			List tmp1 = list2;
+			List tmp1 = list1;
 			List tmp2 = list2;
 			if (tmp1.head <= tmp2.head) {
 				result.append(tmp1.head);
@@ -66,15 +76,15 @@ class MergeSort {
 		y.tail = null;
 
 		x.append(5);
+		x.append(7);
 		x.append(9);
-		x.append(3);
-		y.append(7);
 		y.append(2);
+		y.append(3);
 		y.append(50);
 
 
 		MergeSort ms = new MergeSort();
 		List m = ms.merge(x, y);
-		p.printInt(m.head);
+		m.printList(m);
 	} 
 }

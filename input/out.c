@@ -1404,6 +1404,606 @@ int *Temp_698;
 
 int *Temp_699;
 
+int *Temp_700;
+
+int *Temp_701;
+
+int *Temp_702;
+
+int *Temp_703;
+
+int *Temp_704;
+
+int *Temp_705;
+
+int *Temp_706;
+
+int *Temp_707;
+
+int *Temp_708;
+
+int *Temp_709;
+
+int *Temp_710;
+
+int *Temp_711;
+
+int *Temp_712;
+
+int *Temp_713;
+
+int *Temp_714;
+
+int *Temp_715;
+
+int *Temp_716;
+
+int *Temp_717;
+
+int *Temp_718;
+
+int *Temp_719;
+
+int *Temp_720;
+
+int *Temp_721;
+
+int *Temp_722;
+
+int *Temp_723;
+
+int *Temp_724;
+
+int *Temp_725;
+
+int *Temp_726;
+
+int *Temp_727;
+
+int *Temp_728;
+
+int *Temp_729;
+
+int *Temp_730;
+
+int *Temp_731;
+
+int *Temp_732;
+
+int *Temp_733;
+
+int *Temp_734;
+
+int *Temp_735;
+
+int *Temp_736;
+
+int *Temp_737;
+
+int *Temp_738;
+
+int *Temp_739;
+
+int *Temp_740;
+
+int *Temp_741;
+
+int *Temp_742;
+
+int *Temp_743;
+
+int *Temp_744;
+
+int *Temp_745;
+
+int *Temp_746;
+
+int *Temp_747;
+
+int *Temp_748;
+
+int *Temp_749;
+
+int *Temp_750;
+
+int *Temp_751;
+
+int *Temp_752;
+
+int *Temp_753;
+
+int *Temp_754;
+
+int *Temp_755;
+
+int *Temp_756;
+
+int *Temp_757;
+
+int *Temp_758;
+
+int *Temp_759;
+
+int *Temp_760;
+
+int *Temp_761;
+
+int *Temp_762;
+
+int *Temp_763;
+
+int *Temp_764;
+
+int *Temp_765;
+
+int *Temp_766;
+
+int *Temp_767;
+
+int *Temp_768;
+
+int *Temp_769;
+
+int *Temp_770;
+
+int *Temp_771;
+
+int *Temp_772;
+
+int *Temp_773;
+
+int *Temp_774;
+
+int *Temp_775;
+
+int *Temp_776;
+
+int *Temp_777;
+
+int *Temp_778;
+
+int *Temp_779;
+
+int *Temp_780;
+
+int *Temp_781;
+
+int *Temp_782;
+
+int *Temp_783;
+
+int *Temp_784;
+
+int *Temp_785;
+
+int *Temp_786;
+
+int *Temp_787;
+
+int *Temp_788;
+
+int *Temp_789;
+
+int *Temp_790;
+
+int *Temp_791;
+
+int *Temp_792;
+
+int *Temp_793;
+
+int *Temp_794;
+
+int *Temp_795;
+
+int *Temp_796;
+
+int *Temp_797;
+
+int *Temp_798;
+
+int *Temp_799;
+
+int *Temp_800;
+
+int *Temp_801;
+
+int *Temp_802;
+
+int *Temp_803;
+
+int *Temp_804;
+
+int *Temp_805;
+
+int *Temp_806;
+
+int *Temp_807;
+
+int *Temp_808;
+
+int *Temp_809;
+
+int *Temp_810;
+
+int *Temp_811;
+
+int *Temp_812;
+
+int *Temp_813;
+
+int *Temp_814;
+
+int *Temp_815;
+
+int *Temp_816;
+
+int *Temp_817;
+
+int *Temp_818;
+
+int *Temp_819;
+
+int *Temp_820;
+
+int *Temp_821;
+
+int *Temp_822;
+
+int *Temp_823;
+
+int *Temp_824;
+
+int *Temp_825;
+
+int *Temp_826;
+
+int *Temp_827;
+
+int *Temp_828;
+
+int *Temp_829;
+
+int *Temp_830;
+
+int *Temp_831;
+
+int *Temp_832;
+
+int *Temp_833;
+
+int *Temp_834;
+
+int *Temp_835;
+
+int *Temp_836;
+
+int *Temp_837;
+
+int *Temp_838;
+
+int *Temp_839;
+
+int *Temp_840;
+
+int *Temp_841;
+
+int *Temp_842;
+
+int *Temp_843;
+
+int *Temp_844;
+
+int *Temp_845;
+
+int *Temp_846;
+
+int *Temp_847;
+
+int *Temp_848;
+
+int *Temp_849;
+
+int *Temp_850;
+
+int *Temp_851;
+
+int *Temp_852;
+
+int *Temp_853;
+
+int *Temp_854;
+
+int *Temp_855;
+
+int *Temp_856;
+
+int *Temp_857;
+
+int *Temp_858;
+
+int *Temp_859;
+
+int *Temp_860;
+
+int *Temp_861;
+
+int *Temp_862;
+
+int *Temp_863;
+
+int *Temp_864;
+
+int *Temp_865;
+
+int *Temp_866;
+
+int *Temp_867;
+
+int *Temp_868;
+
+int *Temp_869;
+
+int *Temp_870;
+
+int *Temp_871;
+
+int *Temp_872;
+
+int *Temp_873;
+
+int *Temp_874;
+
+int *Temp_875;
+
+int *Temp_876;
+
+int *Temp_877;
+
+int *Temp_878;
+
+int *Temp_879;
+
+int *Temp_880;
+
+int *Temp_881;
+
+int *Temp_882;
+
+int *Temp_883;
+
+int *Temp_884;
+
+int *Temp_885;
+
+int *Temp_886;
+
+int *Temp_887;
+
+int *Temp_888;
+
+int *Temp_889;
+
+int *Temp_890;
+
+int *Temp_891;
+
+int *Temp_892;
+
+int *Temp_893;
+
+int *Temp_894;
+
+int *Temp_895;
+
+int *Temp_896;
+
+int *Temp_897;
+
+int *Temp_898;
+
+int *Temp_899;
+
+int *Temp_900;
+
+int *Temp_901;
+
+int *Temp_902;
+
+int *Temp_903;
+
+int *Temp_904;
+
+int *Temp_905;
+
+int *Temp_906;
+
+int *Temp_907;
+
+int *Temp_908;
+
+int *Temp_909;
+
+int *Temp_910;
+
+int *Temp_911;
+
+int *Temp_912;
+
+int *Temp_913;
+
+int *Temp_914;
+
+int *Temp_915;
+
+int *Temp_916;
+
+int *Temp_917;
+
+int *Temp_918;
+
+int *Temp_919;
+
+int *Temp_920;
+
+int *Temp_921;
+
+int *Temp_922;
+
+int *Temp_923;
+
+int *Temp_924;
+
+int *Temp_925;
+
+int *Temp_926;
+
+int *Temp_927;
+
+int *Temp_928;
+
+int *Temp_929;
+
+int *Temp_930;
+
+int *Temp_931;
+
+int *Temp_932;
+
+int *Temp_933;
+
+int *Temp_934;
+
+int *Temp_935;
+
+int *Temp_936;
+
+int *Temp_937;
+
+int *Temp_938;
+
+int *Temp_939;
+
+int *Temp_940;
+
+int *Temp_941;
+
+int *Temp_942;
+
+int *Temp_943;
+
+int *Temp_944;
+
+int *Temp_945;
+
+int *Temp_946;
+
+int *Temp_947;
+
+int *Temp_948;
+
+int *Temp_949;
+
+int *Temp_950;
+
+int *Temp_951;
+
+int *Temp_952;
+
+int *Temp_953;
+
+int *Temp_954;
+
+int *Temp_955;
+
+int *Temp_956;
+
+int *Temp_957;
+
+int *Temp_958;
+
+int *Temp_959;
+
+int *Temp_960;
+
+int *Temp_961;
+
+int *Temp_962;
+
+int *Temp_963;
+
+int *Temp_964;
+
+int *Temp_965;
+
+int *Temp_966;
+
+int *Temp_967;
+
+int *Temp_968;
+
+int *Temp_969;
+
+int *Temp_970;
+
+int *Temp_971;
+
+int *Temp_972;
+
+int *Temp_973;
+
+int *Temp_974;
+
+int *Temp_975;
+
+int *Temp_976;
+
+int *Temp_977;
+
+int *Temp_978;
+
+int *Temp_979;
+
+int *Temp_980;
+
+int *Temp_981;
+
+int *Temp_982;
+
+int *Temp_983;
+
+int *Temp_984;
+
+int *Temp_985;
+
+int *Temp_986;
+
+int *Temp_987;
+
+int *Temp_988;
+
+int *Temp_989;
+
+int *Temp_990;
+
+int *Temp_991;
+
+int *Temp_992;
+
+int *Temp_993;
+
+int *Temp_994;
+
+int *Temp_995;
+
+int *Temp_996;
+
+int *Temp_997;
+
+int *Temp_998;
+
+int *Temp_999;
+
 int *sp;
 
 int *fp;
@@ -1494,11 +2094,11 @@ void main()
 
 	Temp_4 = Temp_5;
 
-Label_26_init_for:
+Label_27_init_for:
 
 	if (((int) (Temp_3)) > ((int) (Temp_4)))
 	{
-		goto Label_27_init_end_for;
+		goto Label_28_init_end_for;
 	}
 
 	Temp_6 =(int *) (((int) v0) + ((int) Temp_3));
@@ -1509,9 +2109,9 @@ Label_26_init_for:
 
 	Temp_3 = (int *) ((int) Temp_3 + 4);
 
-	goto Label_26_init_for;
+	goto Label_27_init_for;
 
-Label_27_init_end_for:
+Label_28_init_end_for:
 
 	sp = (int *) ((int) sp + -4);
 
@@ -1793,7 +2393,7 @@ Label_12_g_B:
 
 Label_13_skipFunc:
 
-	goto Label_25_skipFunc;
+	goto Label_26_skipFunc;
 
 Label_0_Main:
 
@@ -1805,7 +2405,7 @@ Label_0_Main:
 
 	fp = sp;
 
-	sp = (int *) ((int) sp + -12);
+	sp = (int *) ((int) sp + -8);
 
 	Temp_29 = (int *) -4;
 
@@ -1851,11 +2451,11 @@ Label_0_Main:
 
 	Temp_36 = Temp_37;
 
-Label_28_init_for:
+Label_29_init_for:
 
 	if (((int) (Temp_35)) > ((int) (Temp_36)))
 	{
-		goto Label_29_init_end_for;
+		goto Label_30_init_end_for;
 	}
 
 	Temp_38 =(int *) (((int) v0) + ((int) Temp_35));
@@ -1866,9 +2466,9 @@ Label_28_init_for:
 
 	Temp_35 = (int *) ((int) Temp_35 + 4);
 
-	goto Label_28_init_for;
+	goto Label_29_init_for;
 
-Label_29_init_end_for:
+Label_30_init_end_for:
 
 	Temp_31 = (int *) *(sp + 0);
 
@@ -1876,71 +2476,55 @@ Label_29_init_end_for:
 
 	*(Temp_31) = (int) (v0+(0));
 
-	Temp_41 = (int *) -12;
+	Temp_42 = (int *) -8;
 
-	Temp_40 =(int *) (((int) Temp_41) + ((int) fp));
+	Temp_41 =(int *) (((int) Temp_42) + ((int) fp));
 
-	sp = (int *) ((int) sp + -4);
+	Temp_40 = (int *) *(Temp_41 + 0);
 
-	*(sp) = (int) (Temp_40+(0));
+	Temp_43 = (int *) 0;
 
-	Temp_42 = (int *) 10;
-
-	Temp_40 = (int *) *(sp + 0);
-
-	sp = (int *) ((int) sp + 4);
-
-	*(Temp_40) = (int) (Temp_42+(0));
-
-	Temp_45 = (int *) -8;
-
-	Temp_44 =(int *) (((int) Temp_45) + ((int) fp));
-
-	Temp_43 = (int *) *(Temp_44 + 0);
+	if (((int) (Temp_40)) == ((int) (Temp_43)))
+	{
+		goto Label_14_AccessViolation;
+	}
 
 	Temp_46 = (int *) 0;
 
-	if (((int) (Temp_43)) == ((int) (Temp_46)))
+	Temp_47 = (int *) 1;
+
+	Temp_45 =(int *) (((int) Temp_46) + ((int) Temp_47));
+
+	Temp_48 = (int *) 4;
+
+	Temp_44 =(int *) (((int) Temp_45) * ((int) Temp_48));
+
+	Temp_49 = (int *) 0;
+
+	if (((int) (Temp_44)) < ((int) (Temp_49)))
 	{
 		goto Label_14_AccessViolation;
 	}
-
-	Temp_49 = (int *) 2;
-
-	Temp_50 = (int *) 1;
-
-	Temp_48 =(int *) (((int) Temp_49) + ((int) Temp_50));
-
-	Temp_51 = (int *) 4;
-
-	Temp_47 =(int *) (((int) Temp_48) * ((int) Temp_51));
 
 	Temp_52 = (int *) 0;
 
-	if (((int) (Temp_47)) < ((int) (Temp_52)))
-	{
-		goto Label_14_AccessViolation;
-	}
+	Temp_53 = (int *) 1;
 
-	Temp_55 = (int *) 2;
+	Temp_51 =(int *) (((int) Temp_52) + ((int) Temp_53));
 
-	Temp_56 = (int *) 1;
+	Temp_54 = (int *) 4;
 
-	Temp_54 =(int *) (((int) Temp_55) + ((int) Temp_56));
+	Temp_50 =(int *) (((int) Temp_51) * ((int) Temp_54));
 
-	Temp_57 = (int *) 4;
+	Temp_58 = (int *) -8;
 
-	Temp_53 =(int *) (((int) Temp_54) * ((int) Temp_57));
+	Temp_57 =(int *) (((int) Temp_58) + ((int) fp));
 
-	Temp_61 = (int *) -8;
+	Temp_56 = (int *) *(Temp_57 + 0);
 
-	Temp_60 =(int *) (((int) Temp_61) + ((int) fp));
+	Temp_55 = (int *) *(Temp_56 + 0);
 
-	Temp_59 = (int *) *(Temp_60 + 0);
-
-	Temp_58 = (int *) *(Temp_59 + 0);
-
-	if (((int) (Temp_53)) > ((int) (Temp_58)))
+	if (((int) (Temp_50)) > ((int) (Temp_55)))
 	{
 		goto Label_14_AccessViolation;
 	}
@@ -1953,120 +2537,122 @@ Label_14_AccessViolation:
 
 Label_15_OK:
 
-	Temp_65 = (int *) -8;
+	Temp_62 = (int *) -8;
 
-	Temp_64 =(int *) (((int) Temp_65) + ((int) fp));
+	Temp_61 =(int *) (((int) Temp_62) + ((int) fp));
 
-	Temp_63 = (int *) *(Temp_64 + 0);
+	Temp_60 = (int *) *(Temp_61 + 0);
 
-	Temp_68 = (int *) 2;
+	Temp_65 = (int *) 0;
 
-	Temp_69 = (int *) 1;
+	Temp_66 = (int *) 1;
 
-	Temp_67 =(int *) (((int) Temp_68) + ((int) Temp_69));
+	Temp_64 =(int *) (((int) Temp_65) + ((int) Temp_66));
 
-	Temp_70 = (int *) 4;
+	Temp_67 = (int *) 4;
 
-	Temp_66 =(int *) (((int) Temp_67) * ((int) Temp_70));
+	Temp_63 =(int *) (((int) Temp_64) * ((int) Temp_67));
 
-	Temp_62 =(int *) (((int) Temp_63) + ((int) Temp_66));
+	Temp_59 =(int *) (((int) Temp_60) + ((int) Temp_63));
 
 	sp = (int *) ((int) sp + -4);
 
-	*(sp) = (int) (Temp_62+(0));
+	*(sp) = (int) (Temp_59+(0));
 
-	a0 = (int *) 8;
+	Temp_68 = (int *) 3;
+
+	Temp_68 = (int *) ((int) Temp_68 + 1);
+
+	Temp_69 = (int *) ((int) Temp_69 + 4);
+
+	Temp_68 =(int *) (((int) Temp_68) * ((int) Temp_69));
+
+	a0 = Temp_68;
 
 	v0 = (int *) malloc((int) a0);
 
-	Temp_71 = (int *) VFTable_C;
+	*(v0) = (int) (Temp_68+(0));
 
-	*(v0) = (int) (Temp_71+(0));
+	Temp_70 = (int *) 4;
 
-	Temp_72 = (int *) 4;
+	Temp_72 = (int *) ((int) a0 + -4);
 
-	Temp_74 = (int *) ((int) a0 + -4);
+	Temp_71 = Temp_72;
 
-	Temp_73 = Temp_74;
+Label_31_init_for:
 
-Label_30_init_for:
-
-	if (((int) (Temp_72)) > ((int) (Temp_73)))
+	if (((int) (Temp_70)) > ((int) (Temp_71)))
 	{
-		goto Label_31_init_end_for;
+		goto Label_32_init_end_for;
 	}
 
-	Temp_75 =(int *) (((int) v0) + ((int) Temp_72));
+	Temp_73 =(int *) (((int) v0) + ((int) Temp_70));
 
-	Temp_76 = (int *) 0;
+	Temp_74 = (int *) 0;
 
-	*(Temp_75) = (int) (Temp_76+(0));
+	*(Temp_73) = (int) (Temp_74+(0));
 
-	Temp_72 = (int *) ((int) Temp_72 + 4);
+	Temp_70 = (int *) ((int) Temp_70 + 4);
 
-	goto Label_30_init_for;
+	goto Label_31_init_for;
 
-Label_31_init_end_for:
+Label_32_init_end_for:
 
-	Temp_62 = (int *) *(sp + 0);
+	Temp_59 = (int *) *(sp + 0);
 
 	sp = (int *) ((int) sp + 4);
 
-	*(Temp_62) = (int) (v0+(0));
+	*(Temp_59) = (int) (v0+(0));
 
-	sp = (int *) ((int) sp + -4);
+	Temp_77 = (int *) -8;
 
-	*(sp) = (int) (t7+(0));
+	Temp_76 =(int *) (((int) Temp_77) + ((int) fp));
 
-	Temp_79 = (int *) -8;
+	Temp_75 = (int *) *(Temp_76 + 0);
 
-	Temp_78 =(int *) (((int) Temp_79) + ((int) fp));
+	Temp_78 = (int *) 0;
 
-	Temp_77 = (int *) *(Temp_78 + 0);
-
-	Temp_80 = (int *) 0;
-
-	if (((int) (Temp_77)) == ((int) (Temp_80)))
+	if (((int) (Temp_75)) == ((int) (Temp_78)))
 	{
 		goto Label_16_AccessViolation;
 	}
 
-	Temp_83 = (int *) 2;
+	Temp_81 = (int *) 0;
 
-	Temp_84 = (int *) 1;
+	Temp_82 = (int *) 1;
 
-	Temp_82 =(int *) (((int) Temp_83) + ((int) Temp_84));
+	Temp_80 =(int *) (((int) Temp_81) + ((int) Temp_82));
 
-	Temp_85 = (int *) 4;
+	Temp_83 = (int *) 4;
 
-	Temp_81 =(int *) (((int) Temp_82) * ((int) Temp_85));
+	Temp_79 =(int *) (((int) Temp_80) * ((int) Temp_83));
 
-	Temp_86 = (int *) 0;
+	Temp_84 = (int *) 0;
 
-	if (((int) (Temp_81)) < ((int) (Temp_86)))
+	if (((int) (Temp_79)) < ((int) (Temp_84)))
 	{
 		goto Label_16_AccessViolation;
 	}
 
-	Temp_89 = (int *) 2;
+	Temp_87 = (int *) 0;
 
-	Temp_90 = (int *) 1;
+	Temp_88 = (int *) 1;
 
-	Temp_88 =(int *) (((int) Temp_89) + ((int) Temp_90));
+	Temp_86 =(int *) (((int) Temp_87) + ((int) Temp_88));
 
-	Temp_91 = (int *) 4;
+	Temp_89 = (int *) 4;
 
-	Temp_87 =(int *) (((int) Temp_88) * ((int) Temp_91));
+	Temp_85 =(int *) (((int) Temp_86) * ((int) Temp_89));
 
-	Temp_95 = (int *) -8;
+	Temp_93 = (int *) -8;
 
-	Temp_94 =(int *) (((int) Temp_95) + ((int) fp));
+	Temp_92 =(int *) (((int) Temp_93) + ((int) fp));
 
-	Temp_93 = (int *) *(Temp_94 + 0);
+	Temp_91 = (int *) *(Temp_92 + 0);
 
-	Temp_92 = (int *) *(Temp_93 + 0);
+	Temp_90 = (int *) *(Temp_91 + 0);
 
-	if (((int) (Temp_87)) > ((int) (Temp_92)))
+	if (((int) (Temp_85)) > ((int) (Temp_90)))
 	{
 		goto Label_16_AccessViolation;
 	}
@@ -2079,86 +2665,65 @@ Label_16_AccessViolation:
 
 Label_17_OK:
 
-	Temp_100 = (int *) -8;
+	Temp_97 = (int *) -8;
 
-	Temp_99 =(int *) (((int) Temp_100) + ((int) fp));
+	Temp_96 =(int *) (((int) Temp_97) + ((int) fp));
 
-	Temp_98 = (int *) *(Temp_99 + 0);
+	Temp_95 = (int *) *(Temp_96 + 0);
 
-	Temp_103 = (int *) 2;
+	Temp_100 = (int *) 0;
 
-	Temp_104 = (int *) 1;
+	Temp_101 = (int *) 1;
 
-	Temp_102 =(int *) (((int) Temp_103) + ((int) Temp_104));
+	Temp_99 =(int *) (((int) Temp_100) + ((int) Temp_101));
 
-	Temp_105 = (int *) 4;
+	Temp_102 = (int *) 4;
 
-	Temp_101 =(int *) (((int) Temp_102) * ((int) Temp_105));
+	Temp_98 =(int *) (((int) Temp_99) * ((int) Temp_102));
 
-	Temp_97 =(int *) (((int) Temp_98) + ((int) Temp_101));
+	Temp_94 =(int *) (((int) Temp_95) + ((int) Temp_98));
 
-	Temp_96 = (int *) *(Temp_97 + 0);
+	Temp_103 = (int *) 0;
 
-	Temp_106 = (int *) 0;
-
-	if (((int) (Temp_96)) == ((int) (Temp_106)))
+	if (((int) (Temp_94)) == ((int) (Temp_103)))
 	{
 		goto Label_18_AccessViolation;
 	}
 
-	goto Label_19_AllOK;
+	Temp_106 = (int *) 0;
 
-Label_18_AccessViolation:
+	Temp_107 = (int *) 1;
 
-	goto Label_0_Access_Violation;
+	Temp_105 =(int *) (((int) Temp_106) + ((int) Temp_107));
 
-Label_19_AllOK:
+	Temp_108 = (int *) 4;
 
-	sp = (int *) ((int) sp + -4);
+	Temp_104 =(int *) (((int) Temp_105) * ((int) Temp_108));
 
-	*(sp) = (int) (t7+(0));
+	Temp_109 = (int *) 0;
 
-	Temp_109 = (int *) -12;
-
-	Temp_108 =(int *) (((int) Temp_109) + ((int) fp));
-
-	Temp_107 = (int *) *(Temp_108 + 0);
-
-	sp = (int *) ((int) sp + -4);
-
-	*(sp) = (int) (Temp_107+(0));
-
-	Temp_112 = (int *) -8;
-
-	Temp_111 =(int *) (((int) Temp_112) + ((int) fp));
-
-	Temp_110 = (int *) *(Temp_111 + 0);
-
-	Temp_113 = (int *) 0;
-
-	if (((int) (Temp_110)) == ((int) (Temp_113)))
+	if (((int) (Temp_104)) < ((int) (Temp_109)))
 	{
-		goto Label_20_AccessViolation;
+		goto Label_18_AccessViolation;
 	}
 
-	Temp_116 = (int *) 2;
+	Temp_112 = (int *) 0;
 
-	Temp_117 = (int *) 1;
+	Temp_113 = (int *) 1;
 
-	Temp_115 =(int *) (((int) Temp_116) + ((int) Temp_117));
+	Temp_111 =(int *) (((int) Temp_112) + ((int) Temp_113));
 
-	Temp_118 = (int *) 4;
+	Temp_114 = (int *) 4;
 
-	Temp_114 =(int *) (((int) Temp_115) * ((int) Temp_118));
+	Temp_110 =(int *) (((int) Temp_111) * ((int) Temp_114));
 
-	Temp_119 = (int *) 0;
+	Temp_119 = (int *) -8;
 
-	if (((int) (Temp_114)) < ((int) (Temp_119)))
-	{
-		goto Label_20_AccessViolation;
-	}
+	Temp_118 =(int *) (((int) Temp_119) + ((int) fp));
 
-	Temp_122 = (int *) 2;
+	Temp_117 = (int *) *(Temp_118 + 0);
+
+	Temp_122 = (int *) 0;
 
 	Temp_123 = (int *) 1;
 
@@ -2168,15 +2733,120 @@ Label_19_AllOK:
 
 	Temp_120 =(int *) (((int) Temp_121) * ((int) Temp_124));
 
-	Temp_128 = (int *) -8;
+	Temp_116 =(int *) (((int) Temp_117) + ((int) Temp_120));
 
-	Temp_127 =(int *) (((int) Temp_128) + ((int) fp));
+	Temp_115 = (int *) *(Temp_116 + 0);
+
+	if (((int) (Temp_110)) > ((int) (Temp_115)))
+	{
+		goto Label_18_AccessViolation;
+	}
+
+	goto Label_19_OK;
+
+Label_18_AccessViolation:
+
+	goto Label_0_Access_Violation;
+
+Label_19_OK:
+
+	Temp_130 = (int *) -8;
+
+	Temp_129 =(int *) (((int) Temp_130) + ((int) fp));
+
+	Temp_128 = (int *) *(Temp_129 + 0);
+
+	Temp_133 = (int *) 0;
+
+	Temp_134 = (int *) 1;
+
+	Temp_132 =(int *) (((int) Temp_133) + ((int) Temp_134));
+
+	Temp_135 = (int *) 4;
+
+	Temp_131 =(int *) (((int) Temp_132) * ((int) Temp_135));
+
+	Temp_127 =(int *) (((int) Temp_128) + ((int) Temp_131));
 
 	Temp_126 = (int *) *(Temp_127 + 0);
 
-	Temp_125 = (int *) *(Temp_126 + 0);
+	Temp_138 = (int *) 0;
 
-	if (((int) (Temp_120)) > ((int) (Temp_125)))
+	Temp_139 = (int *) 1;
+
+	Temp_137 =(int *) (((int) Temp_138) + ((int) Temp_139));
+
+	Temp_140 = (int *) 4;
+
+	Temp_136 =(int *) (((int) Temp_137) * ((int) Temp_140));
+
+	Temp_125 =(int *) (((int) Temp_126) + ((int) Temp_136));
+
+	sp = (int *) ((int) sp + -4);
+
+	*(sp) = (int) (Temp_125+(0));
+
+	Temp_141 = (int *) 10;
+
+	Temp_125 = (int *) *(sp + 0);
+
+	sp = (int *) ((int) sp + 4);
+
+	*(Temp_125) = (int) (Temp_141+(0));
+
+	sp = (int *) ((int) sp + -4);
+
+	*(sp) = (int) (t7+(0));
+
+	Temp_144 = (int *) -8;
+
+	Temp_143 =(int *) (((int) Temp_144) + ((int) fp));
+
+	Temp_142 = (int *) *(Temp_143 + 0);
+
+	Temp_145 = (int *) 0;
+
+	if (((int) (Temp_142)) == ((int) (Temp_145)))
+	{
+		goto Label_20_AccessViolation;
+	}
+
+	Temp_148 = (int *) 0;
+
+	Temp_149 = (int *) 1;
+
+	Temp_147 =(int *) (((int) Temp_148) + ((int) Temp_149));
+
+	Temp_150 = (int *) 4;
+
+	Temp_146 =(int *) (((int) Temp_147) * ((int) Temp_150));
+
+	Temp_151 = (int *) 0;
+
+	if (((int) (Temp_146)) < ((int) (Temp_151)))
+	{
+		goto Label_20_AccessViolation;
+	}
+
+	Temp_154 = (int *) 0;
+
+	Temp_155 = (int *) 1;
+
+	Temp_153 =(int *) (((int) Temp_154) + ((int) Temp_155));
+
+	Temp_156 = (int *) 4;
+
+	Temp_152 =(int *) (((int) Temp_153) * ((int) Temp_156));
+
+	Temp_160 = (int *) -8;
+
+	Temp_159 =(int *) (((int) Temp_160) + ((int) fp));
+
+	Temp_158 = (int *) *(Temp_159 + 0);
+
+	Temp_157 = (int *) *(Temp_158 + 0);
+
+	if (((int) (Temp_152)) > ((int) (Temp_157)))
 	{
 		goto Label_20_AccessViolation;
 	}
@@ -2189,73 +2859,143 @@ Label_20_AccessViolation:
 
 Label_21_OK:
 
-	Temp_133 = (int *) -8;
+	Temp_164 = (int *) -8;
 
-	Temp_132 =(int *) (((int) Temp_133) + ((int) fp));
+	Temp_163 =(int *) (((int) Temp_164) + ((int) fp));
 
-	Temp_131 = (int *) *(Temp_132 + 0);
+	Temp_162 = (int *) *(Temp_163 + 0);
 
-	Temp_136 = (int *) 2;
+	Temp_167 = (int *) 0;
 
-	Temp_137 = (int *) 1;
+	Temp_168 = (int *) 1;
 
-	Temp_135 =(int *) (((int) Temp_136) + ((int) Temp_137));
+	Temp_166 =(int *) (((int) Temp_167) + ((int) Temp_168));
 
-	Temp_138 = (int *) 4;
+	Temp_169 = (int *) 4;
 
-	Temp_134 =(int *) (((int) Temp_135) * ((int) Temp_138));
+	Temp_165 =(int *) (((int) Temp_166) * ((int) Temp_169));
 
-	Temp_130 =(int *) (((int) Temp_131) + ((int) Temp_134));
+	Temp_161 =(int *) (((int) Temp_162) + ((int) Temp_165));
 
-	Temp_129 = (int *) *(Temp_130 + 0);
+	Temp_170 = (int *) 0;
+
+	if (((int) (Temp_161)) == ((int) (Temp_170)))
+	{
+		goto Label_22_AccessViolation;
+	}
+
+	Temp_173 = (int *) 0;
+
+	Temp_174 = (int *) 1;
+
+	Temp_172 =(int *) (((int) Temp_173) + ((int) Temp_174));
+
+	Temp_175 = (int *) 4;
+
+	Temp_171 =(int *) (((int) Temp_172) * ((int) Temp_175));
+
+	Temp_176 = (int *) 0;
+
+	if (((int) (Temp_171)) < ((int) (Temp_176)))
+	{
+		goto Label_22_AccessViolation;
+	}
+
+	Temp_179 = (int *) 0;
+
+	Temp_180 = (int *) 1;
+
+	Temp_178 =(int *) (((int) Temp_179) + ((int) Temp_180));
+
+	Temp_181 = (int *) 4;
+
+	Temp_177 =(int *) (((int) Temp_178) * ((int) Temp_181));
+
+	Temp_186 = (int *) -8;
+
+	Temp_185 =(int *) (((int) Temp_186) + ((int) fp));
+
+	Temp_184 = (int *) *(Temp_185 + 0);
+
+	Temp_189 = (int *) 0;
+
+	Temp_190 = (int *) 1;
+
+	Temp_188 =(int *) (((int) Temp_189) + ((int) Temp_190));
+
+	Temp_191 = (int *) 4;
+
+	Temp_187 =(int *) (((int) Temp_188) * ((int) Temp_191));
+
+	Temp_183 =(int *) (((int) Temp_184) + ((int) Temp_187));
+
+	Temp_182 = (int *) *(Temp_183 + 0);
+
+	if (((int) (Temp_177)) > ((int) (Temp_182)))
+	{
+		goto Label_22_AccessViolation;
+	}
+
+	goto Label_23_OK;
+
+Label_22_AccessViolation:
+
+	goto Label_0_Access_Violation;
+
+Label_23_OK:
+
+	Temp_198 = (int *) -8;
+
+	Temp_197 =(int *) (((int) Temp_198) + ((int) fp));
+
+	Temp_196 = (int *) *(Temp_197 + 0);
+
+	Temp_201 = (int *) 0;
+
+	Temp_202 = (int *) 1;
+
+	Temp_200 =(int *) (((int) Temp_201) + ((int) Temp_202));
+
+	Temp_203 = (int *) 4;
+
+	Temp_199 =(int *) (((int) Temp_200) * ((int) Temp_203));
+
+	Temp_195 =(int *) (((int) Temp_196) + ((int) Temp_199));
+
+	Temp_194 = (int *) *(Temp_195 + 0);
+
+	Temp_206 = (int *) 0;
+
+	Temp_207 = (int *) 1;
+
+	Temp_205 =(int *) (((int) Temp_206) + ((int) Temp_207));
+
+	Temp_208 = (int *) 4;
+
+	Temp_204 =(int *) (((int) Temp_205) * ((int) Temp_208));
+
+	Temp_193 =(int *) (((int) Temp_194) + ((int) Temp_204));
+
+	Temp_192 = (int *) *(Temp_193 + 0);
 
 	sp = (int *) ((int) sp + -4);
 
-	*(sp) = (int) (Temp_129+(0));
+	*(sp) = (int) (Temp_192+(0));
 
-	t0 = (int *) *(Temp_129 + 0);
+	Temp_211 = (int *) -4;
 
-	t0 = (int *) ((int) t0 + 4);
+	Temp_210 =(int *) (((int) Temp_211) + ((int) fp));
 
-	t0 = (int *) *(t0 + 0);
+	Temp_209 = (int *) *(Temp_210 + 0);
+
+	sp = (int *) ((int) sp + -4);
+
+	*(sp) = (int) (Temp_209+(0));
 
 	__asm
 	{
 		call _here2
 		_here2: pop eax
-		add eax,15
-		mov ra,eax
-	}
-
-	__asm
-	{
-		jmp t0
-	}
-
-	sp = (int *) ((int) sp + 8);
-
-	t7 = (int *) *(sp + 0);
-
-	sp = (int *) ((int) sp + 4);
-
-	sp = (int *) ((int) sp + -4);
-
-	*(sp) = (int) (v0+(0));
-
-	Temp_141 = (int *) -4;
-
-	Temp_140 =(int *) (((int) Temp_141) + ((int) fp));
-
-	Temp_139 = (int *) *(Temp_140 + 0);
-
-	sp = (int *) ((int) sp + -4);
-
-	*(sp) = (int) (Temp_139+(0));
-
-	__asm
-	{
-		call _here3
-		_here3: pop eax
 		add eax,14
 		mov ra,eax
 	}
@@ -2288,7 +3028,7 @@ Label_21_OK:
 		jmp ra
 	}
 
-Label_25_skipFunc:
+Label_26_skipFunc:
 
 	exit(0);
 
@@ -2302,28 +3042,28 @@ Label_0_Access_Violation:
 
 Label_0_StrLen:
 
-	Temp_142 = (int *) 0;
+	Temp_212 = (int *) 0;
 
-	Temp_143 = (int *) 0;
+	Temp_213 = (int *) 0;
 
-Label_32_getLenLoop_Start:
+Label_33_getLenLoop_Start:
 
 	t0 = (int *) (*((char *) a0));
 
-	if (((int) (t0)) == ((int) (Temp_143)))
+	if (((int) (t0)) == ((int) (Temp_213)))
 	{
-		goto Label_33_GetLenEnd;
+		goto Label_34_GetLenEnd;
 	}
 
-	Temp_142 = (int *) ((int) Temp_142 + 1);
+	Temp_212 = (int *) ((int) Temp_212 + 1);
 
 	a0 = (int *) ((int) a0 + 1);
 
-	goto Label_32_getLenLoop_Start;
+	goto Label_33_getLenLoop_Start;
 
-Label_33_GetLenEnd:
+Label_34_GetLenEnd:
 
-	v0 = Temp_142;
+	v0 = Temp_212;
 
 	__asm
 	{
@@ -2332,15 +3072,15 @@ Label_33_GetLenEnd:
 
 Label_0_StrCpy:
 
-	Temp_144 = (int *) 0;
+	Temp_214 = (int *) 0;
 
-Label_34_cpy_first:
+Label_35_cpy_first:
 
 	t0 = (int *) (*((char *) a0));
 
-	if (((int) (t0)) == ((int) (Temp_144)))
+	if (((int) (t0)) == ((int) (Temp_214)))
 	{
-		goto Label_35_cpy_second;
+		goto Label_36_cpy_second;
 	}
 
 	*(((char *) a2)+0) = ((char) t0);
@@ -2349,15 +3089,15 @@ Label_34_cpy_first:
 
 	a2 = (int *) ((int) a2 + 1);
 
-	goto Label_34_cpy_first;
+	goto Label_35_cpy_first;
 
-Label_35_cpy_second:
+Label_36_cpy_second:
 
 	t0 = (int *) (*((char *) a1));
 
-	if (((int) (t0)) == ((int) (Temp_144)))
+	if (((int) (t0)) == ((int) (Temp_214)))
 	{
-		goto Label_36_strcpy_end;
+		goto Label_37_strcpy_end;
 	}
 
 	*(((char *) a2)+0) = ((char) t0);
@@ -2366,11 +3106,11 @@ Label_35_cpy_second:
 
 	a2 = (int *) ((int) a2 + 1);
 
-	goto Label_35_cpy_second;
+	goto Label_36_cpy_second;
 
-Label_36_strcpy_end:
+Label_37_strcpy_end:
 
-	*(((char *) a2)+0) = ((char) Temp_144);
+	*(((char *) a2)+0) = ((char) Temp_214);
 
 	__asm
 	{
