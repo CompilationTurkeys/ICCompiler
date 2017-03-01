@@ -1,0 +1,52 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class MyClass
+{
+	int x;
+	
+	void initField()
+	{
+		x = 1;
+	}
+	
+	void printField()
+	{
+		PRINT p;
+		p.printInt(x); 
+	}
+	
+	void updateAndPrintField()
+	{
+		x = 3;
+		printField();
+	}
+	
+	// should print: 1 2 1 3 
+	void printFieldAndArg(int x)
+	{
+		PRINT p;
+		
+		initField();
+		printField(); // should print 1
+	
+		x = 2;
+		p.printInt(x); // should print 2
+		
+		printField(); // should print 1 
+		updateAndPrintField(); // should print 3
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		MyClass obj = new MyClass();
+		obj.printFieldAndArg(7); // this should print: 1 2 1 3 
+	}
+}

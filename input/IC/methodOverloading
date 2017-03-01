@@ -1,0 +1,36 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+		
+	}
+}
+
+class A
+{
+	int a;
+	void print(PRINT p)
+	{
+		p.printInt(a);
+	}
+	
+}
+
+class B extends A
+{
+	void print(PRINT p)
+	{
+		p.printInt(a+a);
+	}
+}
+
+class Mainclass
+{
+	void main(string[] args)
+	{
+		PRINT p;
+	 	A b = new B();
+	 	b.a = 5;
+	 	b.print(p);
+	}
+}

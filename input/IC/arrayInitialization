@@ -1,0 +1,23 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class Mainclass
+{
+	void main(string[] args)
+	{
+	
+		int[] a = new int[6];
+		PRINT p;
+		
+		int index = 0;
+		while(index<6)
+		{
+		p.printInt(a[index]);
+		index = index+1;
+		}
+	}
+}

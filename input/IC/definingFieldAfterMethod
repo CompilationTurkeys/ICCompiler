@@ -1,0 +1,28 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class MyClass
+{
+	void methodA()
+	{
+	}
+	
+	int fieldB;
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		MyClass obj = new MyClass();
+		obj.fieldB = 3;
+		obj.methodA();
+		
+		PRINT printer;
+		printer.printInt(obj.fieldB);
+	}
+}

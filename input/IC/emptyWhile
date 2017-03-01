@@ -1,0 +1,28 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class MyClass
+{
+	void func()
+	{
+		while (2 < 2)
+		{
+		}
+		
+		PRINT p;
+		p.printInt(7);
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		MyClass obj = new MyClass();
+		obj.func();
+	}
+}

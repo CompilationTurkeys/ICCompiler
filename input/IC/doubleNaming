@@ -1,0 +1,40 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+class A
+{
+	int j;	
+}
+
+class B
+{
+	A a;
+	void init()
+	{
+		a = new A();
+		a.j=17;
+	}
+	void update(int j)
+	{
+		a.j=j;
+	}
+	void print(PRINT p)
+	{
+		p.printInt(a.j);
+	}
+}
+
+class Mainc
+{
+	void main(string[] args)
+	{
+		PRINT p;
+		B b = new B();
+		b.init();
+		b.update(22);
+		b.print(p);
+	}
+}

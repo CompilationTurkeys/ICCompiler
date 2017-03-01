@@ -1,0 +1,35 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class Father
+{
+	int x;
+}
+
+class Son extends Father
+{
+	void init(int initValue)
+	{
+		x = initValue;
+	}
+	
+	void printArg(int x)
+	{
+		PRINT p;
+		p.printInt(x); 
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		Son obj = new Son();
+		obj.init(6);
+		obj.printArg(7); // this should print 7 and not 6
+	}
+}

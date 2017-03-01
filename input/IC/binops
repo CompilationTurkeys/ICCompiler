@@ -1,0 +1,56 @@
+
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+
+class MainClass
+{
+	// should print: 7 -1 12 1 0 0 5 1 0 1 5 0 1 1 5 0 0 1 5 1 1 0 
+	void main(string[] args)
+	{
+		PRINT p;
+		
+		int i = 3;
+		int j = 4;
+		
+		// Arithmetic operations
+		p.printInt(i + j); // should print 7
+		p.printInt(i - j); // should print -1
+		p.printInt(i * j); // should print 12
+		
+		
+		// Boolean operations
+		
+		p.printInt(i < j); 	// should print 1
+		p.printInt(j < i); 	// should print 0
+		p.printInt(i < i); 	// should print 0
+		
+		p.printInt(5);
+		
+		p.printInt(i <= j); // should print 1
+		p.printInt(j <= i); // should print 0
+		p.printInt(i <= i); // should print 1
+
+		p.printInt(5);
+		
+		p.printInt(i >= j); // should print 0
+		p.printInt(j >= i); // should print 1
+		p.printInt(j >= j); // should print 1
+		
+		p.printInt(5);
+		
+		p.printInt(i == j); // should print 0
+		p.printInt(j == i); // should print 0
+		p.printInt(i == i); // should print 1
+		
+		p.printInt(5);
+		
+		p.printInt(i != j); // should print 1
+		p.printInt(j != i); // should print 1
+		p.printInt(j != j); // should print 0
+	}
+}

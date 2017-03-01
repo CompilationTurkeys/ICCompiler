@@ -368,7 +368,7 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		Label okLabel = new TempLabel("AllOK");
 		Label accessViolationCallLabel = new TempLabel("AccessViolation");
 
-		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp2, new IR_Const(0),
+		IR_Exp checkInitialization = new IR_Cjump(BinaryOpTypes.EQUALS, varExp, new IR_Const(0),
 				accessViolationCallLabel, okLabel);
 
 		int fieldOffset = classMap.get(varExpType).getFieldOffset(var.fieldName);
@@ -378,13 +378,13 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 			varSubTree = new IR_Mem(
 					new IR_Binop(
 							new IR_Const((fieldOffset)*MethodFrame.WORD_SIZE),
-							varExp,
+							varExp2,
 							BinaryOpTypes.PLUS));
 		}
 		else{
 			varSubTree = 	new IR_Binop(
 					new IR_Const((fieldOffset)*MethodFrame.WORD_SIZE),
-					varExp,
+					varExp2,
 					BinaryOpTypes.PLUS);
 		}
 
@@ -455,11 +455,11 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		
 		IR_Exp checkArrayLeMemorySizeAllocated = null;
 		if (arrExp2 == null){
-			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GT,
+			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GTE,
 					arrIndex,new IR_Mem(arrExp),accessViolationCallLabel,null);
 		}
 		else{
-			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GT,
+			checkArrayLeMemorySizeAllocated = new IR_Cjump(BinaryOpTypes.GTE,
 					arrIndex,new IR_Mem(arrExp2),accessViolationCallLabel,null);
 		}
 

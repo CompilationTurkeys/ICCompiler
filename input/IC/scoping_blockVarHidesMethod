@@ -1,0 +1,40 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class MyClass
+{
+	void foo(int i)
+	{
+		PRINT p;
+		p.printInt(i);
+	}
+	
+	// should print: 5 10 7 
+	void printBlockVarAndField()
+	{
+		PRINT p;
+		
+		foo(5); // should print 5
+		
+		if (1 < 2)
+		{
+			int foo = 10;
+			p.printInt(foo); // should print 10
+		}
+		
+		foo(7); // should print 7
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		MyClass obj = new MyClass();
+		obj.printBlockVarAndField(); // should print 5 10 7 
+	}
+}

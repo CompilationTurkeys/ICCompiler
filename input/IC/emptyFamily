@@ -1,0 +1,49 @@
+class PRINT 
+{
+	void printInt(int i) 
+	{
+	}
+}
+
+class EmptyFather
+{
+}
+
+class EmptySon extends EmptyFather
+{
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		PRINT printer;
+		printer.printInt(1);
+		
+		// Creating sons 
+		
+		EmptySon son;
+		son = new EmptySon();
+		
+		EmptySon son2 = new EmptySon();
+		
+		
+		// Creating fathers
+		
+		EmptyFather father;
+		father = new EmptyFather();
+		
+		EmptyFather father2 = new EmptyFather();
+		
+		
+		// Creating sons and assigning them to fathers
+		
+		EmptyFather sonFather;
+		sonFather = new EmptySon();
+		
+		EmptyFather sonFather2 = new EmptySon();
+		
+		
+		printer.printInt(2);
+	}
+}

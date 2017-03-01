@@ -1,0 +1,29 @@
+class PRINT 
+{
+	void printInt(int i) 
+	{
+	}
+}
+
+
+class Mainclass
+{
+	void main(string[] args)
+	{
+		int[][] a = new int[][3];
+		a[0] = new int[4];
+		a[1]=new int[2];
+		int[] c=a[1];
+		c[0]=10;
+		c[1]=11;
+		int[] b=a[0];
+		b[0]=0;
+		b[1] = 1;
+		b[2]=2;
+		b[3]=3;
+		PRINT p;
+		p.printInt(a[0][2]);
+		p.printInt(a[1][1]);
+		
+	}
+}

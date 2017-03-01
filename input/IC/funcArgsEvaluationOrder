@@ -1,0 +1,49 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class PrintWrapper
+{
+	PRINT printer;
+	
+	int printOne()
+	{
+		printer.printInt(1);
+		return 1;	
+	}
+	
+	int printTwo()
+	{
+		printer.printInt(2);
+		return 2;
+	}
+	
+	int printThree()
+	{
+		printer.printInt(3);
+		return 3;
+	}
+}
+
+class A
+{
+	void foo(int i, int j, int k)
+	{
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		PrintWrapper wrapper = new PrintWrapper();
+		A obj = new A();
+		
+		// The following line should print: 1 2 3, since the arguments are evaluated
+		// from left to right.
+		obj.foo(wrapper.printOne(), wrapper.printTwo(), wrapper.printThree());
+	}
+}

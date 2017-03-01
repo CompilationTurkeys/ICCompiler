@@ -1,0 +1,17 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class Mainc
+{
+	void main(string[] args)
+	{
+	PRINT p;
+	int i=1;
+	p.printInt(i);
+
+	}
+}
