@@ -23,7 +23,13 @@ public class IR_ClassAttribute {
 		this.cls = cls;
 		
 		for (AST_Method method : cls.classMethods) {
-			methodOffset.put(method.getName(), methodCounter++);
+			
+			if (method.getName().equals("main")){
+				methodOffset.put(method.getName(), -1);
+			}
+			else{
+				methodOffset.put(method.getName(), methodCounter++);
+			}
 		}
 		
 		for (AST_Field field : cls.classFields) {
@@ -45,6 +51,7 @@ public class IR_ClassAttribute {
 		methodCounter += methodOffset.size();
 		
 		for (AST_Method method : cls.classMethods) {
+			
 			boolean overriden = false;
 
 			for (String m : methodOffset.keySet()) {
@@ -57,7 +64,12 @@ public class IR_ClassAttribute {
 				}
 			}
 			if (!overriden)
-				methodOffset.put(method.getName(), methodCounter++);
+				if (method.getName().equals("main")){
+					methodOffset.put(method.getName(), -1);
+				}
+				else{
+					methodOffset.put(method.getName(), methodCounter++);
+				}
 			// TODO check if overriden flag is neccessary?
 		}
 		

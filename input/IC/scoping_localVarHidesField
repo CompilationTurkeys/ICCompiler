@@ -1,0 +1,34 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class MyClass
+{
+	int x;
+	
+	void init(int initValue)
+	{
+		x = initValue;
+	}
+	
+	void printLocalTen()
+	{
+		int x = 10;
+		
+		PRINT p;
+		p.printInt(x); 
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		MyClass obj = new MyClass();
+		obj.init(6);
+		obj.printLocalTen(); // this should print 10 and not 6
+	}
+}

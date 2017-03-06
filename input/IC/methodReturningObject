@@ -1,0 +1,38 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class ReturnedClass
+{
+	int fieldA, fieldB;
+	
+	void init()
+	{
+		fieldA = 1;
+		fieldB = 2;
+	}
+}
+
+class MyClass
+{
+	ReturnedClass returningObjFunc()
+	{
+		ReturnedClass obj = new ReturnedClass();
+		obj.init();
+		return obj;
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		PRINT printer;
+		
+		MyClass myObj = new MyClass();
+		printer.printInt((myObj.returningObjFunc()).fieldA); // should print 1
+	}
+}

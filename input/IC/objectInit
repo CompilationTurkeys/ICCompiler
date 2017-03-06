@@ -1,0 +1,33 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class Song
+{
+	string title;
+	string artist;
+	string album;
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		Song mySong = new Song();
+		
+		if (mySong.title == null)
+		{
+			if (mySong.artist == null)
+			{
+				if (mySong.album == null)
+				{
+					PRINT printer;
+					printer.printInt(7); 
+				}
+			}
+		}
+	}
+}

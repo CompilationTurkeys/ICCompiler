@@ -1,0 +1,33 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class Father
+{
+	void foo()
+	{
+		PRINT p;
+		p.printInt(1); 
+	}
+}
+
+class Son extends Father
+{
+	void printArg(int foo)
+	{
+		PRINT p;
+		p.printInt(foo); 
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		Son obj = new Son();
+		obj.printArg(2); // this should print 2
+	}
+}

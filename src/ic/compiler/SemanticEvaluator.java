@@ -254,14 +254,14 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		//if the body of the statement is not null traverse it and create local scope table if necessary
 		if (stmt.body != null) {
 			
-			if (stmt.body instanceof AST_StmtList) {
-				stmt.body.accept(this, symTable);
-			}
-			else {
+			//if (stmt.body instanceof AST_StmtList) {
+			//	stmt.body.accept(this, symTable);
+			//}
+			//else {
 				MethodSymbolTable currTable = new MethodSymbolTable(symTable, ((MethodSymbolTable)symTable).getMethodName());
 				symTable.getChildren().put(stmt.body, currTable);
 				stmt.body.accept(this, currTable);
-			}
+			//}
 			//after finishing with the local scope remove it from the parent table
 			symTable.getChildren().remove(stmt.body);
 		}
@@ -282,14 +282,14 @@ public class SemanticEvaluator implements Visitor<SymbolTable, Attribute> {
 		//if the body of the statement is not null traverse it and create local scope table if necessary
 		if (stmt.body != null) {
 						
-			if (stmt.body instanceof AST_StmtList) {
-				stmt.body.accept(this, symTable);
-			}
-			else {
+			//if (stmt.body instanceof AST_StmtList) {
+			//	stmt.body.accept(this, symTable);
+			//}
+			//else {
 				MethodSymbolTable currTable = new MethodSymbolTable(symTable, ((MethodSymbolTable)symTable).getMethodName());
 				symTable.getChildren().put(stmt.body, currTable);
 				stmt.body.accept(this, currTable);
-			}
+			//}
 			//after finishing with the local scope remove it from the parent table
 			symTable.getChildren().remove(stmt.body);
 		}

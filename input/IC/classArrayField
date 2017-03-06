@@ -1,0 +1,46 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+class A
+{
+	int j;	
+}
+
+class B
+{
+	A[] a;
+	void init()
+	{
+		a = new A[4];
+		a[0] = new A();
+		a[0].j=0;
+		a[1] = new A();
+		a[2] = new A();
+		a[3] = new A();
+		
+		a[1].j = 1;
+		a[2].j = 2;
+		a[3].j = 3;
+	}
+	void print(PRINT p)
+	{
+		p.printInt(a[0].j);
+		p.printInt(a[1].j);
+		p.printInt(a[2].j);
+		p.printInt(a[3].j);
+	}
+}
+
+class Mainc
+{
+	void main(string[] args)
+	{
+		PRINT p;
+		B b = new B();
+		b.init();
+		b.print(p);
+	}
+}

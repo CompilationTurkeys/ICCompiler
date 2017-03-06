@@ -1,0 +1,39 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+class A
+{
+	int a;
+	int b;
+	void init()
+	{
+		a=0;
+		b=0;
+	}
+	void adda(int k)
+	{
+		a = a+k;
+	}
+	void addb(int k)
+	{
+		b=b+k;
+	}
+}
+
+class Mainclass
+{
+	void main(string[] args)
+	{
+	 	PRINT p;
+		A[] a = new A[3];
+		a[0]=new A();
+		a[0].adda(2);
+		a[2]=new A();
+		a[2].addb(9);
+		A temp = a[3];
+		
+	}
+}

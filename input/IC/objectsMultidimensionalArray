@@ -1,0 +1,61 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+		
+	}
+}
+class A
+{
+	int a;
+	string s;
+	int b;
+	void init()
+	{
+		s="abc";
+	}
+	void adda(int k)
+	{
+		a = a+k;
+	}
+	void addb(int k)
+	{
+		b=b+k;
+	}
+	void updateString(string newS)
+	{
+		s=newS;
+	}
+		
+}
+
+class Mainclass
+{
+	void main(string[] args)
+	{
+	 	PRINT p;
+		A[][] a = new A[][4];
+		
+		a[0]=new A[3];
+		a[0][0]=new A();
+		a[0][0].adda(2);
+		a[0][0].updateString("jjjjjjjj");
+		a[0][2] = new A();
+		a[0][2].adda(3);
+		a[0][2].addb(7);
+		a[0][2].addb(1);
+		a[0][2].updateString("j");
+		a[3] =  new A[5];
+		a[3][0] = new A();
+		a[3][0].updateString("pp");
+		a[3][0].adda(10);
+		a[3][0].addb(4);
+		p.printInt(a[0][0].a);
+		p.printInt(a[0][0].b);
+		p.printInt(a[0][2].a);
+		p.printInt(a[0][2].b);
+		p.printInt(a[3][0].a);
+		p.printInt(a[3][0].b);
+		
+	}
+}

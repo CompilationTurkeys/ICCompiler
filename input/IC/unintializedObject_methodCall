@@ -1,0 +1,34 @@
+class PRINT 
+{
+	void printInt(int i) 
+	{
+	}
+}
+
+class Song
+{
+	string title;
+	string artist;
+	string album;
+	
+	void play()
+	{
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		PRINT printer;
+		
+		printer.printInt(1);
+		Song mySong;
+		
+		printer.printInt(2);
+		mySong.play();
+		
+		// This line shouldn't be executed
+		printer.printInt(3);
+	}
+}

@@ -556,7 +556,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 				tempEndForLabel._name.substring(0,tempEndForLabel._name.length()-1));
 
 		Register objElement = new TempRegister();
-		fileWriter.format("\taddi  %s,%s,4\n\n", objElement._name, "$v0");
+		fileWriter.format("\tadd  %s,%s,%s\n\n", objElement._name, "$v0", indexReg._name);
 		Register nullValue = new TempRegister();
 		fileWriter.format("\tli %s,0\n\n", nullValue._name);
 
@@ -740,8 +740,14 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 		//get allocation size
 		Register arraySizeReg = array.arraySize.accept(this);
+		Register mulReg = new TempRegister();
+		
 		//increment size by one (for access violation)
 		fileWriter.format("\taddi %s,%s,1\n\n", arraySizeReg._name, arraySizeReg._name);
+		//multiply size by WORD_SIZE
+		fileWriter.format("\taddi %s,%s,4\n\n", mulReg._name, mulReg._name);
+		fileWriter.format("\tmul %s,%s,%s\n\n", arraySizeReg._name, arraySizeReg._name, mulReg._name);
+
 		//pass argument for syscall
 		fileWriter.format("\tmov $a0,%s\n\n", arraySizeReg._name);
 		//call sbrk syscall for memory allocation

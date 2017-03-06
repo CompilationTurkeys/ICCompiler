@@ -1,0 +1,120 @@
+/* Quicksort <n>: sorts an array of n integers initialized
+   with random values.
+   Output: the array contents before and after sorting.
+*/
+
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class Quicksort {
+    int[] a;
+    int aLen;
+
+    int partition(int low, int high) {
+	    int pivot = a[low];
+	    int i = low;
+	    int j = high;
+	    int tmp;
+	    int shouldContinue = 1;
+	
+	    while (shouldContinue) {
+	        while (a[i] < pivot) i = i+1;
+	        while (a[j] > pivot) j = j-1;
+	
+	        if (i >= j) shouldContinue = 0;
+	
+			if (shouldContinue)
+			{
+				tmp = a[i];
+		        a[i] = a[j];
+		        a[j] = tmp;
+		        i = i+1;
+		        j = j-1;
+			}
+	    }
+	
+	    return j;
+    }
+
+    void quicksort(int low, int high) {
+	    if (low < high) {
+	        int mid = partition(low, high);
+	        quicksort(low, mid);
+	        quicksort((mid+1), high);
+	    }
+    }
+    
+    
+    void initArray() {
+    
+    	aLen = 40;
+    	a = new int[aLen];
+		
+		a[0] = 297;
+		a[1] = 295;
+		a[2] = 296;
+		a[3] = 38;
+		a[4] = 241;
+		a[5] = 257;
+		a[6] = 295;
+		a[7] = 181;
+		a[8] = 246;
+		a[9] = 160;
+		a[10] = 175;
+		a[11] = 265;
+		a[12] = 424;
+		a[13] = 82;
+		a[14] = 272;
+		a[15] = 116;
+		a[16] = 466;
+		a[17] = 392;
+		a[18] = 188;
+		a[19] = 118;
+		a[20] = 45;
+		a[21] = 78;
+		a[22] = 373;
+		a[23] = 46;
+		a[24] = 189;
+		a[25] = 236;
+		a[26] = 113;
+		a[27] = 55;
+		a[28] = 273;
+		a[29] = 366;
+		a[30] = 163;
+		a[31] = 397;
+		a[32] = 275;
+		a[33] = 227;
+		a[34] = 329;
+		a[35] = 445;
+		a[36] = 355;
+		a[37] = 295;
+		a[38] = 441;
+		a[39] = 310;
+
+    }
+
+    void printArray() {
+	    int i = 0;
+	    
+		PRINT p;
+	    while(i<aLen) {
+	        p.printInt(a[i]);
+	        i = i+1;
+	    }
+	    p.printInt(555);
+    }
+
+    void main(string[] args) {
+	   
+	    Quicksort s = new Quicksort();
+	    
+	    s.initArray();
+	    s.printArray();
+	    s.quicksort(0, ((s.aLen)-1));
+	    s.printArray();
+    }
+}

@@ -1,0 +1,30 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class MyClass
+{
+	void foo()
+	{
+		PRINT p;
+		p.printInt(1); 
+	}
+		
+	void printArg(int foo)
+	{
+		PRINT p;
+		p.printInt(foo); 
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		MyClass obj = new MyClass();
+		obj.printArg(2); // this should print 2
+	}
+}

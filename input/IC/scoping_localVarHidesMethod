@@ -1,0 +1,32 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class MyClass
+{
+	void foo()
+	{
+		PRINT p;
+		p.printInt(1); 
+	}
+		
+	void printLocalFoo()
+	{
+		int foo = 3;
+	
+		PRINT p;
+		p.printInt(foo); 
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		MyClass obj = new MyClass();
+		obj.printLocalFoo(); // this should print 3
+	}
+}

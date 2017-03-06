@@ -1,0 +1,16 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class Mainclass
+{
+	void main(string[] args)
+	{
+	 	PRINT p;
+		int[][] a = new int[][4];
+		int k=a[0][1];	
+	}
+}

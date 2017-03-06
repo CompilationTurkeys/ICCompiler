@@ -1,0 +1,37 @@
+class PRINT
+{
+	void printInt(int i)
+	{
+	}
+}
+
+class Father
+{
+	int x;
+}
+
+class Son extends Father
+{
+	void init(int initValue)
+	{
+		x = initValue;
+	}
+	
+	void printLocalTen()
+	{
+		int x = 10;
+		
+		PRINT p;
+		p.printInt(x); 
+	}
+}
+
+class MainClass
+{
+	void main(string[] args)
+	{
+		Son obj = new Son();
+		obj.init(6);
+		obj.printLocalTen(); // this should print 10 and not 6
+	}
+}
