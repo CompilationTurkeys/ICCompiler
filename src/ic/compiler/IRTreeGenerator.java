@@ -491,20 +491,11 @@ public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {
 		}
 		else{
 			if (arrExp2 == null){
-<<<<<<< HEAD
 				arrExp = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp) : arrExp;
-
-=======
-				//arrExp = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp) : arrExp;
->>>>>>> 09cc397027fff4c03b678c762408f19003288ada
 				varSubTree = new IR_Binop(arrExp,arrIndex,BinaryOpTypes.PLUS);
 			}
 			else{
 				arrExp2 = var.arrayExp instanceof AST_VariableExpArray ? new IR_Mem(arrExp2) : arrExp2;
-<<<<<<< HEAD
-				
-=======
->>>>>>> 09cc397027fff4c03b678c762408f19003288ada
 				varSubTree = new IR_Binop(arrExp2,arrIndex,BinaryOpTypes.PLUS);
 			}
 			

@@ -1,9 +1,7 @@
 package ic.ir;
 import ic.ir.IR_Exp;
 import ir.mipsgen.IRVisitor;
-import ic.ast.BinaryOpTypes;
 import ic.compiler.PrinterVisitor;
-import ic.compiler.Visitor;
 
 public class IR_Function extends IR_Exp{
 	

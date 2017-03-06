@@ -39,6 +39,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 
 	private IR_Exp irRoot;
 	private PrintWriter fileWriter;
+	private boolean needStringConcatFunction;
 
 	private final static String EXIT_LABEL = "Label_0_Exit";
 	private final static SpecialLabel STR_LEN_LABEL = new SpecialLabel("Label_0_StrLen");
@@ -59,8 +60,10 @@ public class MipsGenerator implements IRVisitor<Register> {
 		MipsTerminate();
 
 		generateAccessViolation();
-		generateGetStringLength();
-		generateStrCpy();
+		if (needStringConcatFunction){
+			generateGetStringLength();
+			generateStrCpy();
+		}
 		generateExit();
 
 		fileWriter.flush();
@@ -661,6 +664,7 @@ public class MipsGenerator implements IRVisitor<Register> {
 		Register tRight = binop.rightExp.accept(this);
 
 		if (binop.isStringBinop){
+			needStringConcatFunction = true;
 			Register newStrSize = new TempRegister();
 			//str len of str1
 			fileWriter.format("\tmov %s,%s\n\n", "$a0",tLeft._name);			

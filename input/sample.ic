@@ -17,22 +17,25 @@ class A{
 
 	}*/
 	
-	int[] func(int x){}
+	A[] func(int x){}
 	
 }
 
 class C extends A{
 	
-	int[] func(int x){
-		int[][] arr = new int[][x];
-		arr[0] = new int[x];
-		arr[0][0] = 10;
-		return arr[0];
+	A[] func(int x){
+		A[] arr = new A[x];
+		//arr[0] = new A[x];
+		arr[0] = new A();
+		arr[0].y = 4;
+		return arr;
 	}
 	
 	
 	void f(int x){
 		y= x;
+		string a = "ddd";
+		//a = a + "aaa";
 		//y[0] = new A();
 		//y[0].y = x;
 		PRINT p;
@@ -52,7 +55,7 @@ class B extends C{
 		PRINT p;
 		A b;
 		b = new C();
-		p.printInt(b.func(5)[0]);
+		p.printInt(b.func(5)[0].y);
 	
 	}
 
