@@ -1,15 +1,16 @@
-package ic.ir;
+package ic.ast;
 
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
-import ir.mipsgen.IRVisitor;
 
-public class IR_String extends IR_Exp{
-	public StringLabel label;
+public class IR_Epilogue extends IR_Exp{
 	
-	public IR_String(StringLabel label)
+	public int frameSize;
+	
+	public IR_Epilogue(int frameSize)
 	{
-		this.label = label;
+		this.frameSize = frameSize;
 	}
 
 	@Override

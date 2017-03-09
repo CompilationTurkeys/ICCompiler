@@ -1,16 +1,16 @@
-package ic.ir;
-import ic.ir.IR_Exp;
-import ir.mipsgen.IRVisitor;
+package ic.ast;
+
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
+import ic.compiler.Visitor;
 
-public class IR_JumpLabel extends IR_Exp{
+public class IR_Label extends IR_Exp{
 	
-	public Label tl;
-
+	public Label _label;
 	
-	public IR_JumpLabel(Label tl)
+	public IR_Label(Label label)
 	{
-		this.tl = tl;
+		this._label = label;
 	}
 
 	@Override
@@ -23,5 +23,5 @@ public class IR_JumpLabel extends IR_Exp{
 	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
 		return visitor.visit(this);
 	}
-
+	
 }

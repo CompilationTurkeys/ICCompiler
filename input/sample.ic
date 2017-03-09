@@ -32,7 +32,7 @@ class C extends A{
 	}
 	
 	
-	void f(int x){
+	/* void f(int x){
 		y= x;
 		string a = "ddd";
 		//a = a + "aaa";
@@ -40,7 +40,7 @@ class C extends A{
 		//y[0].y = x;
 		PRINT p;
 		//p.printInt(y[0].y);
-	}
+	} */
 	
 	void hrr(){}
 
@@ -55,8 +55,13 @@ class B extends C{
 		PRINT p;
 		A b;
 		b = new C();
-		p.printInt(b.func(5)[0].y);
-	
+		p.printInt(new C().func(5)[0].y);
+		p.printInt(5);
+		A zz = new C();
+		zz.y = 13 * 2;
+		p.printInt(zz.y);
+		int test = new C().func(5)[0].y + zz.y;
+		p.printInt(test);
 	}
 
 

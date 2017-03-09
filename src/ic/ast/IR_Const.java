@@ -1,16 +1,16 @@
-package ic.ir;
+package ic.ast;
 
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
-import ir.mipsgen.IRVisitor;
 
-public class IR_Label extends IR_Exp{
+public class IR_Const extends IR_Exp{
 	
-	public Label _label;
+	public int value;
 	
-	public IR_Label(Label label)
+	public IR_Const(int val)
 	{
-		this._label = label;
+		value = val;
 	}
 
 	@Override

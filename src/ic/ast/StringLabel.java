@@ -1,4 +1,4 @@
-package ic.ir;
+package ic.ast;
 
 public class StringLabel extends Label {
 	

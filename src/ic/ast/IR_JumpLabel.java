@@ -1,17 +1,16 @@
-package ic.ir;
-
+package ic.ast;
+import ic.ast.IR_Exp;
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
-import ic.compiler.Visitor;
-import ir.mipsgen.IRVisitor;
 
-public class IR_Temp extends IR_Exp{
+public class IR_JumpLabel extends IR_Exp{
 	
-	public Register _register;
+	public Label tl;
+
 	
-	
-	public IR_Temp(Register reg)
+	public IR_JumpLabel(Label tl)
 	{
-		this._register = reg;
+		this.tl = tl;
 	}
 
 	@Override

@@ -1,18 +1,17 @@
-package ic.ir;
-import ic.ir.IR_Exp;
-import ir.mipsgen.IRVisitor;
-import ic.ast.BinaryOpTypes;
+package ic.ast;
+
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
 
-public class IR_JumpRegister extends IR_Exp{
+public class IR_Temp extends IR_Exp{
 	
-	public TempRegister tr;
-
+	public Register _register;
 	
-	public IR_JumpRegister(TempRegister tr)
+	
+	public IR_Temp(Register reg)
 	{
-		this.tr = tr;
+		this._register = reg;
 	}
 
 	@Override

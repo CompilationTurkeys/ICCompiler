@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ic.ir.*;
 import ic.ast.*;
 
 public class IRTreeGenerator implements Visitor<IR_SymbolTable, IR_Exp> {

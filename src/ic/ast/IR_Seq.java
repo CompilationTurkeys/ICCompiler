@@ -1,16 +1,17 @@
-package ic.ir;
-
+package ic.ast;
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
-import ir.mipsgen.IRVisitor;
 
-public class IR_Epilogue extends IR_Exp{
+public class IR_Seq extends IR_Exp{
 	
-	public int frameSize;
+	public IR_Exp leftExp;
+	public IR_Exp rightExp;
 	
-	public IR_Epilogue(int frameSize)
+	public IR_Seq(IR_Exp left,IR_Exp right)
 	{
-		this.frameSize = frameSize;
+		this.leftExp = left;
+		this.rightExp = right;
 	}
 
 	@Override

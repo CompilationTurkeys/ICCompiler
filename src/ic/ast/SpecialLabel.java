@@ -1,4 +1,4 @@
-package ic.ir;
+package ic.ast;
 
 public class SpecialLabel extends Label{
 	

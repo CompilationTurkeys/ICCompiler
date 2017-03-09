@@ -1,4 +1,4 @@
-package ic.ir;
+package ic.ast;
 
 public class SpecialRegister extends Register {
 

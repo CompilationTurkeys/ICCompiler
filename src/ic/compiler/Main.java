@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java_cup.runtime.*;
 import ic.ast.AST_Program;
-import ic.ir.IR_Exp;
-import ir.mipsgen.MipsGenerator;
+import ic.ast.IR_Exp;
 
 public class Main
 {

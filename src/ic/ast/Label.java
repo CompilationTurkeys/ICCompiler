@@ -1,4 +1,4 @@
-package ic.ir;
+package ic.ast;
 
 public abstract class Label {
 	

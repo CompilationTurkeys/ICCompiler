@@ -1,27 +1,26 @@
-package ic.ir;
+package ic.ast;
 
+import ic.ast.IR_Exp;
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
-import ic.compiler.Visitor;
-import ir.mipsgen.IRVisitor;
 
-public class IR_Const extends IR_Exp{
+public class IR_NewArray extends IR_Exp {
+
+	public IR_Exp arraySize;
 	
-	public int value;
-	
-	public IR_Const(int val)
-	{
-		value = val;
+	public IR_NewArray(IR_Exp size){
+		this.arraySize = size;
 	}
-
+	
 	@Override
 	public void accept(PrinterVisitor visitor) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
 		return visitor.visit(this);
 	}
-	
+
 }

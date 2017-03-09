@@ -1,6 +1,6 @@
 package ic.compiler;
 
-import ic.ir.Label;
+import ic.ast.Label;
 
 public class Frame {
 	public Label label;

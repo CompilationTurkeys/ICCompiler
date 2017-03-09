@@ -1,39 +1,35 @@
-package ir.mipsgen;
+package ic.compiler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Map;
 
 import ic.ast.BinaryOpTypes;
-import ic.compiler.DispatchAttribute;
-import ic.compiler.Frame;
-import ic.compiler.IRTreeGenerator;
-import ic.ir.IR_Binop;
-import ic.ir.IR_Call;
-import ic.ir.IR_Cjump;
-import ic.ir.IR_Const;
-import ic.ir.IR_Epilogue;
-import ic.ir.IR_Exp;
-import ic.ir.IR_Function;
-import ic.ir.IR_JumpLabel;
-import ic.ir.IR_JumpRegister;
-import ic.ir.IR_Label;
-import ic.ir.IR_Mem;
-import ic.ir.IR_Move;
-import ic.ir.IR_NewArray;
-import ic.ir.IR_NewObject;
-import ic.ir.IR_Prologue;
-import ic.ir.IR_Seq;
-import ic.ir.IR_String;
-import ic.ir.IR_Temp;
-import ic.ir.Label;
-import ic.ir.Register;
-import ic.ir.SpecialLabel;
-import ic.ir.SpecialRegister;
-import ic.ir.TempLabel;
-import ic.ir.TempRegister;
+import ic.ast.IR_Binop;
+import ic.ast.IR_Call;
+import ic.ast.IR_Cjump;
+import ic.ast.IR_Const;
+import ic.ast.IR_Epilogue;
+import ic.ast.IR_Exp;
+import ic.ast.IR_Function;
+import ic.ast.IR_JumpLabel;
+import ic.ast.IR_JumpRegister;
+import ic.ast.IR_Label;
+import ic.ast.IR_Mem;
+import ic.ast.IR_Move;
+import ic.ast.IR_NewArray;
+import ic.ast.IR_NewObject;
+import ic.ast.IR_Prologue;
+import ic.ast.IR_Seq;
+import ic.ast.IR_String;
+import ic.ast.IR_Temp;
+import ic.ast.Label;
+import ic.ast.Register;
+import ic.ast.SpecialLabel;
+import ic.ast.SpecialRegister;
+import ic.ast.TempLabel;
+import ic.ast.TempRegister;
 
 public class MipsGenerator implements IRVisitor<Register> {
 

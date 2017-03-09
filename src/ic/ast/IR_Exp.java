@@ -1,7 +1,7 @@
-package ic.ir;
+package ic.ast;
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
-import ir.mipsgen.IRVisitor;
 
 public abstract class IR_Exp{
 	

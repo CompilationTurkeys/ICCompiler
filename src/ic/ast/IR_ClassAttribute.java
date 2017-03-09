@@ -1,12 +1,8 @@
-package ic.ir;
+package ic.ast;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import ic.ast.AST_ClassDecl;
-import ic.ast.AST_Field;
-import ic.ast.AST_Method;
-import ic.ast.AST_Type;
 import ic.compiler.IR_Attribute;
 
 public class IR_ClassAttribute {

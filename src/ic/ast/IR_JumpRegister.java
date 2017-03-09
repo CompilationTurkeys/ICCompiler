@@ -1,16 +1,17 @@
-package ic.ir;
-
+package ic.ast;
+import ic.ast.IR_Exp;
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
 import ic.compiler.Visitor;
-import ir.mipsgen.IRVisitor;
 
-public class IR_Mem extends IR_Exp{
+public class IR_JumpRegister extends IR_Exp{
 	
-	public IR_Exp irNode;
+	public TempRegister tr;
+
 	
-	public IR_Mem(IR_Exp irNode)
+	public IR_JumpRegister(TempRegister tr)
 	{
-		this.irNode = irNode;
+		this.tr = tr;
 	}
 
 	@Override
@@ -23,5 +24,5 @@ public class IR_Mem extends IR_Exp{
 	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
 		return visitor.visit(this);
 	}
-	
+
 }

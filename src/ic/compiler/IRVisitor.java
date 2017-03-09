@@ -1,5 +1,21 @@
-package ir.mipsgen;
-import ic.ir.*;
+package ic.compiler;
+import ic.ast.IR_Binop;
+import ic.ast.IR_Call;
+import ic.ast.IR_Cjump;
+import ic.ast.IR_Const;
+import ic.ast.IR_Epilogue;
+import ic.ast.IR_Function;
+import ic.ast.IR_JumpLabel;
+import ic.ast.IR_JumpRegister;
+import ic.ast.IR_Label;
+import ic.ast.IR_Mem;
+import ic.ast.IR_Move;
+import ic.ast.IR_NewArray;
+import ic.ast.IR_NewObject;
+import ic.ast.IR_Prologue;
+import ic.ast.IR_Seq;
+import ic.ast.IR_String;
+import ic.ast.IR_Temp;
 
 /** An interface for traversing the AST received from the parser.
  * The visitor passes down objects of type ResultType

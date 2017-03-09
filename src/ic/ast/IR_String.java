@@ -1,19 +1,15 @@
-package ic.ir;
-import java.util.List;
+package ic.ast;
 
+import ic.compiler.IRVisitor;
 import ic.compiler.PrinterVisitor;
-import ir.mipsgen.IRVisitor;
+import ic.compiler.Visitor;
 
-public class IR_Call extends IR_Exp{
+public class IR_String extends IR_Exp{
+	public StringLabel label;
 	
-	public Label label;
-	public List<IR_Exp> args;
-	
-	public IR_Call(Label label, List<IR_Exp> args)
+	public IR_String(StringLabel label)
 	{
 		this.label = label;
-		// the arguments are already reversed
-		this.args = args;
 	}
 
 	@Override
@@ -25,6 +21,6 @@ public class IR_Call extends IR_Exp{
 	@Override
 	public <ResultType> ResultType accept(IRVisitor<ResultType> visitor) {
 		return visitor.visit(this);
-	}	
-	
+	}
+
 }
