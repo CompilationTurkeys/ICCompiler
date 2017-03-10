@@ -1,0 +1,56 @@
+#! /bin/bash
+echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo +"                                                                                      "+
+echo +"                                                                                      "+
+echo + [0] Clean *.class files and machine generated Lexer.java Parser.java sym.java +
+echo +"                                                                                      "+
+echo +"                                                                                      "+
+echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo rm -rf COMPILER ./src/ic/compiler/Lexer.java ./src/ic/compiler/Parser.java ./src/ic/compiler/sym.java bin/ic/compiler/*.class ./bin/ic/ast/*.class
+     rm -rf COMPILER ./src/ic/compiler/Lexer.java ./src/ic/compiler/Parser.java ./src/ic/compiler/sym.java bin/ic/compiler/*.class ./bin/ic/ast/*.class 
+echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo +"                                                          "+
+echo +"                                                          "+
+echo + [1] Use JFlex to synthesize Lexer.java from LEX_FILE.lex +
+echo +"                                                          "+
+echo +"                                                          "+
+echo ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo jflex -q -d ./src/ic/compiler ./cupLexFiles/LEX_FILE.lex
+     jflex -q -d ./src/ic/compiler ./cupLexFiles/LEX_FILE.lex
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo +"                                                                             "+
+echo +"                                                                             "+
+echo + [2] Use CUP to synthesize Parser.java and sym.java from CUP_FILE.cup +
+echo +"                                                                             "+
+echo +"                                                                             "+
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo java -jar ./cupJars/java-cup-11b.jar -nowarn -destdir ./src/ic/compiler -parser Parser -symbols sym ./cupLexFiles/CUP_FILE.cup
+     java -jar ./cupJars/java-cup-11b.jar -nowarn -destdir ./src/ic/compiler -parser Parser -symbols sym ./cupLexFiles/CUP_FILE.cup
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo +"                                                       "+
+echo +"                                                       "+
+echo +  [3] Create *.class files from *.java files + CUP JAR +
+echo +"                                                       "+
+echo +"                                                       "+
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo javac -cp ./cupJars/java-cup-11b-runtime.jar -d ./bin src/ic/compiler/*.java src/ic/ast/*.java 
+     javac -cp ./cupJars/java-cup-11b-runtime.jar -d ./bin src/ic/compiler/*.java  src/ic/ast/*.java 
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo +"                                                         "+
+echo +"                                                         "+
+echo + [4] Create a JAR file from from *.class files + CUP JAR +
+echo +"                                                         "+
+echo +"                                                         "+
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo jar cfm COMPILER ./manifest/manifest.mf -C ./bin/ .
+     jar cfm COMPILER ./manifest/manifest.mf -C ./bin/ .
+chmod 707 COMPILER
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo +"                                                         "+
+echo +"                                                         "+
+echo +"    Jar file COMPILER  was created succefully.   "+
+echo +"                                                         "+
+echo +"                                                         "+
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
